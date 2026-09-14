@@ -1,0 +1,126 @@
+---
+import '../styles/global.css';
+import GTMHead from '../components/tracking/GTMHead.astro';
+import GTMBody from '../components/tracking/GTMBody.astro';
+import UTMCapture from '../components/tracking/UTMCapture.astro';
+import InteractionTrigger from '../components/tracking/InteractionTrigger.astro';
+import WhatsAppWidget from '../components/ui/WhatsAppWidget.astro';
+
+interface WhatsAppStep1Field {
+  name: string;
+  type: 'text' | 'email' | 'tel' | 'number' | 'select' | 'textarea' | 'date' | 'radio';
+  label?: string;
+  placeholder?: string;
+  required?: boolean;
+  options?: { value: string; label: string; disabled?: boolean; selected?: boolean }[];
+  value?: string;
+  min?: string;
+  max?: string;
+  rows?: number;
+}
+
+interface Props {
+  title: string;
+  description?: string;
+  ogImage?: string;
+  canonical?: string;
+  noIndex?: boolean;
+  theme?: 'dark' | 'light';
+  jsonLd?: Record<string, any>;
+  /** Campos da etapa 1 do popup WhatsApp — mesmas opções do formulário da página */
+  whatsAppStep1Fields?: WhatsAppStep1Field[];
+  /** Mensagem de boas-vindas do popup WhatsApp (use \n para quebrar linha) */
+  whatsAppMessage?: string;
+  /** Exibe o campo "Empresa" como primeiro campo da etapa 1 do popup WhatsApp */
+  whatsAppShowEmpresaField?: boolean;
+  /** Oculta o widget de WhatsApp (ex.: home de triagem, que só roteia) */
+  hideWhatsApp?: boolean;
+}
+
+const {
+  title,
+  description = '',
+  ogImage = '/images/og-default.jpg',
+  canonical,
+  noIndex = false,
+  theme = 'dark',
+  jsonLd,
+  whatsAppStep1Fields,
+  whatsAppMessage,
+  whatsAppShowEmpresaField = false,
+  hideWhatsApp = false,
+} = Astro.props;
+
+import config from '../../config.json';
+const gtmId = config.tracking?.gtm_id || '';
+const trackingEnabled = config.tracking?.enabled !== false;
+
+// og:image precisa de URL absoluta para redes sociais e crawlers
+const ogImageAbs = ogImage.startsWith('http') ? ogImage : `https://${config.domain}${ogImage}`;
+
+const defaultJsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebPage',
+  name: title,
+  description: description,
+  url: canonical || Astro.url.href,
+};
+---
+
+<!doctype html>
+<html lang="pt-BR" data-theme={theme}>
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, interactive-widget=resizes-content" />
+    <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+    <link rel="preconnect" href="https://media.dmove.com.br" crossorigin />
+    <link rel="dns-prefetch" href="https://media.dmove.com.br" />
+    <link rel="preconnect" href="https://capi-automation.s3.us-east-2.amazonaws.com" crossorigin />
+    <link rel="preconnect" href="https://www.google.com.br" />
+
+    <!-- SEO -->
+    <title>{title}</title>
+    {description && <meta name="description" content={description} />}
+    {canonical && <link rel="canonical" href={canonical} />}
+    {noIndex && <meta name="robots" content="noindex, nofollow" />}
+
+    <!-- Open Graph -->
+    <meta property="og:title" content={title} />
+    {description && <meta property="og:description" content={description} />}
+    <meta property="og:image" content={ogImageAbs} />
+    <meta property="og:type" content="website" />
+    <meta property="og:locale" content="pt_BR" />
+
+    <!-- Favicon -->
+    <link rel="icon" type="image/png" href="/images/icone.png" />
+    <link rel="shortcut icon" href="/images/icone.png" />
+    <link rel="apple-touch-icon" href="/images/icone.png" />
+
+    <!-- GTM Head -->
+    {trackingEnabled && gtmId && <GTMHead gtmId={gtmId} />}
+
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json" set:html={JSON.stringify(jsonLd || defaultJsonLd)} />
+
+    <slot name="head" />
+  </head>
+  <body>
+    <!-- GTM Body noscript -->
+    {trackingEnabled && gtmId && <GTMBody gtmId={gtmId} />}
+
+    <!-- UTM Capture -->
+    {trackingEnabled && <UTMCapture />}
+
+    <!-- Gatilho de interação: dispara 'user_interaction' no dataLayer para gatilhar Pixel/CAPI no GTM sob demanda -->
+    {trackingEnabled && gtmId && <InteractionTrigger />}
+
+    <!-- Conteúdo da página -->
+    <slot />
+
+    <!-- WhatsApp Flutuante — configurar em config.json > whatsapp -->
+    {!hideWhatsApp && <WhatsAppWidget showEmpresaField={whatsAppShowEmpresaField} />}
+
+    <!-- Scripts adicionais -->
+    <slot name="scripts" />
+  </body>
+</html>

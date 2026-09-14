@@ -1,0 +1,745 @@
+---
+import Base from '../layouts/Base.astro';
+import '../styles/corporativo.css';
+import config from '../../config.json';
+import { getPreset } from '../scripts/form-presets';
+
+const webhookUrl  = config.forms['lead-form'].webhooks[0];
+const redirectUrl = config.forms['lead-form'].redirect_on_success;
+const formFields  = getPreset(config.forms['lead-form'].preset);
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type':    'EventVenue',
+  name:       'Espaço Fazenda das Pedras — Eventos Corporativos',
+  description:'Espaço premium para eventos corporativos em Itu, São Paulo. Convenções, confraternizações e team building.',
+  image:      '/images/hero/slide-1.jpg',
+  address: {
+    '@type':         'PostalAddress',
+    addressLocality: 'Itu',
+    addressRegion:   'SP',
+    addressCountry:  'BR',
+  },
+  maximumAttendeeCapacity: 500,
+  telephone: '+55-11-96370-1306',
+};
+---
+
+<Base
+  title="Eventos Corporativos na Fazenda das Pedras | Até 500 Pessoas | Itu-SP"
+  description="Espaço premium para eventos corporativos a 1h de São Paulo. Convenções, confraternizações, team building e lançamentos. Capacidade para até 500 pessoas. Solicite proposta!"
+  ogImage="/images/hero/slide-1.jpg"
+  canonical={`https://${config.domain}/corporativos`}
+  jsonLd={jsonLd}
+  theme="light"
+  whatsAppShowEmpresaField={true}
+  whatsAppMessage="Olá! Tenho interesse em realizar um evento corporativo na Fazenda das Pedras.\nPode me enviar uma proposta?"
+>
+  <link slot="head" rel="preconnect" href="https://fonts.googleapis.com" />
+  <link slot="head" rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link slot="head" href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Playfair+Display:wght@500;600;700&display=swap" rel="stylesheet" />
+
+  <!-- ============================================================
+       HEADER
+  ============================================================ -->
+  <header class="corp-header" id="corp-header">
+    <div class="corp-container">
+      <a href="#" class="corp-logo-link" aria-label="Fazenda das Pedras">
+        <img src="/images/logo.png" alt="Fazenda das Pedras — Eventos Corporativos" class="corp-logo-img" />
+      </a>
+
+      <button class="corp-mobile-btn" id="corp-mobile-btn" aria-label="Abrir menu" aria-expanded="false">
+        <span></span>
+        <span></span>
+        <span></span>
+      </button>
+
+      <nav class="corp-nav" id="corp-main-nav" aria-label="Menu principal">
+        <ul class="corp-nav-list">
+          <li><a href="#eventos">Eventos</a></li>
+          <li><a href="#espacos">Espaços</a></li>
+          <li><a href="#estrutura">Estrutura</a></li>
+          <li><a href="#cases">Cases</a></li>
+          <li><a href="#contato">Orçamento</a></li>
+          <li><a href="#contato" class="corp-nav-cta">Solicitar Proposta</a></li>
+        </ul>
+      </nav>
+    </div>
+  </header>
+
+  <!-- ============================================================
+       HERO
+  ============================================================ -->
+  <section class="corp-hero" id="hero">
+    <div class="corp-hero-slider" id="corp-hero-slider">
+      <div class="corp-hero-slide active" style="background-image: url('/images/hero/slide-1.jpg')"></div>
+      <div class="corp-hero-slide"        style="background-image: url('/images/hero/slide-2.jpg')"></div>
+      <div class="corp-hero-slide"        style="background-image: url('/images/hero/slide-3.jpg')"></div>
+      <div class="corp-hero-slide"        style="background-image: url('/images/hero/slide-4.jpg')"></div>
+    </div>
+    <div class="corp-hero-overlay"></div>
+
+    <div class="corp-hero-content">
+      <div class="corp-hero-badge">Eventos Corporativos</div>
+      <h1 class="corp-hero-title">
+        Seu Evento Corporativo<br />
+        em um Cenário <span class="corp-highlight">Único</span>
+      </h1>
+      <p class="corp-hero-subtitle">
+        Espaço premium para até <strong>500 pessoas</strong> a apenas 1 hora de São Paulo.<br />
+        Convenções, confraternizações, team building e muito mais.
+      </p>
+
+      <div class="corp-hero-stats">
+        <div class="corp-stat">
+          <span class="corp-stat-number">500+</span>
+          <span class="corp-stat-label">Capacidade</span>
+        </div>
+        <div class="corp-stat">
+          <span class="corp-stat-number">1h</span>
+          <span class="corp-stat-label">de São Paulo</span>
+        </div>
+        <div class="corp-stat">
+          <span class="corp-stat-number">15+</span>
+          <span class="corp-stat-label">Anos de Experiência</span>
+        </div>
+      </div>
+
+      <div class="corp-hero-actions">
+        <a href="#contato" class="corp-btn corp-btn-primary corp-btn-lg">Solicitar Proposta</a>
+        <a href="#espacos" class="corp-btn corp-btn-outline-light corp-btn-lg">Conhecer Espaços</a>
+      </div>
+    </div>
+
+    <div class="corp-hero-scroll" aria-hidden="true">
+      <span>Role para explorar</span>
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+        <path d="M12 5v14M5 12l7 7 7-7"/>
+      </svg>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       TIPOS DE EVENTOS
+  ============================================================ -->
+  <section class="corp-events" id="eventos">
+    <div class="corp-container">
+      <div class="corp-section-header">
+        <span class="corp-eyebrow">Soluções Completas</span>
+        <h2 class="corp-section-title">Eventos Que <span class="corp-highlight">Transformamos</span> em Sucesso</h2>
+        <p class="corp-section-subtitle">
+          Da convenção estratégica à confraternização memorável,
+          cada evento recebe atenção personalizada da nossa equipe.
+        </p>
+      </div>
+
+      <div class="corp-events-grid">
+        <div class="corp-event-card">
+          <div class="corp-event-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/>
+              <circle cx="9" cy="7" r="4"/>
+              <path d="M23 21v-2a4 4 0 0 0-3-3.87"/>
+              <path d="M16 3.13a4 4 0 0 1 0 7.75"/>
+            </svg>
+          </div>
+          <h3>Convenções &amp; Congressos</h3>
+          <p>Auditório para até 300 pessoas sentadas, equipamento AV completo, salas de apoio para workshops simultâneos.</p>
+          <ul class="corp-event-features">
+            <li>Palco e púlpito</li>
+            <li>Projeção profissional</li>
+            <li>Tradução simultânea</li>
+          </ul>
+        </div>
+
+        <div class="corp-event-card">
+          <div class="corp-event-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <circle cx="12" cy="12" r="10"/>
+              <path d="M8 14s1.5 2 4 2 4-2 4-2"/>
+              <line x1="9" y1="9" x2="9.01" y2="9"/>
+              <line x1="15" y1="9" x2="15.01" y2="9"/>
+            </svg>
+          </div>
+          <h3>Confraternizações</h3>
+          <p>Fim de ano, dia da empresa, celebrações de metas. Ambiente descontraído que integra equipes e cria memórias.</p>
+          <ul class="corp-event-features">
+            <li>Área externa ampla</li>
+            <li>DJ e iluminação</li>
+            <li>Buffet personalizado</li>
+          </ul>
+        </div>
+
+        <div class="corp-event-card">
+          <div class="corp-event-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <polygon points="12 2 15.09 8.26 22 9.27 17 14.14 18.18 21.02 12 17.77 5.82 21.02 7 14.14 2 9.27 8.91 8.26 12 2"/>
+            </svg>
+          </div>
+          <h3>Team Building</h3>
+          <p>Atividades ao ar livre, dinâmicas de grupo, integração de equipes. Saia do escritório e fortaleça sua cultura.</p>
+          <ul class="corp-event-features">
+            <li>Área verde de 50.000m²</li>
+            <li>Atividades customizadas</li>
+            <li>Parceiros especializados</li>
+          </ul>
+        </div>
+
+        <div class="corp-event-card">
+          <div class="corp-event-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <rect x="2" y="3" width="20" height="14" rx="2" ry="2"/>
+              <line x1="8" y1="21" x2="16" y2="21"/>
+              <line x1="12" y1="17" x2="12" y2="21"/>
+            </svg>
+          </div>
+          <h3>Lançamentos &amp; Apresentações</h3>
+          <p>Produtos, campanhas, resultados. Impacte seu público em um cenário que sai do comum e impressiona.</p>
+          <ul class="corp-event-features">
+            <li>Cenografia flexível</li>
+            <li>Área de exposição</li>
+            <li>Coquetel de abertura</li>
+          </ul>
+        </div>
+
+        <div class="corp-event-card">
+          <div class="corp-event-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <path d="M22 19a2 2 0 0 1-2 2H4a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h5l2 3h9a2 2 0 0 1 2 2z"/>
+            </svg>
+          </div>
+          <h3>Treinamentos &amp; Workshops</h3>
+          <p>Imersões, capacitações, seminários. Ambiente inspirador que favorece o aprendizado e a concentração.</p>
+          <ul class="corp-event-features">
+            <li>Salas modulares</li>
+            <li>Wi-Fi de alta velocidade</li>
+            <li>Coffee break incluso</li>
+          </ul>
+        </div>
+
+        <div class="corp-event-card">
+          <div class="corp-event-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.5" aria-hidden="true">
+              <path d="M18 8h1a4 4 0 0 1 0 8h-1"/>
+              <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
+              <line x1="6" y1="1" x2="6" y2="4"/>
+              <line x1="10" y1="1" x2="10" y2="4"/>
+              <line x1="14" y1="1" x2="14" y2="4"/>
+            </svg>
+          </div>
+          <h3>Reuniões Executivas</h3>
+          <p>Board meetings, kick-offs, planejamentos estratégicos. Privacidade e infraestrutura para decisões importantes.</p>
+          <ul class="corp-event-features">
+            <li>Salas privativas</li>
+            <li>Videoconferência</li>
+            <li>Serviço de secretaria</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       ESPAÇOS
+  ============================================================ -->
+  <section class="corp-spaces" id="espacos">
+    <div class="corp-container">
+      <div class="corp-section-header">
+        <span class="corp-eyebrow">Infraestrutura Completa</span>
+        <h2 class="corp-section-title">Espaços Que Se <span class="corp-highlight">Adaptam</span> ao Seu Evento</h2>
+      </div>
+
+      <div class="corp-spaces-showcase">
+        <div class="corp-space-card featured">
+          <div class="corp-space-image">
+            <img src="/images/espacos/festa-1.jpg" alt="Salão Principal — capacidade para 500 pessoas" loading="eager" fetchpriority="high" />
+            <div class="corp-space-capacity"><span>Até 500 pessoas</span></div>
+          </div>
+          <div class="corp-space-content">
+            <h3>Salão Principal</h3>
+            <p>Nosso maior espaço, com 800m² totalmente climatizado. Pé-direito alto, iluminação cênica e acústica profissional. Perfeito para grandes convenções e confraternizações.</p>
+            <div class="corp-space-specs">
+              <div class="corp-spec">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="2"/></svg>
+                <span>800m²</span>
+              </div>
+              <div class="corp-spec">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M17 21v-2a4 4 0 0 0-4-4H5a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/></svg>
+                <span>500 pessoas</span>
+              </div>
+              <div class="corp-spec">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/></svg>
+                <span>AV completo</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="corp-space-card">
+          <div class="corp-space-image">
+            <img src="/images/espacos/festa-2.jpg" alt="Área Externa e Jardins" loading="lazy" />
+            <div class="corp-space-capacity"><span>Até 300 pessoas</span></div>
+          </div>
+          <div class="corp-space-content">
+            <h3>Área Externa &amp; Jardins</h3>
+            <p>50.000m² de área verde para atividades ao ar livre, team building e coquetéis. Vista panorâmica e contato com a natureza.</p>
+            <div class="corp-space-specs">
+              <div class="corp-spec">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>
+                <span>50.000m²</span>
+              </div>
+              <div class="corp-spec">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/></svg>
+                <span>Luz natural</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="corp-space-card">
+          <div class="corp-space-image">
+            <img src="/images/espacos/recepcao-1.jpg" alt="Espaço Lounge e Salas de Apoio" loading="lazy" />
+            <div class="corp-space-capacity"><span>Até 80 pessoas</span></div>
+          </div>
+          <div class="corp-space-content">
+            <h3>Espaço Lounge &amp; Salas de Apoio</h3>
+            <p>Ambiente sofisticado para reuniões executivas, workshops paralelos ou área VIP. Mobiliário premium e privacidade total.</p>
+            <div class="corp-space-specs">
+              <div class="corp-spec">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="2" y="7" width="20" height="14" rx="2" ry="2"/><path d="M16 7V4a2 2 0 0 0-2-2h-4a2 2 0 0 0-2 2v3"/></svg>
+                <span>Modular</span>
+              </div>
+              <div class="corp-spec">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M12 22c5.523 0 10-4.477 10-10S17.523 2 12 2 2 6.477 2 12s4.477 10 10 10z"/><path d="M2 12h20"/></svg>
+                <span>Wi-Fi dedicado</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       POR QUE ESCOLHER
+  ============================================================ -->
+  <section class="corp-why-us" id="estrutura">
+    <div class="corp-container">
+      <div class="corp-section-header">
+        <span class="corp-eyebrow">Diferenciais</span>
+        <h2 class="corp-section-title">Por Que as Maiores Empresas<br class="corp-br-desktop" /> <span class="corp-highlight">Escolhem</span> a Fazenda das Pedras</h2>
+        <p class="corp-section-subtitle">
+          Há mais de 15 anos realizamos eventos corporativos de alto padrão.
+          Nossa estrutura foi pensada para atender desde reuniões executivas
+          até grandes convenções com centenas de participantes.
+        </p>
+      </div>
+
+      <div class="corp-why-us-grid">
+        <div class="corp-why-us-content">
+          <div class="corp-benefits-list">
+            <div class="corp-benefit-item">
+              <div class="corp-benefit-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+              </div>
+              <div class="corp-benefit-text">
+                <h4>Localização Estratégica</h4>
+                <p>Apenas 1h de São Paulo pela Castelo Branco. Fácil acesso para colaboradores de toda a região metropolitana.</p>
+              </div>
+            </div>
+
+            <div class="corp-benefit-item">
+              <div class="corp-benefit-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+              </div>
+              <div class="corp-benefit-text">
+                <h4>Capacidade Flexível</h4>
+                <p>De 30 a 500 pessoas. Espaços modulares que se adaptam ao tamanho e formato do seu evento.</p>
+              </div>
+            </div>
+
+            <div class="corp-benefit-item">
+              <div class="corp-benefit-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+              </div>
+              <div class="corp-benefit-text">
+                <h4>Infraestrutura Completa</h4>
+                <p>Projeção, som, iluminação, Wi-Fi corporativo, ar-condicionado, gerador de energia. Tudo incluso.</p>
+              </div>
+            </div>
+
+            <div class="corp-benefit-item">
+              <div class="corp-benefit-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+              </div>
+              <div class="corp-benefit-text">
+                <h4>Estacionamento Amplo</h4>
+                <p>Mais de 200 vagas de estacionamento próprio. Opção de valet para maior comodidade.</p>
+              </div>
+            </div>
+
+            <div class="corp-benefit-item">
+              <div class="corp-benefit-icon">
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                  <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+                </svg>
+              </div>
+              <div class="corp-benefit-text">
+                <h4>Ambiente Diferenciado</h4>
+                <p>Tire sua equipe do escritório. O contato com a natureza estimula criatividade e fortalece conexões.</p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="corp-why-us-image">
+          <img src="/images/hero/slide-2.jpg" alt="Estrutura do espaço" loading="lazy" />
+          <div class="corp-floating-card" aria-hidden="true">
+            <div class="corp-floating-stat">
+              <span class="number">98%</span>
+              <span class="label">Satisfação dos clientes</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       CASES
+  ============================================================ -->
+  <section class="corp-cases" id="cases">
+    <div class="corp-container">
+      <div class="corp-section-header corp-center">
+        <span class="corp-eyebrow">Empresas Que Confiam</span>
+        <h2 class="corp-section-title">Cases de <span class="corp-highlight">Sucesso</span></h2>
+      </div>
+
+      <div class="corp-cases-grid">
+        <div class="corp-case-card">
+          <div class="corp-case-header">
+            <div class="corp-case-company">
+              <div class="corp-company-logo" aria-hidden="true"><span>Tech</span></div>
+              <div class="corp-company-info">
+                <h4>TechCorp Brasil</h4>
+                <span>Convenção Anual de Vendas</span>
+              </div>
+            </div>
+            <div class="corp-case-metrics"><span>350 participantes</span></div>
+          </div>
+          <blockquote>
+            "Realizamos nossa convenção anual na Fazenda das Pedras e foi um sucesso absoluto.
+            A estrutura atendeu perfeitamente nossas necessidades de AV, os espaços para
+            breakout sessions foram excelentes, e a equipe foi extremamente profissional."
+          </blockquote>
+          <div class="corp-case-author">
+            <strong>Roberto Mendes</strong>
+            <span>Diretor Comercial</span>
+          </div>
+        </div>
+
+        <div class="corp-case-card">
+          <div class="corp-case-header">
+            <div class="corp-case-company">
+              <div class="corp-company-logo" aria-hidden="true"><span>IND</span></div>
+              <div class="corp-company-info">
+                <h4>Indústrias Reunidas</h4>
+                <span>Confraternização de Fim de Ano</span>
+              </div>
+            </div>
+            <div class="corp-case-metrics"><span>480 colaboradores</span></div>
+          </div>
+          <blockquote>
+            "Nossa confraternização para quase 500 pessoas foi impecável. O buffet estava
+            excelente, a estrutura de som e DJ funcionaram perfeitamente, e todos elogiaram
+            muito o ambiente. Já fechamos para o próximo ano!"
+          </blockquote>
+          <div class="corp-case-author">
+            <strong>Mariana Costa</strong>
+            <span>Gerente de RH</span>
+          </div>
+        </div>
+
+        <div class="corp-case-card">
+          <div class="corp-case-header">
+            <div class="corp-case-company">
+              <div class="corp-company-logo" aria-hidden="true"><span>FIN</span></div>
+              <div class="corp-company-info">
+                <h4>Grupo Financeiro ABC</h4>
+                <span>Treinamento de Liderança</span>
+              </div>
+            </div>
+            <div class="corp-case-metrics"><span>60 executivos</span></div>
+          </div>
+          <blockquote>
+            "O ambiente fora do escritório fez toda diferença no engajamento dos participantes.
+            As atividades de team building ao ar livre foram um sucesso. O espaço é perfeito
+            para imersões e treinamentos que exigem foco."
+          </blockquote>
+          <div class="corp-case-author">
+            <strong>Carlos Eduardo Silva</strong>
+            <span>Diretor de Pessoas</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       PROCESSO
+  ============================================================ -->
+  <section class="corp-process" id="processo">
+    <div class="corp-container">
+      <div class="corp-section-header corp-center">
+        <span class="corp-eyebrow">Como Funciona</span>
+        <h2 class="corp-section-title">Do Briefing ao <span class="corp-highlight">Evento Perfeito</span></h2>
+      </div>
+
+      <div class="corp-process-timeline">
+        <div class="corp-process-step">
+          <div class="corp-step-num" aria-hidden="true">01</div>
+          <div class="corp-step-content">
+            <h3>Briefing &amp; Proposta</h3>
+            <p>Conte-nos sobre seu evento. Em até 24h você recebe uma proposta detalhada e personalizada.</p>
+          </div>
+        </div>
+        <div class="corp-process-step">
+          <div class="corp-step-num" aria-hidden="true">02</div>
+          <div class="corp-step-content">
+            <h3>Visita Técnica</h3>
+            <p>Agende uma visita para conhecer os espaços e alinhar todos os detalhes técnicos e operacionais.</p>
+          </div>
+        </div>
+        <div class="corp-process-step">
+          <div class="corp-step-num" aria-hidden="true">03</div>
+          <div class="corp-step-content">
+            <h3>Planejamento</h3>
+            <p>Nossa equipe trabalha junto com você no cronograma, layout, fornecedores e toda a logística.</p>
+          </div>
+        </div>
+        <div class="corp-process-step">
+          <div class="corp-step-num" aria-hidden="true">04</div>
+          <div class="corp-step-content">
+            <h3>Execução Impecável</h3>
+            <p>No dia, você foca no conteúdo. Nós cuidamos de toda a operação para um evento de sucesso.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FAQ
+  ============================================================ -->
+  <section class="corp-faq" id="faq">
+    <div class="corp-container">
+      <div class="corp-section-header corp-center">
+        <span class="corp-eyebrow">Dúvidas Frequentes</span>
+        <h2 class="corp-section-title">Perguntas <span class="corp-highlight">Comuns</span></h2>
+      </div>
+
+      <div class="corp-faq-grid">
+        {[
+          {
+            q: 'Qual a capacidade máxima do espaço?',
+            a: 'O Salão Principal comporta até <strong>500 pessoas</strong> em formato coquetel ou <strong>300 pessoas</strong> sentadas em auditório. Para eventos maiores, podemos integrar áreas externas cobertas.',
+          },
+          {
+            q: 'Qual a distância de São Paulo?',
+            a: '<strong>Aproximadamente 1 hora</strong> do centro de São Paulo pela Rodovia Castelo Branco (SP-280). Oferecemos serviço de transfer opcional com ônibus executivo.',
+          },
+          {
+            q: 'O espaço possui infraestrutura de AV?',
+            a: 'Sim! Contamos com <strong>projeção profissional, sistema de som, microfones, iluminação cênica e Wi-Fi corporativo de alta velocidade</strong>. Equipamentos adicionais podem ser locados conforme necessidade.',
+          },
+          {
+            q: 'Posso trazer fornecedores próprios?',
+            a: '<strong>Sim, com total flexibilidade.</strong> Você pode utilizar seus fornecedores de confiança ou escolher entre nossos parceiros homologados. Trabalhamos com buffets, empresas de AV, decoradores e mais.',
+          },
+          {
+            q: 'Há estacionamento para os participantes?',
+            a: 'Sim! Estacionamento amplo com <strong>mais de 200 vagas</strong>, pavimentado e com segurança. Também oferecemos serviço de manobrista/valet opcional.',
+          },
+          {
+            q: 'É possível fazer eventos de múltiplos dias?',
+            a: '<strong>Sim!</strong> Temos estrutura para eventos de 2 ou mais dias. Podemos indicar hotéis parceiros na região para hospedagem dos participantes, com condições especiais.',
+          },
+          {
+            q: 'Vocês emitem nota fiscal?',
+            a: '<strong>Sim, claro.</strong> Emitimos nota fiscal de serviços para todos os eventos. Trabalhamos com contratos corporativos e diferentes formas de pagamento.',
+          },
+          {
+            q: 'Com quanto tempo de antecedência devo reservar?',
+            a: 'Recomendamos <strong>2 a 3 meses de antecedência</strong> para eventos maiores, especialmente no final do ano (alta demanda para confraternizações). Para eventos menores, 1 mês pode ser suficiente.',
+          },
+        ].map(({ q, a }) => (
+          <div class="corp-faq-item">
+            <button class="corp-faq-question" type="button" aria-expanded="false">
+              <span>{q}</span>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <polyline points="6 9 12 15 18 9"/>
+              </svg>
+            </button>
+            <div class="corp-faq-answer" role="region">
+              <p set:html={a} />
+            </div>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       CONTATO / FORMULÁRIO
+  ============================================================ -->
+  <section class="corp-contact" id="contato">
+    <div class="corp-container">
+      <div class="corp-contact-wrapper">
+        <div class="corp-contact-content">
+          <span class="corp-eyebrow light">Vamos Conversar?</span>
+          <h2 class="corp-section-title light">Solicite uma <span class="corp-highlight">Proposta Personalizada</span></h2>
+          <p>
+            Preencha o formulário e nossa equipe comercial entrará em contato
+            em até 24 horas úteis com uma proposta sob medida para seu evento.
+          </p>
+
+          <div class="corp-contact-info">
+            <div class="corp-contact-item">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+                <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/>
+                <circle cx="12" cy="10" r="3"/>
+              </svg>
+              <div>
+                <strong>Localização</strong>
+                <span>Itu, São Paulo — 1h de SP capital</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="corp-form-box" id="corp-form-grid">
+          <div class="corp-form-header">
+            <span class="corp-form-kicker">Atendimento corporativo</span>
+            <h3>Conte um pouco sobre você</h3>
+            <p>Preencha seus dados para receber contato.</p>
+          </div>
+
+          <form
+            id="lead-form"
+            class="corp-form"
+            data-form-id="lead-form"
+            data-submit-url={webhookUrl}
+            data-redirect={redirectUrl}
+            data-grid-id="corp-form-grid"
+            data-success-id="corp-form-success"
+            novalidate
+          >
+            <!-- Honeypot anti-spam -->
+            <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;" />
+
+            {formFields.map(field => (
+              <div class={`corp-form-group${field.full ? ' corp-form-group--full' : ''}`}>
+                <label for={`form-field-${field.name}`}>
+                  {field.label}
+                  {field.hint && <span class="corp-form-hint"> ({field.hint})</span>}
+                </label>
+
+                {field.type === 'select' ? (
+                  <select id={`form-field-${field.name}`} name={field.name} required={field.required}>
+                    {field.options?.map(opt => (
+                      <option value={opt.value} disabled={opt.disabled} selected={opt.selected}>{opt.label}</option>
+                    ))}
+                  </select>
+                ) : field.type === 'textarea' ? (
+                  <textarea
+                    id={`form-field-${field.name}`}
+                    name={field.name}
+                    placeholder={field.placeholder}
+                    required={field.required}
+                    rows={4}
+                  />
+                ) : (
+                  <input
+                    id={`form-field-${field.name}`}
+                    type={field.type}
+                    name={field.name}
+                    placeholder={field.placeholder}
+                    required={field.required}
+                    autocomplete={field.name === 'nome' ? 'name' : field.name === 'email' ? 'email' : field.name === 'telefone' ? 'tel' : undefined}
+                    inputmode={field.type === 'tel' ? 'tel' : field.type === 'number' ? 'numeric' : undefined}
+                    data-datepicker={field.datepicker ? 'true' : undefined}
+                  />
+                )}
+              </div>
+            ))}
+
+            <div class="corp-form-msg" id="corp-FormMsg"></div>
+
+            <button type="submit" class="corp-form-submit form-submit">
+              <span class="btn-label">Solicitar proposta</span>
+              <span class="btn-loading" hidden>Enviando…</span>
+            </button>
+          </form>
+        </div>
+
+        <div id="corp-form-success" role="alert">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+          </svg>
+          <h3>Recebemos sua solicitação!</h3>
+          <p>Nossa equipe comercial entrará em contato em até 24 horas úteis. Fique de olho no seu WhatsApp e e-mail.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FOOTER
+  ============================================================ -->
+  <footer class="corp-footer">
+    <div class="corp-container">
+      <div class="corp-footer-content">
+        <div class="corp-footer-brand">
+          <img src="/images/logo.png" alt="Fazenda das Pedras" class="corp-footer-logo" />
+          <p>Há mais de 15 anos transformando eventos corporativos em experiências memoráveis.</p>
+        </div>
+
+      </div>
+
+      <div class="corp-footer-bottom">
+        <p>&copy; {new Date().getFullYear()} Espaço Fazenda das Pedras. Todos os direitos reservados.</p>
+      </div>
+    </div>
+  </footer>
+
+</Base>
+
+<script>
+  import { initForms }       from '../scripts/forms';
+  import { initCorporativo } from '../scripts/corporativo';
+  import flatpickr            from 'flatpickr';
+  import { Portuguese }       from 'flatpickr/dist/l10n/pt.js';
+  import 'flatpickr/dist/flatpickr.min.css';
+
+  initForms();
+  initCorporativo();
+
+  const dateEl = document.querySelector<HTMLInputElement>('[data-datepicker="true"]');
+  if (dateEl) {
+    flatpickr(dateEl, {
+      locale: Portuguese,
+      dateFormat: 'd/m/Y',
+      minDate: 'today',
+      disableMobile: false,
+      allowInput: true,
+    });
+  }
+</script>

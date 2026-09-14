@@ -1,0 +1,134 @@
+# dmove-astro-template
+
+Template de landing page da Dmove (Astro 7, estático) — modelo para clonar a cada novo projeto de cliente.
+
+---
+
+## Inicio rapido
+
+```bash
+npm install
+npm run dev      # http://localhost:4321
+npm run build
+```
+
+Preencha o `config.json` (dominio, GTM, webhook, WhatsApp, preset do formulario) antes de comecar.
+
+---
+
+## Como publicar
+
+**Push na main salva no GitHub mas NAO publica o site.**
+
+Para colocar no ar, crie uma **Release** no GitHub (ou pelo terminal):
+
+```bash
+git tag v1.0.1
+git push origin v1.0.1
+gh release create v1.0.1 --title "v1.0.1" --notes "descricao do que mudou"
+```
+
+O GitHub Actions builda e envia automaticamente para a VPS. Acompanhe na aba **Actions** do repositorio.
+
+---
+
+## O que esse template tem alem do Astro padrao
+
+### config.json — configuracao central
+
+Tudo que muda de cliente para cliente vive aqui: nome, GTM ID, WhatsApp, webhook dos leads, preset do formulario (social ou corporativo), dominio de deploy. Nenhum outro arquivo precisa ser editado para configurar um projeto novo.
+
+### Captacao de leads (formulario + WhatsApp)
+
+O template tem dois caminhos de captacao que enviam para o mesmo webhook:
+
+- **Formulario** — campos padronizados por preset. O preset `social` tem: nome, telefone, email, tipo de evento, data, convidados. O `corporativo` adiciona "empresa" como primeiro campo. Validacao com mascara de telefone, honeypot anti-spam, e estado de loading no botao.
+
+- **WhatsApp conversacional** — widget flutuante que simula um chat. Faz as perguntas uma a uma (nome, telefone, email, tipo de evento, data, convidados) e so abre o WhatsApp depois de coletar tudo. O lead vai pro webhook antes de abrir a conversa.
+
+### Tracking completo
+
+O template produz todos os sinais que o container GTM da Dmove consome:
+
+- **UTMs e click IDs** — capturados da URL e gravados em cookies 1st-party (90 dias). Sobrevivem a fechar a aba e voltar depois.
+- **Meta CAPI** — `fbc`, `fbp`, `external_id` (UUID 365d), `event_id` (UUID por pageview para dedup Pixel x CAPI).
+- **Google Ads** — `gclid`, `gbraid`, `wbraid` enviados no payload para atribuicao offline (OCI).
+- **IP do visitante** — capturado via Cloudflare trace (ou ipify como fallback) e enviado no payload.
+- **Enhanced Conversions** — o GTM le email/telefone/nome do DOM pelos IDs `#form-field-*`. Por isso cada campo do form precisa ter `id="form-field-<nome>"`.
+- **Eventos GTM** — `form_start`, `form_submit`, `form_error` (form e WhatsApp).
+
+### Componentes de UI
+
+- **Img** — wrapper do Image do Astro. Converte para WebP/AVIF no build. Use `priority` na imagem do hero (LCP).
+- **Video** — player de video self-hosted (.mp4). Lazy-load. Gera JSON-LD VideoObject para o Google automaticamente.
+- **StaticMap** — Google Maps com overlay que bloqueia cliques (evita ponto de fuga da LP).
+
+### Layout Base
+
+Toda pagina usa o `Base.astro` que monta o `<head>` completo: SEO, Open Graph, canonical, JSON-LD, GTM, UTM capture, WhatsApp widget, fontes. Aceita props: `title`, `description`, `ogImage`, `theme` (dark/light), `hideWhatsApp`, `jsonLd`.
+
+### Home de triagem
+
+Quando o cliente tem mais de um funil (ex: casamentos + corporativo + debutantes), a raiz `/` vira uma home leve que pergunta o tipo de evento e direciona para a LP certa. Documentacao em `docs/home-triagem.md`.
+
+### Deploy automatico (GitHub Actions)
+
+O arquivo `.github/workflows/deploy.yml` dispara quando voce cria uma Release. Ele builda o projeto e envia o `dist/` para a VPS via rsync. Os secrets (`VPS_HOST`, `VPS_USER`, `VPS_SSH_KEY`) estao configurados na org Dmove-Marketing — nenhum repo individual precisa de configuracao.
+
+O `deploy.mjs` ainda existe como fallback para deploy manual (`npm run deploy`).
+
+---
+
+## Estrutura do projeto
+
+```
+config.json                  <- configuracao do cliente (GTM, WhatsApp, webhook, deploy)
+src/
+  layouts/Base.astro         <- layout obrigatorio (SEO, GTM, WhatsApp, fontes)
+  pages/                     <- paginas do site (.astro)
+  components/
+    ui/
+      WhatsAppWidget.astro   <- widget conversacional (perguntas uma a uma)
+      Img.astro              <- imagem otimizada (WebP/AVIF)
+      Video.astro            <- video self-hosted + JSON-LD
+      StaticMap.astro         <- mapa sem ponto de fuga
+    tracking/
+      GTMHead.astro          <- snippet GTM no <head>
+      GTMBody.astro          <- <noscript> GTM no <body>
+      UTMCapture.astro       <- captura UTMs + click IDs + external_id
+      InteractionTrigger.astro <- eventos de interacao para GTM
+  scripts/
+    forms.ts                 <- motor de envio (validacao, IP, tracking, webhook)
+    form-presets.ts           <- campos por funil (social / corporativo)
+    lead-payload.ts           <- mapa de campos para o n8n + opcoes de tipo_evento
+    smooth-scroll.ts          <- scroll suave (Lenis)
+  styles/
+    global.css               <- design system base (CSS vars)
+  assets/images/             <- imagens processadas no build
+public/
+  fonts/                     <- fontes self-hosted (.woff2/.ttf)
+  images/                    <- favicon, OG image, avatar WhatsApp
+tools/
+  extract-preview.mjs        <- separa base64 do HTML do Claude Design
+  shot.mjs                   <- screenshots de QA (Playwright)
+scripts/
+  compare.mjs                <- VRT (visual regression test, 3 viewports)
+  run-lighthouse.mjs          <- auditoria de performance
+docs/
+  design-brief.md            <- brief para o time de criacao (Claude Design)
+  home-triagem.md            <- padrao de home com 2+ funis
+  performance.md             <- playbook de performance (LCP, fontes, cache)
+  tracking-gtm.md            <- contrato entre o site e o container GTM
+```
+
+---
+
+## Documentacao
+
+| Documento | Para quem |
+|-----------|-----------|
+| [CLAUDE.md](./CLAUDE.md) | Para a IA — playbook completo de implementacao (7 fases) |
+| [docs/design-brief.md](./docs/design-brief.md) | Para o time de criacao — o que entregar no Claude Design |
+| [docs/home-triagem.md](./docs/home-triagem.md) | Para quem monta a home de clientes com 2+ funis |
+| [docs/performance.md](./docs/performance.md) | Para otimizar LCP, fontes, imagens, cache |
+| [docs/tracking-gtm.md](./docs/tracking-gtm.md) | Para entender o contrato site x GTM |

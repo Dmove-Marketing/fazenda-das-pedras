@@ -1,0 +1,21 @@
+node_modules/
+dist/
+.astro/
+
+# Variáveis de ambiente
+.env
+.env.*
+*.local
+
+# Logs e Caches
+*.log
+npm-debug.log*
+
+# OS e Editores / IA
+.DS_Store
+.vscode/
+.claude/
+.idea/
+
+# artefatos de conversão (scaffold greenfield)
+_work/

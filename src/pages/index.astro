@@ -1,0 +1,491 @@
+---
+import Base from '../layouts/Base.astro';
+import '../styles/home.css';
+import config from '../../config.json';
+import { getPreset } from '../scripts/form-presets';
+
+const formFields  = getPreset(config.forms['lead-form'].preset);
+const webhookUrl  = config.forms['lead-form'].webhooks[0];
+const redirectUrl = config.forms['lead-form'].redirect_on_success;
+
+const BASE = 'https://espacofazendadaspedras.com.br/wp-content/uploads';
+
+const heroDesktop = [
+  `${BASE}/2024/08/banner_espaco_agosto_otimizada.png`,
+  `${BASE}/2024/07/EspacoFazendaDasPedras_julho_bunner_otimizada.png`,
+  `${BASE}/2024/05/banner_maio_espaco_certo_otimizada.webp`,
+  `${BASE}/2024/04/EspacoFazendaDasPedras_abril_banner_site_proporcao_otimizada.webp`,
+  `${BASE}/2024/02/EspacoFazendaDasPedras_marco_banner_site_otimizada.webp`,
+  `${BASE}/2024/02/EspacoFazendaDasPedras_fevereiro_banner_site_otimizada.webp`,
+  `${BASE}/2024/02/EspacoFazendaDasPedras_banner_site_janeiro_otimizada.webp`,
+];
+
+const heroMobile = [
+  `${BASE}/2024/08/banner_espaco_agosto_mobile_otimizada-1920x2400.png`,
+  `${BASE}/2024/06/EspacoFazendaDasPedras_julho_banner_mobile_otimizada-1920x2400.png`,
+  `${BASE}/2024/06/banner_espaco_fazenda_junho_mobile_otimizada-1920x2400.webp`,
+  `${BASE}/2024/04/EspacoFazendaDasPedras_abril_banner_site_mobile_otimizada-1920x2400.webp`,
+  `${BASE}/2024/02/EspacoFazendaDasPedras_fevereiro_banner_site_mobile_otimizada-1920x2400.webp`,
+  `${BASE}/2024/02/EspacoFazendaDasPedras_marco_banner_site_mobile_otimizada-1920x2400.webp`,
+];
+
+const galleryImgs = [
+  `${BASE}/2021/10/espaco-img3-1.jpg`,
+  `${BASE}/2021/10/espaco-casamento2-1.jpg`,
+  `${BASE}/2021/10/espaco-casamento3-1.jpg`,
+  `${BASE}/2021/10/espaco-img4-1.jpg`,
+  `${BASE}/2021/10/espaco-img12-1.jpg`,
+  `${BASE}/2021/10/espaco-img15-1.jpg`,
+  `${BASE}/2021/10/espaco-aniversario1-1.jpg`,
+  `${BASE}/2021/10/espaco-img6-1.jpg`,
+  `${BASE}/2021/10/espaco-img5.jpg`,
+  `${BASE}/2021/10/espaco-img8-1.jpg`,
+  `${BASE}/2021/10/espaco-img16-1.jpg`,
+  `${BASE}/2021/10/espaco-img11-1.jpg`,
+  `${BASE}/2021/10/espaco-img13-1.jpg`,
+  `${BASE}/2021/10/espaco-img14-1.jpg`,
+];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'EventVenue',
+  name: 'Espaço Fazenda das Pedras',
+  description: 'Espaço de eventos em Itu, SP — casamentos, festas, eventos corporativos para até 500 pessoas.',
+  url: `https://${config.domain}/`,
+  address: { '@type': 'PostalAddress', addressLocality: 'Itu', addressRegion: 'SP', addressCountry: 'BR' },
+  maximumAttendeeCapacity: 500,
+  telephone: '+55-11-98444-4607',
+};
+---
+
+<Base
+  title="Espaço Fazenda das Pedras — Salão de Eventos ao Ar Livre"
+  description="Nosso Espaço foi construído para eventos em meio a natureza com privacidade e comodidade. Estrutura completa para aproveitar ao máximo."
+  ogImage={heroDesktop[0]}
+  canonical={`https://${config.domain}/`}
+  jsonLd={jsonLd}
+  theme="light"
+  whatsAppMessage="Olá! Tenho interesse em realizar um evento na Fazenda das Pedras. Pode me passar mais informações?"
+>
+  <link slot="head" rel="preconnect" href="https://fonts.googleapis.com" />
+  <link slot="head" rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link slot="head" href="https://fonts.googleapis.com/css2?family=Roboto:ital,wght@0,300;0,400;0,500;0,700;1,400&family=Libre+Baskerville:ital,wght@0,400;0,700;1,400&display=swap" rel="stylesheet" />
+
+  <!-- ============================================================
+       HEADER
+  ============================================================ -->
+  <header class="orig-header" id="orig-header">
+    <div class="orig-container">
+      <a href="/" class="orig-logo" aria-label="Espaço Fazenda das Pedras">
+        <img src="/images/logo.png" alt="Espaço Fazenda das Pedras" />
+      </a>
+
+      <nav aria-label="Menu principal">
+        <ul class="orig-nav-list">
+          <li><a href="#inicio">Início</a></li>
+          <li><a href="#sobre-nos">Sobre Nós</a></li>
+          <li><a href="#nosso-espaco">Nosso Espaço</a></li>
+          <li><a href="#eventos">Eventos</a></li>
+          <li><a href="#contato">Contato</a></li>
+        </ul>
+      </nav>
+
+      <button class="orig-mobile-btn" id="orig-mobile-btn" aria-label="Abrir menu" aria-expanded="false">
+        <span></span><span></span><span></span>
+      </button>
+    </div>
+  </header>
+
+  <!-- Mobile nav -->
+  <div class="orig-mobile-nav" id="orig-mobile-nav" aria-label="Menu mobile">
+    <ul>
+      <li><a href="#inicio">Início</a></li>
+      <li><a href="#sobre-nos">Sobre Nós</a></li>
+      <li><a href="#nosso-espaco">Nosso Espaço</a></li>
+      <li><a href="#eventos">Eventos</a></li>
+      <li><a href="#contato">Contato</a></li>
+    </ul>
+  </div>
+
+  <!-- ============================================================
+       HERO SLIDER
+  ============================================================ -->
+  <section class="orig-hero" id="inicio" aria-label="Banner principal">
+    <!-- Desktop banners -->
+    {heroDesktop.map((src, i) => (
+      <div
+        class={`orig-hero-slide desktop-only${i === 0 ? ' active' : ''}`}
+        style={`background-image:url('${src}')`}
+        aria-hidden="true"
+      />
+    ))}
+
+    <!-- Mobile banners -->
+    {heroMobile.map((src, i) => (
+      <div
+        class={`orig-hero-slide mobile-only${i === 0 ? ' active' : ''}`}
+        style={`background-image:url('${src}')`}
+        aria-hidden="true"
+      />
+    ))}
+
+    <div class="orig-hero-dots" id="orig-hero-dots" aria-label="Controles do slider">
+      {heroDesktop.map((_, i) => (
+        <button class={`orig-hero-dot${i === 0 ? ' active' : ''}`} aria-label={`Slide ${i + 1}`} />
+      ))}
+    </div>
+  </section>
+
+  <!-- ============================================================
+       SOBRE NÓS
+  ============================================================ -->
+  <section class="orig-sobre" id="sobre-nos">
+    <div class="orig-container">
+      <img
+        src={`${BASE}/2021/11/espaco-line-img2.png`}
+        alt=""
+        class="orig-sobre-line"
+        aria-hidden="true"
+        loading="eager"
+      />
+
+      <div class="orig-sobre-grid">
+        <div class="orig-icon-box">
+          <div class="orig-icon-box-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/>
+            </svg>
+          </div>
+          <div>
+            <h4>Diversos Ambientes</h4>
+            <p>Faça seu evento ao ar livre, embaixo das árvores ou em nosso redário.</p>
+          </div>
+        </div>
+
+        <div class="orig-icon-box">
+          <div class="orig-icon-box-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/>
+              <line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/>
+              <line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/>
+            </svg>
+          </div>
+          <div>
+            <h4>Espaço Climatizado</h4>
+            <p>Integrado a natureza com parede de vidro e vista para o jardim.</p>
+          </div>
+        </div>
+
+        <div class="orig-icon-box">
+          <div class="orig-icon-box-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+          </div>
+          <div>
+            <h4>Hospedagem e Lazer</h4>
+            <p>Chalés acolhedores e estrutura de lazer completa ao ar livre.</p>
+          </div>
+        </div>
+
+        <div class="orig-icon-box">
+          <div class="orig-icon-box-icon">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" aria-hidden="true">
+              <path d="M18 8h1a4 4 0 0 1 0 8h-1"/>
+              <path d="M2 8h16v9a4 4 0 0 1-4 4H6a4 4 0 0 1-4-4V8z"/>
+              <line x1="6" y1="1" x2="6" y2="4"/><line x1="10" y1="1" x2="10" y2="4"/><line x1="14" y1="1" x2="14" y2="4"/>
+            </svg>
+          </div>
+          <div>
+            <h4>Gastronomia Única</h4>
+            <p>Comidas típicas da fazenda ou menu personalizado.</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       NOSSO ESPAÇO — galeria slider
+  ============================================================ -->
+  <section class="orig-espaco" id="nosso-espaco">
+    <div class="orig-gallery-slider">
+      <div class="orig-gallery-track">
+        {galleryImgs.map((src, i) => (
+          <div class="orig-gallery-slide">
+            <img src={src} alt={`Espaço Fazenda das Pedras — foto ${i + 1}`} loading={i === 0 ? 'eager' : 'lazy'} />
+          </div>
+        ))}
+      </div>
+
+      <button class="orig-gallery-prev" aria-label="Foto anterior">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <polyline points="15 18 9 12 15 6"/>
+        </svg>
+      </button>
+      <button class="orig-gallery-next" aria-label="Próxima foto">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <polyline points="9 18 15 12 9 6"/>
+        </svg>
+      </button>
+    </div>
+
+    <div class="orig-gallery-dots" aria-label="Controles da galeria">
+      {galleryImgs.map((_, i) => (
+        <button class={`orig-gallery-dot${i === 0 ? ' active' : ''}`} aria-label={`Foto ${i + 1}`} />
+      ))}
+    </div>
+  </section>
+
+  <!-- ============================================================
+       EVENTOS — abas SOCIAL + CORPORATIVO
+  ============================================================ -->
+  <section class="orig-eventos" id="eventos">
+    <div class="orig-container">
+      <div class="orig-eventos-header">
+        <img
+          src={`${BASE}/2021/11/flower-img04.png`}
+          alt=""
+          class="orig-eventos-flower"
+          aria-hidden="true"
+          loading="lazy"
+        />
+        <h2>Lugar <span>perfeito</span> para o seu evento</h2>
+      </div>
+
+      <div class="orig-eventos-cols">
+        <!-- SOCIAL -->
+        <div class="orig-tabs-group">
+          <p class="orig-eventos-label">Social</p>
+          <ul class="orig-tabs-nav">
+            <li><a href="#" class="active">Casamentos</a></li>
+            <li><a href="#">Aniversários</a></li>
+            <li><a href="#">Celebrações</a></li>
+          </ul>
+          <div class="orig-tab-panel active">
+            <img src={`${BASE}/2021/10/espaco-casamento01.jpg`} alt="Casamentos" loading="lazy" />
+          </div>
+          <div class="orig-tab-panel">
+            <img src={`${BASE}/2021/10/espaco-aniversario3.jpg`} alt="Aniversários" loading="lazy" />
+          </div>
+          <div class="orig-tab-panel">
+            <img src={`${BASE}/2021/10/espaco-celebracoes3.jpg`} alt="Celebrações" loading="lazy" />
+          </div>
+        </div>
+
+        <!-- CORPORATIVO -->
+        <div class="orig-tabs-group">
+          <p class="orig-eventos-label">Corporativo</p>
+          <ul class="orig-tabs-nav">
+            <li><a href="#" class="active">Confraternizações</a></li>
+            <li><a href="#">Treinamentos</a></li>
+            <li><a href="#">Workshops</a></li>
+          </ul>
+          <div class="orig-tab-panel active">
+            <img src={`${BASE}/2021/10/espaco-confraternizacoes1.jpg`} alt="Confraternizações" loading="lazy" />
+          </div>
+          <div class="orig-tab-panel">
+            <img src={`${BASE}/2021/10/espaco-img10.jpg`} alt="Treinamentos" loading="lazy" />
+          </div>
+          <div class="orig-tab-panel">
+            <img src={`${BASE}/2021/10/espaco-workshop1.jpg`} alt="Workshops" loading="lazy" />
+          </div>
+        </div>
+      </div>
+
+      <!-- Vídeos YouTube -->
+      <div class="orig-videos">
+        <div class="orig-video-wrap">
+          <iframe
+            src="https://www.youtube.com/embed/Z7blueLeVgM?wmode=opaque"
+            title="Vídeo Espaço Fazenda das Pedras"
+            allowfullscreen
+            loading="lazy"
+          />
+        </div>
+        <div class="orig-video-wrap">
+          <iframe
+            src="https://www.youtube.com/embed/AewahIg-yLE?wmode=opaque"
+            title="Vídeo Espaço Fazenda das Pedras"
+            allowfullscreen
+            loading="lazy"
+          />
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       LOCALIZAÇÃO / MAPA
+  ============================================================ -->
+  <section class="orig-mapa">
+    <div class="orig-container">
+      <h2>Estamos localizados em <span>Itu</span>, a 100km de São Paulo</h2>
+      <p>Entre em contato e agende uma visita!</p>
+    </div>
+    <iframe
+      class="orig-mapa-iframe"
+      src="https://www.google.com/maps/embed?pb=!1m14!1m8!1m3!1d14662.181949738277!2d-47.1980841!3d-23.259621!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x94cf474b40e9a59b%3A0x2f88f7921085469!2sEspa%C3%A7o%20Fazenda%20das%20Pedras!5e0!3m2!1spt-BR!2sbr!4v1678795433237!5m2!1spt-BR!2sbr"
+      title="Localização Espaço Fazenda das Pedras no Google Maps"
+      allowfullscreen
+      loading="lazy"
+    />
+  </section>
+
+  <!-- ============================================================
+       CONTATO
+  ============================================================ -->
+  <section class="orig-contato" id="contato">
+
+    <!-- ── FORMULÁRIO DE LEAD (antes do logo/ícones) ───────────────────────── -->
+    <div class="orig-lead-wrap">
+
+      <!-- Este div é ocultado no sucesso (data-grid-id) -->
+      <div id="orig-lead-grid">
+        <div class="orig-lead-header">
+          <h3>Solicite uma proposta</h3>
+          <p>Preencha os dados abaixo e entraremos em contato.</p>
+        </div>
+
+        <form
+          id="lead-form"
+          class="orig-lead-form"
+          data-form-id="lead-form"
+          data-submit-url={webhookUrl}
+          data-redirect={redirectUrl}
+          data-grid-id="orig-lead-grid"
+          data-success-id="lead-form-success"
+          novalidate
+        >
+          <!-- Honeypot anti-spam -->
+          <input type="text" name="website" tabindex="-1" autocomplete="off" aria-hidden="true" style="position:absolute;left:-9999px;opacity:0;" />
+
+          <div class="orig-lead-grid">
+            {formFields.map(field => (
+              <div class={`orig-lead-group${field.full ? ' orig-lead-group--full' : ''}`}>
+                <label for={`form-field-${field.name}`}>
+                  {field.label}
+                  {field.hint && <span class="orig-lead-hint"> ({field.hint})</span>}
+                </label>
+
+                {field.type === 'select' ? (
+                  <select
+                    id={`form-field-${field.name}`}
+                    name={field.name}
+                    required={field.required}
+                  >
+                    {field.options?.map(opt => (
+                      <option
+                        value={opt.value}
+                        disabled={opt.disabled}
+                        selected={opt.selected}
+                      >{opt.label}</option>
+                    ))}
+                  </select>
+                ) : field.type === 'textarea' ? (
+                  <textarea
+                    id={`form-field-${field.name}`}
+                    name={field.name}
+                    placeholder={field.placeholder}
+                    required={field.required}
+                    rows={4}
+                  />
+                ) : (
+                  <input
+                    id={`form-field-${field.name}`}
+                    type={field.type}
+                    name={field.name}
+                    placeholder={field.placeholder}
+                    required={field.required}
+                    autocomplete={field.name === 'nome' ? 'name' : field.name === 'email' ? 'email' : field.name === 'telefone' ? 'tel' : undefined}
+                    inputmode={field.type === 'tel' ? 'tel' : field.type === 'number' ? 'numeric' : undefined}
+                    data-datepicker={field.datepicker ? 'true' : undefined}
+                  />
+                )}
+              </div>
+            ))}
+          </div>
+
+          <div class="orig-lead-msg" id="lead-FormMsg"></div>
+
+          <button type="submit" class="orig-lead-btn">
+            <span class="btn-label">Solicitar proposta</span>
+            <span class="btn-loading" hidden>Enviando…</span>
+          </button>
+        </form>
+      </div>
+
+      <!-- Mensagem de sucesso (irmão do grid, aparece via .active) -->
+      <div class="orig-lead-success" id="lead-form-success" role="alert">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>
+        </svg>
+        <h3>Mensagem enviada!</h3>
+        <p>Entraremos em contato em breve.</p>
+      </div>
+
+    </div>
+
+    <img
+      src={`${BASE}/2021/11/logo-espaco-black.png`}
+      alt="Espaço Fazenda das Pedras"
+      class="orig-contato-logo"
+      loading="lazy"
+    />
+
+    <div class="orig-contato-icons">
+      <!-- WhatsApp — abre o popup do widget -->
+      <button id="orig-wa-open" class="orig-contato-wa-btn" aria-label="WhatsApp">
+        <svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+          <path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347m-5.421 7.403h-.004a9.87 9.87 0 0 1-5.031-1.378l-.361-.214-3.741.982.998-3.648-.235-.374a9.86 9.86 0 0 1-1.51-5.26c.001-5.45 4.436-9.884 9.888-9.884 2.64 0 5.122 1.03 6.988 2.898a9.825 9.825 0 0 1 2.893 6.994c-.003 5.45-4.437 9.884-9.885 9.884m8.413-18.297A11.815 11.815 0 0 0 12.05 0C5.495 0 .16 5.335.157 11.892c0 2.096.547 4.142 1.588 5.945L.057 24l6.305-1.654a11.882 11.882 0 0 0 5.683 1.448h.005c6.554 0 11.89-5.335 11.893-11.893a11.821 11.821 0 0 0-3.48-8.413Z"/>
+        </svg>
+      </button>
+
+      <!-- Instagram -->
+      <a href="https://www.instagram.com/espacofazendadaspedras/" target="_blank" rel="noopener noreferrer" aria-label="Instagram">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <rect x="2" y="2" width="20" height="20" rx="5" ry="5"/>
+          <path d="M16 11.37A4 4 0 1 1 12.63 8 4 4 0 0 1 16 11.37z"/>
+          <line x1="17.5" y1="6.5" x2="17.51" y2="6.5"/>
+        </svg>
+      </a>
+
+      <!-- Facebook -->
+      <a href="https://www.facebook.com/espacofazendadaspedras/" target="_blank" rel="noopener noreferrer" aria-label="Facebook">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+          <path d="M18 2h-3a5 5 0 0 0-5 5v3H7v4h3v8h4v-8h3l1-4h-4V7a1 1 0 0 1 1-1h3z"/>
+        </svg>
+      </a>
+    </div>
+  </section>
+
+  <!-- ============================================================
+       FOOTER
+  ============================================================ -->
+  <footer class="orig-footer">
+    <p>&copy; {new Date().getFullYear()} Espaço Fazenda das Pedras. Todos os direitos reservados.</p>
+  </footer>
+
+</Base>
+
+<script>
+  import { initHome }  from '../scripts/home';
+  import { initForms } from '../scripts/forms';
+  import flatpickr     from 'flatpickr';
+  import { Portuguese } from 'flatpickr/dist/l10n/pt.js';
+  import 'flatpickr/dist/flatpickr.min.css';
+
+  initHome();
+  initForms();
+
+  const dateEl = document.querySelector<HTMLInputElement>('[data-datepicker="true"]');
+  if (dateEl) {
+    flatpickr(dateEl, {
+      locale: Portuguese,
+      dateFormat: 'd/m/Y',
+      minDate: 'today',
+      disableMobile: false,
+      allowInput: true,
+    });
+  }
+</script>

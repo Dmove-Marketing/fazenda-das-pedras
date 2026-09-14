@@ -1,0 +1,40 @@
+{
+  "project_name": "Fazenda das Pedras — Eventos Corporativos",
+  "project_slug": "fazenda-das-pedras",
+  "domain": "espacofazendadaspedras.com.br",
+  "client": "Fazenda das Pedras",
+  "environment": "development",
+  "tracking": {
+    "gtm_id": "GTM-XXXXXXX",
+    "enabled": true
+  },
+  "whatsapp": {
+    "phone": "5511963701306",
+    "display_name": "Fazenda das Pedras",
+    "avatar": "/images/logo.png",
+    "enabled": true
+  },
+  "forms": {
+    "lead-form": {
+      "id": "lead-form",
+      "preset": "corporativo",
+      "redirect_on_success": "/obrigado",
+      "webhooks": [
+        "https://server3n8n.dmove.com.br/webhook/fazenda-das-pedras"
+      ]
+    }
+  },
+  "media": {
+    "cdn_base": "https://media.dmove.com.br/clients/fazenda-das-pedras"
+  },
+  "deploy": {
+    "user": "root",
+    "server": "157.173.197.116",
+    "remote_path": "/var/www/espacofazendadaspedras.com.br"
+  },
+  "meta": {
+    "created_at": "2026-09-14",
+    "last_updated": "2026-09-14",
+    "owner": "Dmove"
+  }
+}

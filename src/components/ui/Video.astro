@@ -1,0 +1,154 @@
+---
+interface Props {
+  /** URL pública do .mp4 (VPS ou CDN — ex: Bunny.net) */
+  src: string;
+  /** URL da imagem de poster */
+  poster: string;
+  /** Título do vídeo (obrigatório para SEO/VideoObject) */
+  title: string;
+  /** Descrição curta para o schema */
+  description?: string;
+  /** Data de upload ISO 8601 (ex: "2025-01-01") */
+  uploadDate?: string;
+  /** Duração ISO 8601 (ex: "PT2M30S" = 2min30s) */
+  duration?: string;
+  /** Mostra controles nativos após play (padrão: true) */
+  controls?: boolean;
+  class?: string;
+}
+
+const {
+  src,
+  poster,
+  title,
+  description = '',
+  uploadDate,
+  duration,
+  controls = true,
+  class: className,
+} = Astro.props;
+
+const videoId = `video-${Math.random().toString(36).slice(2, 8)}`;
+
+// Detecta o MIME type pelo extensão da URL
+const mimeType = src.endsWith('.webm') ? 'video/webm' : 'video/mp4';
+
+// Poster exibido no <video> usa versão redimensionada do CDN (mais leve);
+// o JSON-LD (thumbnailUrl) mantém a imagem original — Google recomenda ≥1200px.
+const MEDIA_CDN_PREFIX = 'https://media.dmove.com.br/clients/';
+const displayPoster = poster.startsWith(MEDIA_CDN_PREFIX)
+  ? poster.replace('/clients/', '/api/public/resize/800/clients/')
+  : poster;
+
+const schema = {
+  '@context': 'https://schema.org',
+  '@type': 'VideoObject',
+  name: title,
+  description,
+  contentUrl: src,
+  thumbnailUrl: poster,
+  ...(uploadDate && { uploadDate }),
+  ...(duration && { duration }),
+};
+---
+
+<div class:list={['video-wrap', className]} id={videoId}>
+  <video
+    class="video-wrap__player"
+    poster={displayPoster}
+    preload="none"
+    playsinline
+    controls={controls}
+    data-src={src}
+    aria-label={title}
+  >
+    <source data-src={src} type={mimeType} />
+    Seu navegador não suporta vídeo HTML5.
+  </video>
+
+  <img class="video-wrap__poster" src={displayPoster} alt="" aria-hidden="true" />
+
+  <button class="video-wrap__play" type="button" aria-label={`Reproduzir ${title}`}>
+    <svg viewBox="0 0 80 80" width="72" height="72" aria-hidden="true">
+      <circle cx="40" cy="40" r="40" fill="rgba(0,0,0,.55)"/>
+      <polygon points="32,22 62,40 32,58" fill="#fff"/>
+    </svg>
+  </button>
+</div>
+
+<script define:vars={{ videoId }}>
+  const wrap = document.getElementById(videoId);
+  if (!wrap) throw new Error();
+
+  const video = wrap.querySelector('video');
+  const poster = wrap.querySelector('.video-wrap__poster');
+  const btn = wrap.querySelector('.video-wrap__play');
+  const source = video.querySelector('source');
+
+  const load = () => {
+    if (!video.src) {
+      video.src = video.dataset.src;
+      source.src = source.dataset.src;
+      video.load();
+    }
+  };
+
+  // Pré-carrega ao aproximar da viewport apenas no desktop; no mobile o
+  // download só começa quando o usuário toca no play (economia de dados/velocidade)
+  if (window.matchMedia('(min-width: 768px)').matches) {
+    const observer = new IntersectionObserver((entries) => {
+      if (entries[0].isIntersecting) { load(); observer.disconnect(); }
+    }, { rootMargin: '200px' });
+    observer.observe(wrap);
+  }
+
+  btn.addEventListener('click', () => {
+    load();
+    video.play();
+    btn.style.display = 'none';
+    poster.style.display = 'none';
+  });
+
+  video.addEventListener('pause', () => { btn.style.display = ''; });
+  video.addEventListener('ended', () => { btn.style.display = ''; });
+</script>
+
+<script type="application/ld+json" set:html={JSON.stringify(schema)} />
+
+<style>
+  .video-wrap {
+    position: relative;
+    background: #000;
+    overflow: hidden;
+    border-radius: inherit;
+    aspect-ratio: 16 / 9;
+  }
+  .video-wrap__player {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+  }
+  .video-wrap__poster {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+    pointer-events: none;
+  }
+  .video-wrap__play {
+    position: absolute;
+    inset: 0;
+    margin: auto;
+    width: 72px;
+    height: 72px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    transition: transform .15s, opacity .15s;
+    z-index: 1;
+  }
+  .video-wrap__play:hover { transform: scale(1.1); opacity: .9; }
+</style>
