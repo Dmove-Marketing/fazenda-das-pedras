@@ -12,6 +12,8 @@ interface Props {
   showEmpresaField?: boolean;
   /** Pergunta empresa apenas se o tipo de evento selecionado for corporativo */
   empresaCondicional?: boolean;
+  /** Sobrescreve a fonte padrão (Landing page/<slug>) no payload enviado ao webhook */
+  pageSource?: string;
 }
 
 const {
@@ -22,6 +24,7 @@ const {
   project = config.project_slug || 'landing-page',
   showEmpresaField = false,
   empresaCondicional = false,
+  pageSource,
 } = Astro.props;
 
 const empresaField = { key: 'empresa', type: 'text', label: 'Qual é o nome da sua empresa?', placeholder: 'Nome da empresa' };
@@ -138,7 +141,7 @@ const introMessages = [
   </div>
 </div>
 
-<script define:vars={{ submitUrl, project, trackingParamKeys, phone, fields, introMessages, avatar, empresaCondicional, corporateTipos }}>
+<script define:vars={{ submitUrl, project, trackingParamKeys, phone, fields, introMessages, avatar, empresaCondicional, corporateTipos, pageSource }}>
   /* ── Elementos ─────────────────────────────── */
   const toggle    = document.getElementById('wa-toggle');
   const popup     = document.getElementById('wa-popup');
@@ -388,8 +391,8 @@ const introMessages = [
     const qs = new URLSearchParams();
     trackingParamKeys.forEach((k) => { if (tracking[k]) qs.set(k, tracking[k]); });
     const slug = window.location.pathname.replace(/\/$/, '').split('/').filter(Boolean)[0];
-    const pageSource = `Landing page/${slug || 'casamentos'}`;
-    const fonte = qs.toString() ? `${pageSource}?${qs.toString()}` : pageSource;
+    const resolvedSource = pageSource || `Landing page/${slug || 'casamentos'}`;
+    const fonte = qs.toString() ? `${resolvedSource}?${qs.toString()}` : resolvedSource;
 
     const now = new Date();
     const payload = {

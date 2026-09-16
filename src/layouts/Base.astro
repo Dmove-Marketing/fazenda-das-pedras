@@ -35,6 +35,8 @@ interface Props {
   whatsAppShowEmpresaField?: boolean;
   /** Pergunta empresa no popup WhatsApp apenas se o tipo de evento for corporativo */
   whatsAppEmpresaCondicional?: boolean;
+  /** Sobrescreve a fonte padrão no payload do widget WhatsApp */
+  whatsAppPageSource?: string;
   /** Oculta o widget de WhatsApp (ex.: home de triagem, que só roteia) */
   hideWhatsApp?: boolean;
 }
@@ -51,6 +53,7 @@ const {
   whatsAppMessage,
   whatsAppShowEmpresaField = false,
   whatsAppEmpresaCondicional = false,
+  whatsAppPageSource,
   hideWhatsApp = false,
 } = Astro.props;
 
@@ -121,7 +124,7 @@ const defaultJsonLd = {
     <slot />
 
     <!-- WhatsApp Flutuante — configurar em config.json > whatsapp -->
-    {!hideWhatsApp && <WhatsAppWidget showEmpresaField={whatsAppShowEmpresaField} empresaCondicional={whatsAppEmpresaCondicional} />}
+    {!hideWhatsApp && <WhatsAppWidget showEmpresaField={whatsAppShowEmpresaField} empresaCondicional={whatsAppEmpresaCondicional} pageSource={whatsAppPageSource} />}
 
     <!-- Scripts adicionais -->
     <slot name="scripts" />
