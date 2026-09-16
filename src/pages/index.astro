@@ -6,7 +6,6 @@ import { getPreset } from '../scripts/form-presets';
 
 const formFields  = getPreset(config.forms['lead-form'].preset);
 const webhookUrl  = 'https://server3n8n.dmove.com.br/webhook/fazenda-das-pedras-site';
-const redirectUrl = config.forms['lead-form'].redirect_on_success;
 
 const BASE = 'https://media.dmove.com.br/dashboard/fazenda-das-pedras';
 
@@ -354,7 +353,6 @@ const jsonLd = {
           class="orig-lead-form"
           data-form-id="lead-form"
           data-submit-url={webhookUrl}
-          data-redirect={redirectUrl}
           data-grid-id="orig-lead-grid"
           data-success-id="lead-form-success"
           data-fonte="Site/fazenda-das-pedras"
