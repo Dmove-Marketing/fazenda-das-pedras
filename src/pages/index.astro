@@ -5,7 +5,7 @@ import config from '../../config.json';
 import { getPreset } from '../scripts/form-presets';
 
 const formFields  = getPreset(config.forms['lead-form'].preset);
-const webhookUrl  = config.forms['lead-form'].webhooks[0];
+const webhookUrl  = 'https://server3n8n.dmove.com.br/webhook/fazenda-das-pedras-site';
 const redirectUrl = config.forms['lead-form'].redirect_on_success;
 
 const BASE = 'https://media.dmove.com.br/dashboard/fazenda-das-pedras';
