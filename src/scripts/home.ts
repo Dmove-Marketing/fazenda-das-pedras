@@ -1,3 +1,14 @@
+const CORPORATE_TIPOS = new Set([
+  'Confraternizacao corporativa',
+  'Corporativo',
+  'Feiras e Exposicoes',
+  'Masterclass e Palestras',
+  'Mentorias e Treinamentos',
+  'Offsite corporativo',
+  'Reunioes de Networking',
+  'Workshops, Conferencias e Seminarios',
+]);
+
 export function initHome(): void {
   initHeader();
   initMobileMenu();
@@ -5,6 +16,7 @@ export function initHome(): void {
   initGallerySlider();
   initTabs();
   initWaContactBtn();
+  initEmpresaCondicional();
 }
 
 function initWaContactBtn(): void {
@@ -103,6 +115,25 @@ function initGallerySlider(): void {
 
   document.addEventListener('visibilitychange', () => document.hidden ? stop() : start());
   start();
+}
+
+function initEmpresaCondicional(): void {
+  const tipoSelect   = document.getElementById('form-field-tipo_evento') as HTMLSelectElement | null;
+  const empresaInput = document.getElementById('form-field-empresa')     as HTMLInputElement  | null;
+  if (!tipoSelect || !empresaInput) return;
+
+  const empresaGroup = empresaInput.closest<HTMLElement>('.orig-lead-group');
+  if (!empresaGroup) return;
+
+  const toggle = (value: string) => {
+    const show = CORPORATE_TIPOS.has(value);
+    empresaGroup.style.display = show ? '' : 'none';
+    empresaInput.required = show;
+    if (!show) empresaInput.value = '';
+  };
+
+  toggle(tipoSelect.value);
+  tipoSelect.addEventListener('change', () => toggle(tipoSelect.value));
 }
 
 function initTabs(): void {
