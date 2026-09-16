@@ -8,42 +8,42 @@ const formFields  = getPreset(config.forms['lead-form'].preset);
 const webhookUrl  = config.forms['lead-form'].webhooks[0];
 const redirectUrl = config.forms['lead-form'].redirect_on_success;
 
-const BASE = 'https://espacofazendadaspedras.com.br/wp-content/uploads';
+const BASE = 'https://media.dmove.com.br/dashboard/fazenda-das-pedras';
 
 const heroDesktop = [
-  `${BASE}/2024/08/banner_espaco_agosto_otimizada.png`,
-  `${BASE}/2024/07/EspacoFazendaDasPedras_julho_bunner_otimizada.png`,
-  `${BASE}/2024/05/banner_maio_espaco_certo_otimizada.webp`,
-  `${BASE}/2024/04/EspacoFazendaDasPedras_abril_banner_site_proporcao_otimizada.webp`,
-  `${BASE}/2024/02/EspacoFazendaDasPedras_marco_banner_site_otimizada.webp`,
-  `${BASE}/2024/02/EspacoFazendaDasPedras_fevereiro_banner_site_otimizada.webp`,
-  `${BASE}/2024/02/EspacoFazendaDasPedras_banner_site_janeiro_otimizada.webp`,
+  `${BASE}/banner_espaco_agosto_otimizada.png`,
+  `${BASE}/EspacoFazendaDasPedras_julho_bunner_otimizada.png`,
+  `${BASE}/banner_maio_espaco_certo_otimizada.webp`,
+  `${BASE}/EspacoFazendaDasPedras_abril_banner_site_proporcao_otimizada.webp`,
+  `${BASE}/EspacoFazendaDasPedras_marco_banner_site_otimizada.webp`,
+  `${BASE}/EspacoFazendaDasPedras_fevereiro_banner_site_otimizada.webp`,
+  `${BASE}/EspacoFazendaDasPedras_banner_site_janeiro_otimizada.webp`,
 ];
 
 const heroMobile = [
-  `${BASE}/2024/08/banner_espaco_agosto_mobile_otimizada-1920x2400.png`,
-  `${BASE}/2024/06/EspacoFazendaDasPedras_julho_banner_mobile_otimizada-1920x2400.png`,
-  `${BASE}/2024/06/banner_espaco_fazenda_junho_mobile_otimizada-1920x2400.webp`,
-  `${BASE}/2024/04/EspacoFazendaDasPedras_abril_banner_site_mobile_otimizada-1920x2400.webp`,
-  `${BASE}/2024/02/EspacoFazendaDasPedras_fevereiro_banner_site_mobile_otimizada-1920x2400.webp`,
-  `${BASE}/2024/02/EspacoFazendaDasPedras_marco_banner_site_mobile_otimizada-1920x2400.webp`,
+  `${BASE}/banner_espaco_agosto_mobile_otimizada-1920x2400.png`,
+  `${BASE}/EspacoFazendaDasPedras_julho_banner_mobile_otimizada-1920x2400.png`,
+  `${BASE}/banner_espaco_fazenda_junho_mobile_otimizada-1920x2400.webp`,
+  `${BASE}/EspacoFazendaDasPedras_abril_banner_site_mobile_otimizada-1920x2400.webp`,
+  `${BASE}/EspacoFazendaDasPedras_fevereiro_banner_site_mobile_otimizada-1920x2400.webp`,
+  `${BASE}/EspacoFazendaDasPedras_marco_banner_site_mobile_otimizada-1920x2400.webp`,
 ];
 
 const galleryImgs = [
-  `${BASE}/2021/10/espaco-img3-1.jpg`,
-  `${BASE}/2021/10/espaco-casamento2-1.jpg`,
-  `${BASE}/2021/10/espaco-casamento3-1.jpg`,
-  `${BASE}/2021/10/espaco-img4-1.jpg`,
-  `${BASE}/2021/10/espaco-img12-1.jpg`,
-  `${BASE}/2021/10/espaco-img15-1.jpg`,
-  `${BASE}/2021/10/espaco-aniversario1-1.jpg`,
-  `${BASE}/2021/10/espaco-img6-1.jpg`,
-  `${BASE}/2021/10/espaco-img5.jpg`,
-  `${BASE}/2021/10/espaco-img8-1.jpg`,
-  `${BASE}/2021/10/espaco-img16-1.jpg`,
-  `${BASE}/2021/10/espaco-img11-1.jpg`,
-  `${BASE}/2021/10/espaco-img13-1.jpg`,
-  `${BASE}/2021/10/espaco-img14-1.jpg`,
+  `${BASE}/espaco-img3-1.jpg`,
+  `${BASE}/espaco-casamento2-1.jpg`,
+  `${BASE}/espaco-casamento3-1.jpg`,
+  `${BASE}/espaco-img4-1.jpg`,
+  `${BASE}/espaco-img12-1.jpg`,
+  `${BASE}/espaco-img15-1.jpg`,
+  `${BASE}/espaco-aniversario1-1.jpg`,
+  `${BASE}/espaco-img6-1.jpg`,
+  `${BASE}/espaco-img5.jpg`,
+  `${BASE}/espaco-img8-1.jpg`,
+  `${BASE}/espaco-img16-1.jpg`,
+  `${BASE}/espaco-img11-1.jpg`,
+  `${BASE}/espaco-img13-1.jpg`,
+  `${BASE}/espaco-img14-1.jpg`,
 ];
 
 const jsonLd = {
@@ -142,7 +142,7 @@ const jsonLd = {
   <section class="orig-sobre" id="sobre-nos">
     <div class="orig-container">
       <img
-        src={`${BASE}/2021/11/espaco-line-img2.png`}
+        src={`${BASE}/espaco-line-img2.png`}
         alt=""
         class="orig-sobre-line"
         aria-hidden="true"
@@ -244,7 +244,7 @@ const jsonLd = {
     <div class="orig-container">
       <div class="orig-eventos-header">
         <img
-          src={`${BASE}/2021/11/flower-img04.png`}
+          src={`${BASE}/flower-img04.png`}
           alt=""
           class="orig-eventos-flower"
           aria-hidden="true"
@@ -263,13 +263,13 @@ const jsonLd = {
             <li><a href="#">Celebrações</a></li>
           </ul>
           <div class="orig-tab-panel active">
-            <img src={`${BASE}/2021/10/espaco-casamento01.jpg`} alt="Casamentos" loading="lazy" />
+            <img src={`${BASE}/espaco-casamento01.jpg`} alt="Casamentos" loading="lazy" />
           </div>
           <div class="orig-tab-panel">
-            <img src={`${BASE}/2021/10/espaco-aniversario3.jpg`} alt="Aniversários" loading="lazy" />
+            <img src={`${BASE}/espaco-aniversario3.jpg`} alt="Aniversários" loading="lazy" />
           </div>
           <div class="orig-tab-panel">
-            <img src={`${BASE}/2021/10/espaco-celebracoes3.jpg`} alt="Celebrações" loading="lazy" />
+            <img src={`${BASE}/espaco-celebracoes3.jpg`} alt="Celebrações" loading="lazy" />
           </div>
         </div>
 
@@ -282,13 +282,13 @@ const jsonLd = {
             <li><a href="#">Workshops</a></li>
           </ul>
           <div class="orig-tab-panel active">
-            <img src={`${BASE}/2021/10/espaco-confraternizacoes1.jpg`} alt="Confraternizações" loading="lazy" />
+            <img src={`${BASE}/espaco-confraternizacoes1.jpg`} alt="Confraternizações" loading="lazy" />
           </div>
           <div class="orig-tab-panel">
-            <img src={`${BASE}/2021/10/espaco-img10.jpg`} alt="Treinamentos" loading="lazy" />
+            <img src={`${BASE}/espaco-img10.jpg`} alt="Treinamentos" loading="lazy" />
           </div>
           <div class="orig-tab-panel">
-            <img src={`${BASE}/2021/10/espaco-workshop1.jpg`} alt="Workshops" loading="lazy" />
+            <img src={`${BASE}/espaco-workshop1.jpg`} alt="Workshops" loading="lazy" />
           </div>
         </div>
       </div>
@@ -427,7 +427,7 @@ const jsonLd = {
     </div>
 
     <img
-      src={`${BASE}/2021/11/logo-espaco-black.png`}
+      src={`${BASE}/logo-espaco-black.png`}
       alt="Espaço Fazenda das Pedras"
       class="orig-contato-logo"
       loading="lazy"
