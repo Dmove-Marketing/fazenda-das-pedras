@@ -3,7 +3,7 @@
   "project_slug": "fazenda-das-pedras",
   "domain": "espacofazendadaspedras.com.br",
   "client": "Fazenda das Pedras",
-  "environment": "development",
+  "environment": "production",
   "tracking": {
     "gtm_id": "GTM-XXXXXXX",
     "enabled": true
