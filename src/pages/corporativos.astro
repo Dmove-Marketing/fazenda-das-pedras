@@ -5,7 +5,6 @@ import config from '../../config.json';
 import { getPreset } from '../scripts/form-presets';
 
 const webhookUrl  = config.forms['lead-form'].webhooks[0];
-const redirectUrl = config.forms['lead-form'].redirect_on_success;
 const formFields  = getPreset(config.forms['lead-form'].preset);
 
 const jsonLd = {
@@ -637,7 +636,6 @@ const jsonLd = {
             class="corp-form"
             data-form-id="lead-form"
             data-submit-url={webhookUrl}
-            data-redirect={redirectUrl}
             data-grid-id="corp-form-grid"
             data-success-id="corp-form-success"
             novalidate
