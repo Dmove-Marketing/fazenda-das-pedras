@@ -10,6 +10,8 @@ interface Props {
   project?: string;
   /** Pergunta o nome da empresa antes do nome (usado na página de eventos corporativos) */
   showEmpresaField?: boolean;
+  /** Pergunta empresa apenas se o tipo de evento selecionado for corporativo */
+  empresaCondicional?: boolean;
 }
 
 const {
@@ -19,17 +21,30 @@ const {
   submitUrl = config.forms['lead-form']?.webhooks[0] || '',
   project = config.project_slug || 'landing-page',
   showEmpresaField = false,
+  empresaCondicional = false,
 } = Astro.props;
+
+const empresaField = { key: 'empresa', type: 'text', label: 'Qual é o nome da sua empresa?', placeholder: 'Nome da empresa' };
+
+const corporateTipos = [
+  'Confraternizacao corporativa',
+  'Corporativo',
+  'Feiras e Exposicoes',
+  'Masterclass e Palestras',
+  'Mentorias e Treinamentos',
+  'Offsite corporativo',
+  'Reunioes de Networking',
+  'Workshops, Conferencias e Seminarios',
+];
 
 // Roteiro da conversa: uma pergunta por campo (estilo Captura Web / Voe)
 const fields = [
-  ...(showEmpresaField
-    ? [{ key: 'empresa', type: 'text', label: 'Qual é o nome da sua empresa?', placeholder: 'Nome da empresa' }]
-    : []),
+  ...(showEmpresaField && !empresaCondicional ? [empresaField] : []),
   { key: 'nome', type: 'text', label: 'Pra começar, qual é o seu nome? 😊', placeholder: 'Seu nome' },
   { key: 'tel', type: 'phone', label: 'Qual é o seu WhatsApp com DDD?', placeholder: '(11) 99999-9999' },
   { key: 'email', type: 'email', label: 'E o seu e-mail?', placeholder: 'seu@email.com' },
   { key: 'tipo_evento', type: 'select', label: 'Que tipo de evento você quer celebrar? 🥂', options: tipoEventoOptions },
+  ...(empresaCondicional ? [empresaField] : []),
   { key: 'data_evento', type: 'date', label: 'Qual é a data prevista do evento? 📅', placeholder: 'dd/mm/aaaa' },
   { key: 'convidados', type: 'number', label: 'E quantos convidados, aproximadamente?', placeholder: 'Ex: 150', chips: ['50', '100', '150', '200', '300'] },
 ];
@@ -123,7 +138,7 @@ const introMessages = [
   </div>
 </div>
 
-<script define:vars={{ submitUrl, project, trackingParamKeys, phone, fields, introMessages, avatar }}>
+<script define:vars={{ submitUrl, project, trackingParamKeys, phone, fields, introMessages, avatar, empresaCondicional, corporateTipos }}>
   /* ── Elementos ─────────────────────────────── */
   const toggle    = document.getElementById('wa-toggle');
   const popup     = document.getElementById('wa-popup');
@@ -141,6 +156,7 @@ const introMessages = [
   const errorEl   = document.getElementById('wa-error');
   const teaser    = document.getElementById('wa-teaser');
 
+  const CORPORATE_SET = new Set(corporateTipos);
   const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
   const wait = (ms) => new Promise((r) => setTimeout(r, reduceMotion ? 0 : ms));
 
@@ -425,6 +441,10 @@ const introMessages = [
     // Replay instantâneo do que já aconteceu nesta sessão (recarregou a página)
     introMessages.forEach((m) => bubble('agent', m, true));
     fields.slice(0, state.idx).forEach((f) => {
+      if (f.key === 'empresa' && empresaCondicional) {
+        const tipoAns = state.answers['tipo_evento'];
+        if (!tipoAns || !CORPORATE_SET.has(tipoAns.value)) return;
+      }
       bubble('agent', f.label, true);
       const ans = state.answers[f.key];
       if (ans) bubble('user', ans.display, true);
@@ -446,6 +466,16 @@ const introMessages = [
 
     while (state.idx < fields.length) {
       const field = fields[state.idx];
+
+      if (field.key === 'empresa' && empresaCondicional) {
+        const tipoAns = state.answers['tipo_evento'];
+        if (!tipoAns || !CORPORATE_SET.has(tipoAns.value)) {
+          state.idx += 1;
+          saveState();
+          continue;
+        }
+      }
+
       await agentSays(field.label, 600);
       showInput(field);
       const answer = await new Promise((resolve) => { activeResolve = resolve; });
