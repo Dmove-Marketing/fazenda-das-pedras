@@ -1,0 +1,678 @@
+---
+// ============================================================
+// /eventos-corporativos — LP do funil corporativo (F1)
+// GERADO por tools/build-eventos-corporativos.mjs — não edite à mão.
+// Design: "docs para desenvolvimento/ENTREGA/fazenda-das-pedras-eventos-corporativos.html"
+// ============================================================
+import Base from '../layouts/Base.astro';
+import '../styles/eventos-corporativos.css';
+import config from '../../config.json';
+import { getPreset } from '../scripts/form-presets';
+
+const webhookUrl = config.forms['lead-form'].webhooks[0];
+const campos = getPreset('corporativo');
+
+// Campos "full" ocupam a linha toda; os demais fluem em pares no grid do design.
+const formRows: (typeof campos)[] = [];
+let par: typeof campos = [];
+for (const campo of campos) {
+  if (campo.full) {
+    if (par.length) { formRows.push(par); par = []; }
+    formRows.push([campo]);
+    continue;
+  }
+  par.push(campo);
+  if (par.length === 2) { formRows.push(par); par = []; }
+}
+if (par.length) formRows.push(par);
+
+const autoComplete: Record<string, string> = {
+  empresa: 'organization',
+  nome: 'name',
+  telefone: 'tel',
+  email: 'email',
+};
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'EventVenue',
+  name: 'Espaço Fazenda das Pedras — Eventos Corporativos',
+  description: "Celebre as conquistas da sua empresa em meio à natureza. Espaço para até 600 pessoas em Itu/SP, a poucos km de São Paulo. Salão climatizado, gastronomia personalizada e hospedagem no local.",
+  image: 'https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hero.webp',
+  url: `https://${config.domain}/eventos-corporativos`,
+  telephone: '+5511963701306',
+  maximumAttendeeCapacity: 600,
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'Rod. Dom Gabriel Paulino Bueno Couto, s/n — km 98',
+    addressLocality: 'Itu',
+    addressRegion: 'SP',
+    postalCode: '13304-350',
+    addressCountry: 'BR',
+  },
+};
+---
+
+<Base
+  title="Fazenda das Pedras Eventos | Confraternização de Fim de Ano Corporativa em Itu/SP"
+  description="Celebre as conquistas da sua empresa em meio à natureza. Espaço para até 600 pessoas em Itu/SP, a poucos km de São Paulo. Salão climatizado, gastronomia personalizada e hospedagem no local."
+  ogImage="/images/og-eventos-corporativos.jpg"
+  canonical={`https://${config.domain}/eventos-corporativos`}
+  theme="light"
+  jsonLd={jsonLd}
+  whatsAppShowEmpresaField={true}
+  whatsAppMessage={'Olá! Quero planejar a confraternização da minha empresa na Fazenda das Pedras.'}
+>
+  <Fragment slot="head">
+    <!-- LCP: o hero é background-image, então o browser só o descobre depois do CSS -->
+    <link rel="preload" as="image" href="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hero.webp" fetchpriority="high" />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/Kalista-Serif-Regular.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/Gotham-Book.woff2" crossorigin />
+  </Fragment>
+
+  <!-- =================== HEADER / NAVEGAÇÃO =================== -->
+  <header class="cabecalho" id="cabecalho">
+    <div class="container cabecalho__barra">
+      <a href="#topo" aria-label="Fazenda das Pedras Eventos — voltar ao início">
+        <img class="cabecalho__logo" src="/images/eventos-corporativos/logo-horizontal-claro.svg" alt="Espaço Fazenda das Pedras Eventos">
+      </a>
+      <input type="checkbox" id="alterna-menu" class="somente-leitor" aria-label="Abrir menu">
+      <label for="alterna-menu" class="cabecalho__botao-menu">
+        <span></span><span></span><span></span>
+      </label>
+      <nav class="cabecalho__nav" aria-label="Navegação principal">
+        <a href="#sobre">Sobre</a>
+        <a href="#ambientes">Ambientes</a>
+        <a href="#gastronomia">Gastronomia</a>
+        <a href="#hospedagem">Hospedagem</a>
+        <a href="#galeria">Galeria</a>
+        <a href="#localizacao">Localização</a>
+        <a href="#contato">Contato</a>
+      </nav>
+    </div>
+  </header>
+
+  <main>
+
+    <!-- =================== HERO =================== -->
+    <section class="hero" id="topo">
+      <div class="container hero__conteudo">
+        <div class="hero__caixa">
+          <p class="rotulo hero__eyebrow">Itu · São Paulo</p>
+          <h1 class="hero__titulo">Celebre as conquistas<br class="quebra-mobile"> da sua empresa em<br class="quebra-mobile"> meio à natureza</h1>
+          <p class="hero__paragrafo">Saia da rotina e transforme a confraternização de fim de ano em um evento memorável.</p>
+          <div class="hero__acoes">
+            <a href="#contato" class="botao botao--primario">Planejar minha confraternização</a>
+          </div>
+          <div class="hero__destaques">
+            <span class="hero__destaque">Até 600 pessoas</span>
+            <span class="hero__destaque">Um evento por dia</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== SOBRE =================== -->
+    <section id="sobre">
+      <div class="container">
+        <div class="sobre__grade">
+          <div class="sobre__foto">
+            <img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-sobre.webp" alt="Área verde e natureza preservada da Fazenda das Pedras" loading="lazy">
+          </div>
+          <div>
+            <p class="rotulo">O espaço</p>
+            <h2 class="titulo-secao">Uma fazenda para<br class="quebra-mobile"> reunir o seu time</h2>
+            <p class="paragrafo" style="margin-top:20px;">A Fazenda das Pedras reúne o que uma boa confraternização precisa: espaço para estar junto, tranquilidade e estrutura para grandes equipes.</p>
+            <p class="paragrafo" style="margin-top:16px;">A poucos quilômetros de São Paulo, a fazenda convida seu time a desacelerar, respirar novos ares e deixar a rotina do escritório para trás.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== DEPOIMENTO =================== -->
+    <section class="depoimento">
+      <div class="container">
+        <span class="depoimento__aspas" aria-hidden="true">"</span>
+        <p class="depoimento__texto">Espaço incrível, perfeito para festas de todos os tipos, inclusive. Os salões são ótimos, os jardins são lindos e ainda há um redário. Super recomendo! Nós amamos e, com certeza, faremos outras festas lá.</p>
+        <p class="depoimento__autor">Katiely Santos</p>
+      </div>
+    </section>
+
+    <!-- =================== AMBIENTES =================== -->
+    <section id="ambientes">
+      <div class="container">
+        <div class="cabecalho-secao centralizado">
+          <p class="rotulo">Ambientes</p>
+          <h2 class="titulo-secao">Ambientes para personalizar do seu jeito</h2>
+          <p class="paragrafo">Crie um espaço que tenha<br class="quebra-mobile"> a identidade da sua marca.</p>
+        </div>
+        <div class="ambientes__grade">
+          <div class="ambiente-card">
+            <img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-jatoba.webp" alt="Espaço Jatobá da Fazenda das Pedras" loading="lazy">
+            <span class="ambiente-card__rotulo">Espaço Jatobá</span>
+          </div>
+          <div class="ambiente-card">
+            <img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-redario.webp" alt="Redário da Fazenda das Pedras" loading="lazy">
+            <span class="ambiente-card__rotulo">Redário</span>
+          </div>
+          <div class="ambiente-card">
+            <img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-salaoprincipal.webp" alt="Salão Principal da Fazenda das Pedras" loading="lazy">
+            <span class="ambiente-card__rotulo">Salão Principal</span>
+          </div>
+          <div class="ambiente-card">
+            <img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-espacorustico.webp" alt="Espaço Rústico da Fazenda das Pedras" loading="lazy">
+            <span class="ambiente-card__rotulo">Espaço Rústico</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== INFRAESTRUTURA =================== -->
+    <section class="infra" id="infraestrutura">
+      <div class="container">
+        <div class="cabecalho-secao centralizado">
+          <p class="rotulo">Infraestrutura</p>
+          <h2 class="titulo-secao">Tudo pronto para o seu time aproveitar</h2>
+          <p class="paragrafo">Uma estrutura completa para que você não precise se preocupar com nada.</p>
+        </div>
+
+        <div class="infra__grade">
+          <div class="infra-item">
+            <span class="infra-item__icone">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M4.9 4.9l14.2 14.2M19.1 4.9 4.9 19.1M2 12h20"/></svg>
+            </span>
+            <div>
+              <p class="infra-item__titulo">Salão climatizado</p>
+              <p class="infra-item__texto">Conforto em qualquer clima</p>
+            </div>
+          </div>
+          <div class="infra-item">
+            <span class="infra-item__icone">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>
+            </span>
+            <div>
+              <p class="infra-item__titulo">Gerador próprio</p>
+              <p class="infra-item__texto">Para a festa sempre continuar</p>
+            </div>
+          </div>
+          <div class="infra-item">
+            <span class="infra-item__icone">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22s8-4 8-11V5l-8-3-8 3v6c0 7 8 11 8 11Z"/></svg>
+            </span>
+            <div>
+              <p class="infra-item__titulo">Segurança e bombeiro civil</p>
+              <p class="infra-item__texto">Mais tranquilidade para todos</p>
+            </div>
+          </div>
+          <div class="infra-item">
+            <span class="infra-item__icone">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 3h9a4.5 4.5 0 0 1 0 9H9v9H6V3Zm3 3v6h6a3 3 0 0 0 0-6H9Z"/></svg>
+            </span>
+            <div>
+              <p class="infra-item__titulo">Estacionamento amplo</p>
+              <p class="infra-item__texto">Praticidade para chegar</p>
+            </div>
+          </div>
+          <div class="infra-item">
+            <span class="infra-item__icone">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c6-2 9-6 9-12a9 9 0 0 0-9-9 9 9 0 0 0-9 9c0 6 3 10 9 12Z"/><path d="M12 22V10"/></svg>
+            </span>
+            <div>
+              <p class="infra-item__titulo">Contato com a natureza</p>
+              <p class="infra-item__texto">Áreas verdes para respirar e sair da rotina</p>
+            </div>
+          </div>
+          <div class="infra-item">
+            <span class="infra-item__icone">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 10h18v9H3z"/><path d="M5 10V7a2 2 0 0 1 2-2h10a2 2 0 0 1 2 2v3M3 15h18"/></svg>
+            </span>
+            <div>
+              <p class="infra-item__titulo">Mobiliário completo</p>
+              <p class="infra-item__texto">Mesas e cadeiras para acomodar<br>seus convidados</p>
+            </div>
+          </div>
+        </div>
+
+        <div class="infra__galeria marquee">
+          <div class="marquee__track">
+            <div class="galeria-scroll__item" id="infra-1"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-estrutura-1.webp" alt="Infraestrutura da Fazenda das Pedras — visão 1"></div>
+            <div class="galeria-scroll__item" id="infra-2"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-estrutura-2.webp" alt="Infraestrutura da Fazenda das Pedras — visão 2"></div>
+            <div class="galeria-scroll__item" id="infra-3"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-estrutura-3.webp" alt="Infraestrutura da Fazenda das Pedras — visão 3"></div>
+            <div class="galeria-scroll__item" id="infra-4"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-estrutura-4.webp" alt="Infraestrutura da Fazenda das Pedras — visão 4"></div>
+            <div class="galeria-scroll__item" id="infra-5"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-estrutura-5.webp" alt="Infraestrutura da Fazenda das Pedras — visão 5"></div>
+            <div class="galeria-scroll__item" aria-hidden="true"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-estrutura-1.webp" alt=""></div>
+            <div class="galeria-scroll__item" aria-hidden="true"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-estrutura-2.webp" alt=""></div>
+            <div class="galeria-scroll__item" aria-hidden="true"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-estrutura-3.webp" alt=""></div>
+            <div class="galeria-scroll__item" aria-hidden="true"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-estrutura-4.webp" alt=""></div>
+            <div class="galeria-scroll__item" aria-hidden="true"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-estrutura-5.webp" alt=""></div>
+          </div>
+          <div class="marquee__setas marquee__setas--1">
+            <a href="#infra-5" class="marquee__seta" aria-label="Foto anterior">‹</a>
+            <a href="#infra-2" class="marquee__seta" aria-label="Próxima foto">›</a>
+          </div>
+          <div class="marquee__setas marquee__setas--2">
+            <a href="#infra-1" class="marquee__seta" aria-label="Foto anterior">‹</a>
+            <a href="#infra-3" class="marquee__seta" aria-label="Próxima foto">›</a>
+          </div>
+          <div class="marquee__setas marquee__setas--3">
+            <a href="#infra-2" class="marquee__seta" aria-label="Foto anterior">‹</a>
+            <a href="#infra-4" class="marquee__seta" aria-label="Próxima foto">›</a>
+          </div>
+          <div class="marquee__setas marquee__setas--4">
+            <a href="#infra-3" class="marquee__seta" aria-label="Foto anterior">‹</a>
+            <a href="#infra-5" class="marquee__seta" aria-label="Próxima foto">›</a>
+          </div>
+          <div class="marquee__setas marquee__setas--5">
+            <a href="#infra-4" class="marquee__seta" aria-label="Foto anterior">‹</a>
+            <a href="#infra-1" class="marquee__seta" aria-label="Próxima foto">›</a>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== GASTRONOMIA =================== -->
+    <section id="gastronomia">
+      <div class="container">
+        <div class="cabecalho-secao centralizado">
+          <p class="rotulo">Gastronomia</p>
+          <h2 class="titulo-secao">Gastronomia com<br class="quebra-mobile"> sabor de Fazenda</h2>
+          <p class="paragrafo">Surpreenda seus convidados com sabores típicos em um menu personalizado.</p>
+        </div>
+        <div class="gastronomia__grade">
+          <a href="#lb-gastro-1" class="gastronomia__foto lightbox-trigger" aria-label="Ampliar foto"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-1.webp" alt="Prato preparado pela gastronomia da Fazenda das Pedras" loading="lazy"></a>
+          <a href="#lb-gastro-2" class="gastronomia__foto lightbox-trigger" aria-label="Ampliar foto"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-2.webp" alt="Mesa de serviço gastronômico personalizado" loading="lazy"></a>
+          <a href="#lb-gastro-3" class="gastronomia__foto lightbox-trigger" aria-label="Ampliar foto"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-3.webp" alt="Detalhe de menu típico da Fazenda das Pedras" loading="lazy"></a>
+          <a href="#lb-gastro-4" class="gastronomia__foto lightbox-trigger" aria-label="Ampliar foto"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-4.webp" alt="Buffet preparado para evento corporativo" loading="lazy"></a>
+        </div>
+        <div class="lightbox" id="lb-gastro-1">
+          <a href="#gastronomia" class="lightbox__fechar" aria-label="Fechar">×</a>
+          <img class="lightbox__img" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-1.webp" alt="Prato preparado pela gastronomia da Fazenda das Pedras">
+        </div>
+        <div class="lightbox" id="lb-gastro-2">
+          <a href="#gastronomia" class="lightbox__fechar" aria-label="Fechar">×</a>
+          <img class="lightbox__img" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-2.webp" alt="Mesa de serviço gastronômico personalizado">
+        </div>
+        <div class="lightbox" id="lb-gastro-3">
+          <a href="#gastronomia" class="lightbox__fechar" aria-label="Fechar">×</a>
+          <img class="lightbox__img" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-3.webp" alt="Detalhe de menu típico da Fazenda das Pedras">
+        </div>
+        <div class="lightbox" id="lb-gastro-4">
+          <a href="#gastronomia" class="lightbox__fechar" aria-label="Fechar">×</a>
+          <img class="lightbox__img" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-4.webp" alt="Buffet preparado para evento corporativo">
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== HOSPEDAGEM =================== -->
+    <section class="hospedagem-verde" id="hospedagem">
+      <div class="container">
+        <div class="sobre__grade sobre__grade--inv">
+          <div class="sobre__foto hospedagem-carrossel">
+            <div class="hospedagem-carrossel__viewport">
+              <div class="hospedagem-carrossel__slide" id="hosp-1">
+                <a href="#lb-hosp-1" class="lightbox-trigger" aria-label="Ampliar foto"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-1.webp" alt="Chalé de hospedagem da Fazenda das Pedras — 1" loading="lazy"></a>
+                <a href="#hosp-8" class="hospedagem-carrossel__seta hospedagem-carrossel__seta--prev" aria-label="Foto anterior">‹</a>
+                <a href="#hosp-2" class="hospedagem-carrossel__seta hospedagem-carrossel__seta--next" aria-label="Próxima foto">›</a>
+              </div>
+              <div class="hospedagem-carrossel__slide" id="hosp-2">
+                <a href="#lb-hosp-2" class="lightbox-trigger" aria-label="Ampliar foto"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-2.webp" alt="Chalé de hospedagem da Fazenda das Pedras — 2" loading="lazy"></a>
+                <a href="#hosp-1" class="hospedagem-carrossel__seta hospedagem-carrossel__seta--prev" aria-label="Foto anterior">‹</a>
+                <a href="#hosp-3" class="hospedagem-carrossel__seta hospedagem-carrossel__seta--next" aria-label="Próxima foto">›</a>
+              </div>
+              <div class="hospedagem-carrossel__slide" id="hosp-3">
+                <a href="#lb-hosp-3" class="lightbox-trigger" aria-label="Ampliar foto"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-3.webp" alt="Chalé de hospedagem da Fazenda das Pedras — 3" loading="lazy"></a>
+                <a href="#hosp-2" class="hospedagem-carrossel__seta hospedagem-carrossel__seta--prev" aria-label="Foto anterior">‹</a>
+                <a href="#hosp-4" class="hospedagem-carrossel__seta hospedagem-carrossel__seta--next" aria-label="Próxima foto">›</a>
+              </div>
+              <div class="hospedagem-carrossel__slide" id="hosp-4">
+                <a href="#lb-hosp-4" class="lightbox-trigger" aria-label="Ampliar foto"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-4.webp" alt="Chalé de hospedagem da Fazenda das Pedras — 4" loading="lazy"></a>
+                <a href="#hosp-3" class="hospedagem-carrossel__seta hospedagem-carrossel__seta--prev" aria-label="Foto anterior">‹</a>
+                <a href="#hosp-5" class="hospedagem-carrossel__seta hospedagem-carrossel__seta--next" aria-label="Próxima foto">›</a>
+              </div>
+              <div class="hospedagem-carrossel__slide" id="hosp-5">
+                <a href="#lb-hosp-5" class="lightbox-trigger" aria-label="Ampliar foto"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-5.webp" alt="Chalé de hospedagem da Fazenda das Pedras — 5" loading="lazy"></a>
+                <a href="#hosp-4" class="hospedagem-carrossel__seta hospedagem-carrossel__seta--prev" aria-label="Foto anterior">‹</a>
+                <a href="#hosp-6" class="hospedagem-carrossel__seta hospedagem-carrossel__seta--next" aria-label="Próxima foto">›</a>
+              </div>
+              <div class="hospedagem-carrossel__slide" id="hosp-6">
+                <a href="#lb-hosp-6" class="lightbox-trigger" aria-label="Ampliar foto"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-6.webp" alt="Chalé de hospedagem da Fazenda das Pedras — 6" loading="lazy"></a>
+                <a href="#hosp-5" class="hospedagem-carrossel__seta hospedagem-carrossel__seta--prev" aria-label="Foto anterior">‹</a>
+                <a href="#hosp-7" class="hospedagem-carrossel__seta hospedagem-carrossel__seta--next" aria-label="Próxima foto">›</a>
+              </div>
+              <div class="hospedagem-carrossel__slide" id="hosp-7">
+                <a href="#lb-hosp-7" class="lightbox-trigger" aria-label="Ampliar foto"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-7.webp" alt="Chalé de hospedagem da Fazenda das Pedras — 7" loading="lazy"></a>
+                <a href="#hosp-6" class="hospedagem-carrossel__seta hospedagem-carrossel__seta--prev" aria-label="Foto anterior">‹</a>
+                <a href="#hosp-8" class="hospedagem-carrossel__seta hospedagem-carrossel__seta--next" aria-label="Próxima foto">›</a>
+              </div>
+              <div class="hospedagem-carrossel__slide" id="hosp-8">
+                <a href="#lb-hosp-8" class="lightbox-trigger" aria-label="Ampliar foto"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-8.webp" alt="Chalé de hospedagem da Fazenda das Pedras — 8" loading="lazy"></a>
+                <a href="#hosp-7" class="hospedagem-carrossel__seta hospedagem-carrossel__seta--prev" aria-label="Foto anterior">‹</a>
+                <a href="#hosp-1" class="hospedagem-carrossel__seta hospedagem-carrossel__seta--next" aria-label="Próxima foto">›</a>
+              </div>
+            </div>
+          </div>
+          <div>
+            <p class="rotulo">Hospedagem</p>
+            <h2 class="titulo-secao">Estenda a celebração<br>para o dia seguinte</h2>
+            <p class="paragrafo" style="margin-top:16px;">Com hospedagem na própria Fazenda, o encontro pode continuar por mais tempo.</p>
+            <div class="hospedagem__destaques">
+              <span class="hospedagem__destaque">60<br class="quebra-mobile"> chalés</span>
+              <span class="hospedagem__destaque">Até 150<br class="quebra-mobile"> pessoas</span>
+              <span class="hospedagem__destaque">Café da<br class="quebra-mobile"> manhã incluso</span>
+            </div>
+          </div>
+        </div>
+      </div>
+        <div class="lightbox" id="lb-hosp-1">
+          <a href="#hospedagem" class="lightbox__fechar" aria-label="Fechar">×</a>
+          <img class="lightbox__img" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-1.webp" alt="Chalé de hospedagem da Fazenda das Pedras — 1">
+        </div>
+        <div class="lightbox" id="lb-hosp-2">
+          <a href="#hospedagem" class="lightbox__fechar" aria-label="Fechar">×</a>
+          <img class="lightbox__img" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-2.webp" alt="Chalé de hospedagem da Fazenda das Pedras — 2">
+        </div>
+        <div class="lightbox" id="lb-hosp-3">
+          <a href="#hospedagem" class="lightbox__fechar" aria-label="Fechar">×</a>
+          <img class="lightbox__img" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-3.webp" alt="Chalé de hospedagem da Fazenda das Pedras — 3">
+        </div>
+        <div class="lightbox" id="lb-hosp-4">
+          <a href="#hospedagem" class="lightbox__fechar" aria-label="Fechar">×</a>
+          <img class="lightbox__img" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-4.webp" alt="Chalé de hospedagem da Fazenda das Pedras — 4">
+        </div>
+        <div class="lightbox" id="lb-hosp-5">
+          <a href="#hospedagem" class="lightbox__fechar" aria-label="Fechar">×</a>
+          <img class="lightbox__img" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-5.webp" alt="Chalé de hospedagem da Fazenda das Pedras — 5">
+        </div>
+        <div class="lightbox" id="lb-hosp-6">
+          <a href="#hospedagem" class="lightbox__fechar" aria-label="Fechar">×</a>
+          <img class="lightbox__img" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-6.webp" alt="Chalé de hospedagem da Fazenda das Pedras — 6">
+        </div>
+        <div class="lightbox" id="lb-hosp-7">
+          <a href="#hospedagem" class="lightbox__fechar" aria-label="Fechar">×</a>
+          <img class="lightbox__img" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-7.webp" alt="Chalé de hospedagem da Fazenda das Pedras — 7">
+        </div>
+        <div class="lightbox" id="lb-hosp-8">
+          <a href="#hospedagem" class="lightbox__fechar" aria-label="Fechar">×</a>
+          <img class="lightbox__img" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-8.webp" alt="Chalé de hospedagem da Fazenda das Pedras — 8">
+        </div>
+    </section>
+
+    <!-- =================== AUTORIDADE =================== -->
+    <section class="autoridade" id="autoridade">
+      <div class="container">
+        <p class="rotulo">Quem já celebrou aqui</p>
+        <h2 class="titulo-secao">Um lugar que já faz parte de muitas histórias</h2>
+        <p class="paragrafo" style="margin:16px auto 0;">Empresas que escolheram sair da rotina para celebrar na Fazenda das Pedras.</p>
+        <!-- Logos aguardando envio pelo cliente — substituir cada .autoridade__logo-slot por <img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/logo-empresa-x.webp" alt="Nome da empresa"> quando recebidos. -->
+        <div class="autoridade__logos">
+          <div class="autoridade__logo-slot">Logo cliente</div>
+          <div class="autoridade__logo-slot">Logo cliente</div>
+          <div class="autoridade__logo-slot">Logo cliente</div>
+          <div class="autoridade__logo-slot">Logo cliente</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== GALERIA =================== -->
+    <section class="fundo-creme" id="galeria">
+      <div class="container">
+        <div class="cabecalho-secao centralizado">
+          <p class="rotulo">Galeria</p>
+          <h2 class="titulo-secao">Momentos que vão<br class="quebra-mobile"> além do corporativo</h2>
+          <p class="paragrafo">Veja como empresas transformam confraternizações em experiências memoráveis.</p>
+        </div>
+        <div class="galeria__mosaico">
+          <a href="#lb-gal-1" class="galeria__mosaico__item lightbox-trigger" aria-label="Ampliar foto"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-1.webp" alt="Confraternização corporativa ao ar livre na Fazenda das Pedras" loading="lazy"></a>
+          <a href="#lb-gal-2" class="galeria__mosaico__item lightbox-trigger" aria-label="Ampliar foto"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-2.webp" alt="Convidados reunidos nos jardins da Fazenda das Pedras" loading="lazy"></a>
+          <a href="#lb-gal-3" class="galeria__mosaico__item lightbox-trigger" aria-label="Ampliar foto"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-3.webp" alt="Área externa decorada para evento corporativo" loading="lazy"></a>
+          <a href="#lb-gal-4" class="galeria__mosaico__item lightbox-trigger" aria-label="Ampliar foto"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-5.webp" alt="Paisagem natural ao redor da Fazenda das Pedras" loading="lazy"></a>
+          <a href="#lb-gal-5" class="galeria__mosaico__item lightbox-trigger" aria-label="Ampliar foto"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-6.webp" alt="Detalhe da decoração de evento corporativo" loading="lazy"></a>
+          <a href="#lb-gal-6" class="galeria__mosaico__item lightbox-trigger" aria-label="Ampliar foto"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-7.webp" alt="Detalhe do espaço externo da Fazenda das Pedras" loading="lazy"></a>
+          <a href="#lb-gal-7" class="galeria__mosaico__item lightbox-trigger" aria-label="Ampliar foto"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-8.webp" alt="Momento de confraternização entre colaboradores" loading="lazy"></a>
+          <a href="#lb-gal-8" class="galeria__mosaico__item lightbox-trigger" aria-label="Ampliar foto"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-9.webp" alt="Ambiente preparado para receber grandes equipes" loading="lazy"></a>
+          <a href="#lb-gal-9" class="galeria__mosaico__item lightbox-trigger" aria-label="Ampliar foto"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-10.webp" alt="Vista geral da Fazenda das Pedras em Itu/SP" loading="lazy"></a>
+        </div>
+        <div class="galeria__marquee marquee">
+          <div class="marquee__track">
+            <div class="galeria__marquee__item" id="gal-1"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-1.webp" alt="Confraternização corporativa ao ar livre na Fazenda das Pedras" loading="lazy"></div>
+            <div class="galeria__marquee__item" id="gal-2"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-2.webp" alt="Convidados reunidos nos jardins da Fazenda das Pedras" loading="lazy"></div>
+            <div class="galeria__marquee__item" id="gal-3"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-3.webp" alt="Área externa decorada para evento corporativo" loading="lazy"></div>
+            <div class="galeria__marquee__item" id="gal-4"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-5.webp" alt="Paisagem natural ao redor da Fazenda das Pedras" loading="lazy"></div>
+            <div class="galeria__marquee__item" id="gal-5"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-6.webp" alt="Detalhe da decoração de evento corporativo" loading="lazy"></div>
+            <div class="galeria__marquee__item" id="gal-6"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-7.webp" alt="Detalhe do espaço externo da Fazenda das Pedras" loading="lazy"></div>
+            <div class="galeria__marquee__item" id="gal-7"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-8.webp" alt="Momento de confraternização entre colaboradores" loading="lazy"></div>
+            <div class="galeria__marquee__item" id="gal-8"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-9.webp" alt="Ambiente preparado para receber grandes equipes" loading="lazy"></div>
+            <div class="galeria__marquee__item" id="gal-9"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-10.webp" alt="Vista geral da Fazenda das Pedras em Itu/SP" loading="lazy"></div>
+            <div class="galeria__marquee__item" aria-hidden="true"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-1.webp" alt=""></div>
+            <div class="galeria__marquee__item" aria-hidden="true"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-2.webp" alt=""></div>
+            <div class="galeria__marquee__item" aria-hidden="true"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-3.webp" alt=""></div>
+            <div class="galeria__marquee__item" aria-hidden="true"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-5.webp" alt=""></div>
+            <div class="galeria__marquee__item" aria-hidden="true"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-6.webp" alt=""></div>
+            <div class="galeria__marquee__item" aria-hidden="true"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-7.webp" alt=""></div>
+            <div class="galeria__marquee__item" aria-hidden="true"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-8.webp" alt=""></div>
+            <div class="galeria__marquee__item" aria-hidden="true"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-9.webp" alt=""></div>
+            <div class="galeria__marquee__item" aria-hidden="true"><img src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-10.webp" alt=""></div>
+          </div>
+          <div class="marquee__setas marquee__setas--1">
+            <a href="#gal-9" class="marquee__seta" aria-label="Foto anterior">‹</a>
+            <a href="#gal-2" class="marquee__seta" aria-label="Próxima foto">›</a>
+          </div>
+          <div class="marquee__setas marquee__setas--2">
+            <a href="#gal-1" class="marquee__seta" aria-label="Foto anterior">‹</a>
+            <a href="#gal-3" class="marquee__seta" aria-label="Próxima foto">›</a>
+          </div>
+          <div class="marquee__setas marquee__setas--3">
+            <a href="#gal-2" class="marquee__seta" aria-label="Foto anterior">‹</a>
+            <a href="#gal-4" class="marquee__seta" aria-label="Próxima foto">›</a>
+          </div>
+          <div class="marquee__setas marquee__setas--4">
+            <a href="#gal-3" class="marquee__seta" aria-label="Foto anterior">‹</a>
+            <a href="#gal-5" class="marquee__seta" aria-label="Próxima foto">›</a>
+          </div>
+          <div class="marquee__setas marquee__setas--5">
+            <a href="#gal-4" class="marquee__seta" aria-label="Foto anterior">‹</a>
+            <a href="#gal-6" class="marquee__seta" aria-label="Próxima foto">›</a>
+          </div>
+          <div class="marquee__setas marquee__setas--6">
+            <a href="#gal-5" class="marquee__seta" aria-label="Foto anterior">‹</a>
+            <a href="#gal-7" class="marquee__seta" aria-label="Próxima foto">›</a>
+          </div>
+          <div class="marquee__setas marquee__setas--7">
+            <a href="#gal-6" class="marquee__seta" aria-label="Foto anterior">‹</a>
+            <a href="#gal-8" class="marquee__seta" aria-label="Próxima foto">›</a>
+          </div>
+          <div class="marquee__setas marquee__setas--8">
+            <a href="#gal-7" class="marquee__seta" aria-label="Foto anterior">‹</a>
+            <a href="#gal-9" class="marquee__seta" aria-label="Próxima foto">›</a>
+          </div>
+          <div class="marquee__setas marquee__setas--9">
+            <a href="#gal-8" class="marquee__seta" aria-label="Foto anterior">‹</a>
+            <a href="#gal-1" class="marquee__seta" aria-label="Próxima foto">›</a>
+          </div>
+        </div>
+      </div>
+        <div class="lightbox" id="lb-gal-1">
+          <a href="#galeria" class="lightbox__fechar" aria-label="Fechar">×</a>
+          <img class="lightbox__img" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-1.webp" alt="Confraternização corporativa ao ar livre na Fazenda das Pedras">
+        </div>
+        <div class="lightbox" id="lb-gal-2">
+          <a href="#galeria" class="lightbox__fechar" aria-label="Fechar">×</a>
+          <img class="lightbox__img" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-2.webp" alt="Convidados reunidos nos jardins da Fazenda das Pedras">
+        </div>
+        <div class="lightbox" id="lb-gal-3">
+          <a href="#galeria" class="lightbox__fechar" aria-label="Fechar">×</a>
+          <img class="lightbox__img" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-3.webp" alt="Área externa decorada para evento corporativo">
+        </div>
+        <div class="lightbox" id="lb-gal-4">
+          <a href="#galeria" class="lightbox__fechar" aria-label="Fechar">×</a>
+          <img class="lightbox__img" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-5.webp" alt="Paisagem natural ao redor da Fazenda das Pedras">
+        </div>
+        <div class="lightbox" id="lb-gal-5">
+          <a href="#galeria" class="lightbox__fechar" aria-label="Fechar">×</a>
+          <img class="lightbox__img" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-6.webp" alt="Detalhe da decoração de evento corporativo">
+        </div>
+        <div class="lightbox" id="lb-gal-6">
+          <a href="#galeria" class="lightbox__fechar" aria-label="Fechar">×</a>
+          <img class="lightbox__img" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-7.webp" alt="Detalhe do espaço externo da Fazenda das Pedras">
+        </div>
+        <div class="lightbox" id="lb-gal-7">
+          <a href="#galeria" class="lightbox__fechar" aria-label="Fechar">×</a>
+          <img class="lightbox__img" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-8.webp" alt="Momento de confraternização entre colaboradores">
+        </div>
+        <div class="lightbox" id="lb-gal-8">
+          <a href="#galeria" class="lightbox__fechar" aria-label="Fechar">×</a>
+          <img class="lightbox__img" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-9.webp" alt="Ambiente preparado para receber grandes equipes">
+        </div>
+        <div class="lightbox" id="lb-gal-9">
+          <a href="#galeria" class="lightbox__fechar" aria-label="Fechar">×</a>
+          <img class="lightbox__img" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-galeria-10.webp" alt="Vista geral da Fazenda das Pedras em Itu/SP">
+        </div>
+    </section>
+
+    <!-- =================== LOCALIZAÇÃO =================== -->
+    <section id="localizacao">
+      <div class="container">
+        <div class="cabecalho-secao centralizado">
+          <p class="rotulo">Como chegar</p>
+          <h2 class="titulo-secao">Perto da cidade.<br class="quebra-mobile"> Longe da rotina</h2>
+          <p class="paragrafo">Em Itu, a poucos quilômetros de São Paulo, Sorocaba, Jundiaí e outras cidades da região.</p>
+        </div>
+        <div class="localizacao__mapa">
+          <iframe
+            src="https://www.google.com/maps?q=Espa%C3%A7o+Fazenda+das+Pedras+Itu,+Rod.+Dom+Gabriel+Paulino+Bueno+Couto,+s%2Fn+-+km+98,+Itu+-+SP,+13304-350&output=embed"
+            loading="lazy"
+            referrerpolicy="no-referrer-when-downgrade"
+            title="Mapa de localização — Espaço Fazenda das Pedras, Itu/SP">
+          </iframe>
+        </div>
+      </div>
+    </section>
+
+    <!-- =================== CONTATO =================== -->
+    <section class="contato" id="contato">
+      <div class="container">
+        <div class="contato__conteudo">
+          <div class="contato__texto">
+            <p class="rotulo">Fale conosco</p>
+            <h2 class="titulo-secao">Vamos planejar sua<br>confraternização<br>de sucesso?</h2>
+            <p class="paragrafo">Preencha o formulário<br class="quebra-mobile"> para receber nosso contato.</p>
+          </div>
+
+          <!-- Formulário padrão Dmove — campos em src/scripts/form-presets.ts,
+               envio/validação/tracking em src/scripts/forms.ts. Estética do design. -->
+          <div id="form-grid">
+            <form
+              class="formulario"
+              id="lead-form"
+              data-form-id="lead-form"
+              data-submit-url={webhookUrl}
+              data-grid-id="form-grid"
+              data-success-id="form-success"
+              novalidate
+            >
+              <input type="text" name="website" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+              {formRows.map((linha) => (
+                <div class={linha.length > 1 ? 'campos-duplos' : 'campo-linha'}>
+                  {linha.map((field) => (
+                    <div class={`campo${field.required ? '' : ' campo--opcional'}`}>
+                      <label for={`form-field-${field.name}`}>
+                        {field.label}
+                        {field.hint && <span> ({field.hint})</span>}
+                      </label>
+
+                      {field.type === 'select' ? (
+                        <select id={`form-field-${field.name}`} name={field.name} required={field.required}>
+                          {field.options?.map((opt) => (
+                            <option value={opt.value} disabled={opt.disabled} selected={opt.selected}>{opt.label}</option>
+                          ))}
+                        </select>
+                      ) : field.type === 'textarea' ? (
+                        <textarea
+                          id={`form-field-${field.name}`}
+                          name={field.name}
+                          placeholder={field.placeholder}
+                          required={field.required}
+                          rows={3}
+                        />
+                      ) : (
+                        <input
+                          id={`form-field-${field.name}`}
+                          type={field.type}
+                          name={field.name}
+                          placeholder={field.placeholder}
+                          required={field.required}
+                          min={field.type === 'number' ? '1' : undefined}
+                          autocomplete={autoComplete[field.name]}
+                          inputmode={field.type === 'tel' ? 'tel' : field.type === 'number' ? 'numeric' : undefined}
+                          data-datepicker={field.datepicker ? 'true' : undefined}
+                        />
+                      )}
+                    </div>
+                  ))}
+                </div>
+              ))}
+
+              <div class="formulario__msg" id="leadFormMsg"></div>
+
+              <button type="submit" class="botao botao--primario botao--largo form-submit">
+                <span class="btn-text">Enviar solicitação</span>
+                <span class="btn-loading">Enviando…</span>
+              </button>
+            </form>
+          </div>
+
+          <div class="formulario formulario--sucesso" id="form-success" role="alert">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+              <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
+            </svg>
+            <h3>Recebemos sua solicitação</h3>
+            <p>Nossa equipe entra em contato em breve pelo WhatsApp ou e-mail para planejar a sua confraternização.</p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- =================== RODAPÉ =================== -->
+  <footer class="rodape">
+    <div class="container">
+      <div class="rodape__topo">
+        <a href="#topo" aria-label="Fazenda das Pedras Eventos — voltar ao início">
+          <img class="rodape__logo" src="/images/eventos-corporativos/logo-vertical-claro.svg" alt="Espaço Fazenda das Pedras Eventos">
+        </a>
+      </div>
+      <hr class="rodape__linha">
+      <p class="rodape__copy">Copyright © 2026 Fazenda das Pedras - Todos os direitos reservados</p>
+    </div>
+  </footer>
+</Base>
+
+<script>
+  import { initForms } from '../scripts/forms';
+  import flatpickr from 'flatpickr';
+  import { Portuguese } from 'flatpickr/dist/l10n/pt.js';
+  import 'flatpickr/dist/flatpickr.min.css';
+
+  initForms();
+
+  const dateEl = document.querySelector<HTMLInputElement>('[data-datepicker="true"]');
+  if (dateEl) {
+    flatpickr(dateEl, {
+      locale: Portuguese,
+      dateFormat: 'd/m/Y',
+      minDate: 'today',
+      allowInput: true,
+      disableMobile: false,
+    });
+    // O fallback mobile do Flatpickr injeta tabindex="1", que quebra a ordem de foco
+    document.querySelectorAll<HTMLInputElement>('.flatpickr-mobile').forEach((el) => { el.tabIndex = 0; });
+  }
+
+  // O menu mobile é um checkbox CSS-only: fecha ao navegar para a âncora.
+  const toggle = document.getElementById('alterna-menu') as HTMLInputElement | null;
+  document.querySelectorAll('.cabecalho__nav a').forEach((link) => {
+    link.addEventListener('click', () => { if (toggle) toggle.checked = false; });
+  });
+</script>

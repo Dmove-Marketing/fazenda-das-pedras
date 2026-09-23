@@ -132,3 +132,40 @@ docs/
 | [docs/home-triagem.md](./docs/home-triagem.md) | Para quem monta a home de clientes com 2+ funis |
 | [docs/performance.md](./docs/performance.md) | Para otimizar LCP, fontes, imagens, cache |
 | [docs/tracking-gtm.md](./docs/tracking-gtm.md) | Para entender o contrato site x GTM |
+
+---
+
+## Rota `/eventos-corporativos` (funil F1 — corporativo)
+
+LP do funil corporativo, construída a partir do HTML entregue pelo time de criação em
+`../eventos-corporativos/docs para desenvolvimento/ENTREGA/`.
+
+**Os dois arquivos da página são gerados — não edite à mão:**
+
+| Gerado | Fonte |
+|---|---|
+| `src/pages/eventos-corporativos.astro` | `ENTREGA/fazenda-das-pedras-eventos-corporativos.html` |
+| `src/styles/eventos-corporativos.css` | o `<style>` do mesmo HTML |
+
+Design revisado? Substitua o HTML na pasta de entrega e rode:
+
+```bash
+node tools/build-eventos-corporativos.mjs     # regenera página + CSS
+node tools/optimize-eventos-corporativos.mjs  # imagens → WebP em _work/otimizadas (subir pro CDN)
+node tools/qa-eventos-corporativos.mjs        # QA: fontes, tracking, formulário, menu, screenshots
+node tools/vrt-eventos-corporativos.mjs       # VRT: design × Astro nos 3 viewports
+```
+
+O QA e o VRT esperam o preview rodando (`npx astro preview --port 4331`).
+
+**O que o build faz além de copiar o design:**
+
+- fontes da marca (`.otf`/`.ttf`) → `.woff2` self-hospedado em `public/fonts/`
+- fotos → WebP no CDN `media.dmove.com.br/clients/fazenda-das-pedras/photos/` (69 MB → 7 MB)
+- formulário do design trocado pelo motor padrão (`form-presets.ts` + `forms.ts`), preset `corporativo`
+- neutraliza o vazamento de tipografia do `global.css` (`line-height` do body/`p`/`h1..h6`), sem o que
+  a página inteira desalinha ~6 px por seção em relação ao design
+- corrige no design: `aria-label` proibido em `<label>` e o seletor do hamburger que nunca virava "X"
+
+**Pendência:** `config.json > tracking.gtm_id` ainda está em `GTM-XXXXXXX`. O site inteiro
+(não só esta rota) está no ar sem medição até o ID real do container entrar aí.
