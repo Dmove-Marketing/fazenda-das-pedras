@@ -14,6 +14,9 @@ const SRC  = '../eventos-corporativos/docs para desenvolvimento/ENTREGA/fazenda-
 const CDN  = 'https://media.dmove.com.br/clients/fazenda-das-pedras/photos';
 const MANIFESTO = JSON.parse(await readFile('tools/imagens.manifest.json', 'utf8'));
 const url = (base, w) => `${CDN}/${base}-${w}.webp`;
+// O hero do celular é o elemento de LCP: servido do próprio domínio ele dispensa
+// o aperto de mão com o CDN e aproveita a conexão já aberta do documento (-0,5s).
+const urlHeroLocal = (w) => `/images/hero/fazendadaspedras-corporativo-hero-${w}.webp`;
 const HERO_PRELOAD = url('fazendadaspedras-corporativo-hero', 1280);
 
 // ------------------------------------------------------------
@@ -277,17 +280,32 @@ section[id], header[id] { scroll-margin-top: 84px; }
   .hero {
     background-image: none;
     background-color: var(--cor-primaria-escura);
-    min-height: 0;
-    display: block;
-    padding: 0 0 36px;
+    /* Segue ocupando a tela inteira: se o hero encurta, a foto da seção
+       seguinte espia na primeira dobra e vira o elemento de LCP — foi o que
+       derrubou 1,3s da medição quando a foto virou <img>. */
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 0 0 28px;
   }
   .hero__foto {
     display: block;
     width: 100%;
     height: auto;
     margin: 0;
+    flex: 0 0 auto;
   }
-  .hero__conteudo { padding-top: 28px; }
+  .hero__conteudo {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    padding-top: 24px;
+    min-width: 0;
+  }
+  /* sem isto a caixa não encolhe abaixo do min-content ("confraternização")
+     e vaza 27px numa tela de 320px */
+  .hero__caixa { min-width: 0; width: 100%; }
 }
 
 /* ============================================================
@@ -677,7 +695,7 @@ body = trocarBloco(body, '      <div class="ambientes__grade">', (bloco, indent)
     ...imgs.flatMap((img, n) => [
       `${i4}<figure class="palco__cena${n === 0 ? ' is-ativa' : ''}" aria-hidden="${n === 0 ? 'false' : 'true'}">`,
       n === 0
-        ? `${i5}${img.replace('<img ', '<img class="palco__foto" ').replace(' loading="lazy"', '').replace('decoding="async"', 'fetchpriority="low" decoding="async"')}`
+        ? `${i5}${img.replace('<img ', '<img class="palco__foto" ')}`
         : `${i5}${img.replace('<img ', '<img class="palco__foto" ').replace(/\bsrc=/, 'data-src=').replace(/\bsrcset=/, 'data-srcset=').replace(/\bsizes=/, 'data-sizes=')}\n${i5}<noscript>${img}</noscript>`,
       `${i5}<figcaption class="palco__legenda">`,
       `${i5}  <span class="palco__numero">${String(n + 1).padStart(2, '0')}</span>`,
@@ -738,7 +756,7 @@ body = trocarBloco(body, '      <div class="galeria__marquee marquee">', (bloco,
   // decoding="sync": num elemento de LCP o "async" autoriza o browser a pintar o
   // resto antes de decodificar a foto — o download terminava em 1,6s e a pintura
   // só saía aos 3,9s.
-  const img = `<img class="hero__foto" src="${url(base, maior)}" srcset="${larguras.map((w) => `${url(base, w)} ${w}w`).join(', ')}" sizes="100vw" width="${dims.w}" height="${dims.h}" alt="Confraternização de empresa ao ar livre na Fazenda das Pedras, em Itu" fetchpriority="high" decoding="sync">`;
+  const img = `<img class="hero__foto" src="${urlHeroLocal(maior)}" srcset="${larguras.map((w) => `${urlHeroLocal(w)} ${w}w`).join(', ')}" sizes="100vw" width="${dims.w}" height="${dims.h}" alt="Confraternização de empresa ao ar livre na Fazenda das Pedras, em Itu" fetchpriority="high" decoding="sync">`;
   const alvo = '    <div class="container hero__conteudo">'.slice(2);
   if (!body.includes(alvo)) throw new Error('Hero: não achei o container do conteúdo');
   body = body.replace(alvo, `    ${img}\n${alvo}`);
@@ -901,8 +919,8 @@ const jsonLd = {
     <link
       rel="preload"
       as="image"
-      href="${url('fazendadaspedras-corporativo-hero', 800)}"
-      imagesrcset="${[480, 640, 800].map((w) => `${url('fazendadaspedras-corporativo-hero', w)} ${w}w`).join(', ')}"
+      href="${urlHeroLocal(800)}"
+      imagesrcset="${[480, 640, 800].map((w) => `${urlHeroLocal(w)} ${w}w`).join(', ')}"
       imagesizes="100vw"
       media="(max-width: 899px)"
       fetchpriority="high"

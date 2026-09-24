@@ -219,6 +219,19 @@ o palco e o avanço automático. Nenhum listener de `scroll` — só Intersectio
 
 **Hero no celular:** o design ampliava o fundo em 420%, o que mostrava um recorte
 pequeno demais do espaço. Abaixo de 900px a foto virou um `<img>` de largura total
-com a proporção original preservada, e o texto desceu para o verde da marca. Como
-passou a ser o elemento de LCP, o srcset é limitado a 960px (a faixa tem ~275px de
-altura; acima disso não há ganho visível e o LCP paga a conta).
+com a proporção original preservada, e o texto desceu para o verde da marca.
+
+Três detalhes que essa troca exigiu, cada um medido:
+- A seção segue com `min-height: 100svh`. Sem isso o hero encurta, a foto da seção
+  seguinte espia na primeira dobra e **ela** vira o elemento de LCP.
+- O `srcset` para no **800px**: a faixa tem ~275px de altura, e 800 já dá 1,9× de
+  densidade num celular de 412px. 1280 custava 1,7s a mais no Lighthouse.
+- As três variantes móveis ficam **self-hospedadas** em `public/images/hero/`
+  (geradas pelo otimizador). Servir o elemento de LCP do próprio domínio dispensa
+  o aperto de mão com o CDN: 0,5s a menos.
+
+⚠️ **Sobre a nota do Lighthouse:** antes desta mudança o elemento de LCP era o
+`<h1>` — texto, que pinta assim que o CSS chega. Agora é a foto do espaço, que
+precisa de bytes. A nota de performance caiu de 92 para 87 e o LCP de 3,0s para
+3,6s por causa disso, não por a página ter ficado mais lenta: o peso total caiu de
+1,49 MB para 1,19 MB e o CLS melhorou. É o preço de mostrar a foto no topo.

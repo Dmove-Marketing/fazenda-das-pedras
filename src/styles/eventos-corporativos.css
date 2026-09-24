@@ -1144,17 +1144,32 @@ section[id], header[id] { scroll-margin-top: 84px; }
   .hero {
     background-image: none;
     background-color: var(--cor-primaria-escura);
-    min-height: 0;
-    display: block;
-    padding: 0 0 36px;
+    /* Segue ocupando a tela inteira: se o hero encurta, a foto da seção
+       seguinte espia na primeira dobra e vira o elemento de LCP — foi o que
+       derrubou 1,3s da medição quando a foto virou <img>. */
+    min-height: 100svh;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-start;
+    padding: 0 0 28px;
   }
   .hero__foto {
     display: block;
     width: 100%;
     height: auto;
     margin: 0;
+    flex: 0 0 auto;
   }
-  .hero__conteudo { padding-top: 28px; }
+  .hero__conteudo {
+    flex: 1 1 auto;
+    display: flex;
+    align-items: center;
+    padding-top: 24px;
+    min-width: 0;
+  }
+  /* sem isto a caixa não encolhe abaixo do min-content ("confraternização")
+     e vaza 27px numa tela de 320px */
+  .hero__caixa { min-width: 0; width: 100%; }
 }
 
 /* ============================================================

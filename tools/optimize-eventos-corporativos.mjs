@@ -10,7 +10,7 @@
 //   → _work/otimizadas/  +  tools/imagens.manifest.json
 // ============================================================
 import sharp from 'sharp';
-import { readdir, mkdir, writeFile, stat, rm } from 'node:fs/promises';
+import { readdir, mkdir, writeFile, stat, rm, copyFile } from 'node:fs/promises';
 import path from 'node:path';
 
 const SRC = '../eventos-corporativos/docs para desenvolvimento/ENTREGA/imagens';
@@ -63,6 +63,15 @@ for (const f of arquivos) {
   manifesto[base] = { largura: maior.w, altura: maior.h, proporcao: +(meta.width / meta.height).toFixed(4), variantes };
   console.log(`${base.padEnd(46)} ${meta.width}px → ${variantes.map((v) => `${v.w}(${v.kb}k)`).join(' ')}`);
 }
+
+// O hero do celular é o elemento de LCP e fica self-hospedado (sem aperto de
+// mão com o CDN). As demais variantes seguem só no CDN.
+await mkdir('public/images/hero', { recursive: true });
+for (const w of [480, 640, 800]) {
+  const nome = `fazendadaspedras-corporativo-hero-${w}.webp`;
+  await copyFile(path.join(OUT, nome), path.join('public/images/hero', nome));
+}
+console.log('hero do celular copiado para public/images/hero/');
 
 await writeFile('tools/imagens.manifest.json', JSON.stringify(manifesto, null, 2));
 console.log(`\n${arquivos.length} fotos → ${geradas} variantes`);

@@ -183,12 +183,18 @@ export function initAmbientes() {
   }
   palco.classList.add('palco--pronto');
 
+  // Adiantar a próxima cena é bom quando o visitante já está no palco, mas
+  // no carregamento da página isso baixaria uma foto que está telas abaixo.
+  let perto = false;
+  new IntersectionObserver((e) => { if (e[0].isIntersecting) { perto = true; acordarCena(atual + 1); } },
+    { rootMargin: '300px 0px' }).observe(palco);
+
   let atual = -1;
   const ativar = (i: number) => {
     if (i === atual) return;
     atual = i;
     acordarCena(i);
-    acordarCena(i + 1);   // adianta a próxima, para a troca não esperar download
+    if (perto) acordarCena(i + 1);   // adianta a próxima, para a troca não esperar download
     cenas.forEach((c, n) => {
       c.classList.toggle('is-ativa', n === i);
       c.classList.toggle('is-passada', n < i);
