@@ -200,6 +200,41 @@ for (const [rotulo, vw, vh] of [['mobile', 390, 844], ['desktop', 1440, 900]]) {
   await p.close();
 }
 
+// —— avatar do widget de WhatsApp ——
+{
+  const p = await b.newPage({ viewport: { width: 390, height: 844 } });
+  await p.goto(URL, { waitUntil: 'networkidle' });
+  await p.waitForTimeout(6500);   // o teaser aparece com atraso
+  const teaser = await p.evaluate(() => {
+    const a = document.querySelector('.wa-teaser__avatar');
+    return a ? { arquivo: a.currentSrc.split('/').pop(), w: a.naturalWidth, h: a.naturalHeight } : null;
+  });
+  teaser && teaser.arquivo === 'whatsapp-avatar.png'
+    ? ok('WhatsApp: avatar é o da marca', teaser.arquivo)
+    : fail('WhatsApp: avatar errado', JSON.stringify(teaser));
+  // quadrado importa: o círculo usa object-fit cover, e uma imagem larga
+  // entraria recortada no meio (era o caso da logo horizontal 700x296)
+  teaser && teaser.w === teaser.h
+    ? ok('WhatsApp: avatar quadrado, não sofre corte no círculo', `${teaser.w}x${teaser.h}`)
+    : fail('WhatsApp: avatar fora do quadrado', teaser ? `${teaser.w}x${teaser.h}` : 'ausente');
+
+  await p.click('.wa-fab');
+  await p.waitForTimeout(2600);
+  const noChat = await p.evaluate(() => {
+    const cab = document.querySelector('.wa-header__avatar-img');
+    const linhas = [...document.querySelectorAll('.wa-row__avatar')];
+    return {
+      cabecalho: !!cab && cab.naturalWidth > 0,
+      linhas: linhas.length,
+      todasCarregadas: linhas.every((i) => i.naturalWidth > 0),
+    };
+  });
+  noChat.cabecalho && noChat.linhas > 0 && noChat.todasCarregadas
+    ? ok('WhatsApp: avatar no cabeçalho e nas mensagens', `${noChat.linhas} mensagens`)
+    : fail('WhatsApp: avatar falhou no chat', JSON.stringify(noChat));
+  await p.close();
+}
+
 // —— depoimento ——
 {
   const p = await b.newPage({ viewport: { width: 390, height: 844 } });
