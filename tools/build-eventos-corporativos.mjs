@@ -722,12 +722,16 @@ body = trocarBloco(body, '      <div class="galeria__marquee marquee">', (bloco,
 {
   const base = 'fazendadaspedras-corporativo-hero';
   const item = MANIFESTO[base];
-  // A foto ocupa a largura da tela mas só ~275px de altura: acima de 960 não
-  // há ganho visível e o LCP paga a conta (o 1280 custava 1,7s a mais no 4G).
-  const larguras = [480, 640, 960].filter((w) => item.variantes.some((v) => v.w === w));
+  // A foto ocupa a largura da tela mas só ~275px de altura. 800px dá ~1,9× de
+  // densidade num celular de 412px — indistinguível de 2,6× a olho nu — e é
+  // metade dos bytes do elemento de LCP.
+  const larguras = [480, 640, 800].filter((w) => item.variantes.some((v) => v.w === w));
   const maior = larguras[larguras.length - 1];
   const dims = item.variantes.find((v) => v.w === maior);
-  const img = `<img class="hero__foto" src="${url(base, maior)}" srcset="${larguras.map((w) => `${url(base, w)} ${w}w`).join(', ')}" sizes="100vw" width="${dims.w}" height="${dims.h}" alt="Confraternização de empresa ao ar livre na Fazenda das Pedras, em Itu" fetchpriority="high" decoding="async">`;
+  // decoding="sync": num elemento de LCP o "async" autoriza o browser a pintar o
+  // resto antes de decodificar a foto — o download terminava em 1,6s e a pintura
+  // só saía aos 3,9s.
+  const img = `<img class="hero__foto" src="${url(base, maior)}" srcset="${larguras.map((w) => `${url(base, w)} ${w}w`).join(', ')}" sizes="100vw" width="${dims.w}" height="${dims.h}" alt="Confraternização de empresa ao ar livre na Fazenda das Pedras, em Itu" fetchpriority="high" decoding="sync">`;
   const alvo = '    <div class="container hero__conteudo">'.slice(2);
   if (!body.includes(alvo)) throw new Error('Hero: não achei o container do conteúdo');
   body = body.replace(alvo, `    ${img}\n${alvo}`);
@@ -890,8 +894,8 @@ const jsonLd = {
     <link
       rel="preload"
       as="image"
-      href="${url('fazendadaspedras-corporativo-hero', 960)}"
-      imagesrcset="${[480, 640, 960].map((w) => `${url('fazendadaspedras-corporativo-hero', w)} ${w}w`).join(', ')}"
+      href="${url('fazendadaspedras-corporativo-hero', 800)}"
+      imagesrcset="${[480, 640, 800].map((w) => `${url('fazendadaspedras-corporativo-hero', w)} ${w}w`).join(', ')}"
       imagesizes="100vw"
       media="(max-width: 899px)"
       fetchpriority="high"

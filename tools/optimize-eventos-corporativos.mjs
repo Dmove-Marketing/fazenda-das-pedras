@@ -19,7 +19,7 @@ const OUT = '_work/otimizadas';
 // Larguras por papel. O papel sai do nome do arquivo — é assim que o time de
 // criação nomeia a entrega, e o build usa a mesma convenção.
 const PAPEIS = [
-  { test: /hero\./,        larguras: [480, 640, 960, 1280, 1600, 2000], quality: 74 },  // background do hero (LCP)
+  { test: /hero\./,        larguras: [480, 640, 800, 960, 1280, 1600, 2000], quality: 74 },  // background do hero (LCP)
   { test: /estrutura-2\./, larguras: [320, 480, 640, 960, 1280, 1920], quality: 70 }, // marquee + fundo do depoimento
   { test: /formulario\./,  larguras: [640, 960, 1280, 1920], quality: 70 },         // fundo da seção de contato
   { test: /hospedagem-/,   larguras: [360, 560, 800, 1080], quality: 76 },
