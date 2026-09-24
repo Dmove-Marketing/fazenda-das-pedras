@@ -12,7 +12,65 @@ import path from 'node:path';
 
 const SRC  = '../eventos-corporativos/docs para desenvolvimento/ENTREGA/fazenda-das-pedras-eventos-corporativos.html';
 const CDN  = 'https://media.dmove.com.br/clients/fazenda-das-pedras/photos';
-const HERO = `${CDN}/fazendadaspedras-corporativo-hero.webp`;
+const MANIFESTO = JSON.parse(await readFile('tools/imagens.manifest.json', 'utf8'));
+const url = (base, w) => `${CDN}/${base}-${w}.webp`;
+const HERO_PRELOAD = url('fazendadaspedras-corporativo-hero', 1280);
+
+// ------------------------------------------------------------
+// Papel de cada <img> na página → larguras do srcset e o sizes.
+//
+// ATENÇÃO ao `sizes`: quase toda foto aqui é `object-fit: cover` numa caixa de
+// proporção diferente da imagem. Nesse caso a largura RENDERIZADA é maior que a
+// caixa (a imagem é ampliada até cobrir e sobra cortada). O `sizes` descreve a
+// largura renderizada, não a da caixa — senão o navegador escolhe uma variante
+// pequena demais e a foto sai borrada. Os valores abaixo saem da medição real
+// max(larguraCaixa, alturaCaixa × proporção) no pior caso de proporção da seção.
+// A ordem importa: a primeira regra que casar vence.
+// ------------------------------------------------------------
+const PAPEIS_IMG = [
+  // `caixas`: [larguraDoViewport, larguraDaCaixa, alturaDaCaixa] medidos com
+  // tools/audit-responsivo.mjs. A largura que a foto precisa sai de
+  // max(larguraCaixa, alturaCaixa × proporçãoDaFoto) — é quanto o `object-fit:
+  // cover` amplia a imagem para cobrir a caixa. Retrato e paisagem na mesma
+  // seção pedem larguras diferentes, por isso o cálculo é por foto.
+  { nome: 'lightbox',  casa: (l) => /class="lightbox__img"/.test(l),
+    larguras: [800, 1400], sizesFixo: '100vw' },
+  { nome: 'mosaico',   casa: (l) => /galeria__mosaico__item/.test(l),
+    larguras: [320, 480, 640, 800], caixas: [[1440, 371, 371], [1024, 319, 319], [768, 233, 233]] },
+  { nome: 'gal-marquee', casa: (l) => /galeria__marquee__item/.test(l),
+    larguras: [320, 480], caixas: [[390, 300, 225]] },
+  { nome: 'infra-marquee', casa: (l) => /galeria-scroll__item/.test(l),
+    larguras: [320, 480, 560, 700], caixas: [[1440, 320, 400], [1024, 320, 400], [768, 320, 400], [390, 281, 351]] },
+  { nome: 'gastronomia', casa: (l) => /gastronomia__foto/.test(l),
+    larguras: [320, 480, 640, 900], caixas: [[1440, 276, 368], [1024, 237, 316], [768, 173, 231], [390, 300, 225]] },
+  { nome: 'hospedagem', casa: (l, n) => /hospedagem-/.test(n),
+    larguras: [360, 560, 800, 1080], caixas: [[1440, 459, 612], [1024, 393, 524], [768, 728, 546], [390, 350, 263]] },
+  { nome: 'ambiente',  casa: (l, n) => /(jatoba|redario|espacorustico|salaoprincipal)/.test(n),
+    larguras: [320, 480, 560, 800], caixas: [[1440, 272, 362], [1024, 233, 310], [768, 355, 266], [390, 170, 128]] },
+  { nome: 'sobre',     casa: (l, n) => /sobre/.test(n),
+    larguras: [480, 700, 1000, 1200, 1600], caixas: [[1440, 540, 405], [1024, 462, 347], [768, 728, 546], [390, 350, 263]] },
+];
+
+// Monta o `sizes` desta foto: a largura exigida em cada faixa, em vw (fluido)
+// ou px (a partir de 1100px o layout é fixo).
+const montarSizes = (papel, proporcao) => {
+  if (papel.sizesFixo) return papel.sizesFixo;
+  const precisa = (cx, cy) => Math.ceil(Math.max(cx, cy * proporcao));
+  const faixas = papel.caixas.map(([vw, cx, cy]) => {
+    const w = precisa(cx, cy);
+    if (vw >= 1440) return { min: 1100, valor: `${w}px` };
+    const min = vw >= 1024 ? 900 : vw >= 768 ? 700 : 0;
+    return { min, valor: `${Math.ceil((w / vw) * 100)}vw` };
+  }).sort((a, b) => b.min - a.min);
+  return faixas.map((f, i) => (i === faixas.length - 1 && f.min === 0 ? f.valor : `(min-width: ${f.min}px) ${f.valor}`)).join(', ');
+};
+
+// Fundos em CSS: o browser não tem srcset, então troca-se a variante por media query.
+const FUNDOS = [
+  { seletor: '.hero',       base: 'fazendadaspedras-corporativo-hero',       menor: 1280, camadas: [[600, 1600], [1400, 2000]] },
+  { seletor: '.depoimento', base: 'fazendadaspedras-corporativo-estrutura-2', menor: 640,  camadas: [[600, 960], [1000, 1280], [1600, 1920]] },
+  { seletor: '.contato',    base: 'fazendadaspedras-corporativo-formulario',  menor: 640,  camadas: [[600, 960], [1000, 1280], [1600, 1920]] },
+];
 
 const html = await readFile(SRC, 'utf8');
 
@@ -27,8 +85,21 @@ css = css.replace(
   (_m, name) => `url('/fonts/${name}.woff2') format('woff2')`
 );
 
-// imagens de background → CDN (webp)
-css = css.replace(/url\('imagens\/([^']+)\.(jpe?g|png)'\)/gi, (_m, name) => `url('${CDN}/${name}.webp')`);
+// imagens de background → CDN, já na menor variante (mobile-first)
+css = css.replace(/url\('imagens\/([^']+)\.(jpe?g|png)'\)/gi, (_m, name) => {
+  const fundo = FUNDOS.find((f) => f.base === name);
+  if (!fundo) throw new Error(`Background sem regra de variante: ${name}`);
+  return `url('${url(name, fundo.menor)}')`;
+});
+
+// Camadas por largura de viewport: cada fundo sobe de variante conforme a tela cresce.
+const camadasFundo = FUNDOS.map((f) => {
+  const decl = css.match(new RegExp(`\\${f.seletor}\\s*\\{[^}]*?background-image:\\s*([^;]+);`, 's'));
+  if (!decl) throw new Error(`Não achei o background-image de ${f.seletor}`);
+  return f.camadas
+    .map(([minw, w]) => `@media (min-width: ${minw}px) {\n  ${f.seletor} { background-image: ${decl[1].trim().replace(`-${f.menor}.webp`, `-${w}.webp`)}; }\n}`)
+    .join('\n');
+}).join('\n');
 
 // Fase 5 do playbook: o global.css aplica --font-display/--font-body em h1..h6.
 // Sem sobrescrever os tokens, os títulos caem na fonte de sistema.
@@ -103,6 +174,76 @@ section[id], header[id] { scroll-margin-top: 84px; }
 }
 .formulario--sucesso p { font-size: 15px; color: var(--cor-texto); margin: 0; }
 
+/* ============================================================
+   Responsividade e toque
+   ============================================================ */
+
+/* iPad paisagem (1024px): "1fr" não encolhe abaixo do min-content do título,
+   e a coluna de 620px do formulário empurrava a página 51px pra fora. */
+@media (min-width: 900px) {
+  .contato__conteudo { grid-template-columns: minmax(0, 1fr) minmax(0, 620px); }
+}
+#form-grid { min-width: 0; }
+
+/* Alvos de toque de no mínimo 44px onde o ponteiro é o dedo.
+   No desktop o design fica como desenhado. */
+@media (max-width: 899px) {
+  .cabecalho__botao-menu {
+    width: 44px; height: 44px;
+    padding: 10px 6px;
+    box-sizing: border-box;
+    margin-right: -6px;
+  }
+  .botao {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hero__acoes .botao, .botao--largo { min-height: 48px; }
+  .marquee__seta { width: 44px; height: 44px; }
+  .hospedagem-carrossel__seta { width: 44px; height: 44px; }
+  .lightbox__fechar { min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+
+  /* Campos do formulário: 35px de altura é pouco pro dedo, e fonte abaixo de
+     16px faz o iOS dar zoom ao focar — a página pula na hora da conversão. */
+  .campo input, .campo select, .campo textarea {
+    min-height: 44px;
+    font-size: 16px;
+    padding: 10px 14px;
+  }
+  .campo textarea { min-height: 76px; }
+}
+
+/* Texto abaixo de 12px não se lê bem em tela nenhuma */
+.autoridade__logo-slot { font-size: 12px; }
+
+/* Desktop: o link do menu tem 17px de altura de texto. O padding aumenta a
+   área clicável sem mover nada, porque a nav é mais baixa que o logo. */
+@media (min-width: 900px) {
+  .cabecalho__nav a:not(.botao) { padding-block: 12px; }
+}
+
+/* Celular deitado: a altura útil some. O menu vira lista rolável e o hero
+   para de esticar além do que cabe. */
+@media (max-width: 899px) and (orientation: landscape) {
+  .cabecalho__nav {
+    justify-content: flex-start;
+    gap: 14px;
+    padding: 70px 20px 24px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .cabecalho__nav a { font-size: 20px; }
+  .hero { min-height: 480px; }
+}
+
+/* Telas muito estreitas (320px): o respiro lateral não pode comer o conteúdo */
+@media (max-width: 359px) {
+  :root { --gutter: 16px; }
+  .hero__titulo { font-size: 32px; }
+}
+
 /* Flatpickr na paleta da marca */
 .flatpickr-calendar { font-family: var(--fonte-corpo); border-radius: 12px; box-shadow: 0 12px 40px rgba(58,62,31,.18); }
 .flatpickr-months, .flatpickr-weekdays, .flatpickr-weekdaycontainer { background: var(--cor-primaria); }
@@ -121,7 +262,11 @@ await writeFile(
    Edite o HTML em "docs para desenvolvimento/ENTREGA/" e rode o script.
    ============================================================ */
 ${css}
-${CSS_EXTRA}`
+${CSS_EXTRA}
+
+/* ---- Variantes de fundo por largura de viewport ---- */
+${camadasFundo}
+`
 );
 
 // ------------------------------------------------------------
@@ -129,9 +274,53 @@ ${CSS_EXTRA}`
 // ------------------------------------------------------------
 let body = html.match(/<body[^>]*>([\s\S]*?)<\/body>/)[1].trim();
 
-body = body
-  .replace(/src="imagens\/(logo-[^"]+\.svg)"/g, (_m, f) => `src="/images/eventos-corporativos/${f}"`)
-  .replace(/src="imagens\/([^"]+)\.(jpe?g|png)"/gi, (_m, name) => `src="${CDN}/${name}.webp"`);
+// Logos são SVG: vão para public/, sem variante.
+body = body.replace(/src="imagens\/(logo-[^"]+\.svg)"/g, (_m, f) => `src="/images/eventos-corporativos/${f}"`);
+
+// ------------------------------------------------------------
+// Cada <img> de foto vira srcset + sizes + width/height + lazy.
+// O papel é decidido pela linha (classes do contêiner) e pelo nome do arquivo,
+// porque é o contexto que define o tamanho exibido, não a imagem em si.
+// ------------------------------------------------------------
+const usoPorPapel = {};
+body = body.split('\n').map((linha) => {
+  if (!/<img[^>]+src="imagens\//.test(linha)) return linha;
+  // a seção "autoridade" traz um <img> de exemplo dentro de comentário HTML
+  if (/<!--/.test(linha) && linha.indexOf('<!--') < linha.indexOf('<img')) return linha;
+
+  return linha.replace(/<img([^>]*?)src="imagens\/([^"]+)\.(jpe?g|png)"([^>]*)>/gi, (tag, antes, nome, _ext, depois) => {
+    const item = MANIFESTO[nome];
+    if (!item) throw new Error(`Foto fora do manifesto: ${nome} (rode tools/optimize-eventos-corporativos.mjs)`);
+
+    const papel = PAPEIS_IMG.find((r) => r.casa(linha, nome));
+    if (!papel) throw new Error(`<img> sem papel definido: ${nome} na linha: ${linha.trim().slice(0, 80)}`);
+    usoPorPapel[papel.nome] = (usoPorPapel[papel.nome] || 0) + 1;
+
+    // só as variantes que existem de fato para esta foto
+    const disponiveis = item.variantes.map((v) => v.w);
+    let escolhidas = papel.larguras.map((w) => Math.min(w, item.largura)).filter((w) => disponiveis.includes(w));
+    if (!escolhidas.length) escolhidas = [disponiveis[disponiveis.length - 1]];
+    escolhidas = [...new Set(escolhidas)].sort((a, b) => a - b);
+
+    const maior = escolhidas[escolhidas.length - 1];
+    const dims = item.variantes.find((v) => v.w === maior);
+    const srcset = escolhidas.map((w) => `${url(nome, w)} ${w}w`).join(', ');
+
+    const resto = `${antes}${depois}`.trim();
+    const temLazy = /loading=/.test(resto);
+    const atributos = [
+      `src="${url(nome, maior)}"`,
+      `srcset="${srcset}"`,
+      `sizes="${montarSizes(papel, item.proporcao)}"`,
+      `width="${dims.w}"`,
+      `height="${dims.h}"`,
+      temLazy ? '' : 'loading="lazy"',
+      'decoding="async"',
+    ].filter(Boolean).join(' ');
+
+    return `<img ${resto ? resto + ' ' : ''}${atributos}>`;
+  });
+}).join('\n');
 
 // a11y: aria-label é proibido em <label>. O nome acessível vai no checkbox,
 // que é o elemento de fato controlado pelo usuário.
@@ -269,7 +458,7 @@ const jsonLd = {
   '@type': 'EventVenue',
   name: 'Espaço Fazenda das Pedras — Eventos Corporativos',
   description: ${JSON.stringify(description)},
-  image: '${HERO}',
+  image: '${HERO_PRELOAD}',
   url: \`https://\${config.domain}/eventos-corporativos\`,
   telephone: '+5511963701306',
   maximumAttendeeCapacity: 600,
@@ -296,7 +485,7 @@ const jsonLd = {
 >
   <Fragment slot="head">
     <!-- LCP: o hero é background-image, então o browser só o descobre depois do CSS -->
-    <link rel="preload" as="image" href="${HERO}" fetchpriority="high" />
+    <link rel="preload" as="image" href="${HERO_PRELOAD}" fetchpriority="high" />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/Kalista-Serif-Regular.woff2" crossorigin />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/Gotham-Book.woff2" crossorigin />
   </Fragment>
@@ -325,6 +514,26 @@ ${body.split('\n').map((l) => (l.trim() ? '  ' + l : l)).join('\n')}
     document.querySelectorAll<HTMLInputElement>('.flatpickr-mobile').forEach((el) => { el.tabIndex = 0; });
   }
 
+  // As 21 fotos dos lightbox são lazy para não baixarem todas no load. Em troca,
+  // precisam ser acordadas ao abrir — e já no toque/hover, para a foto estar
+  // chegando quando o clique se completa.
+  const acordarLightbox = (hash: string | null) => {
+    if (!hash || !hash.startsWith('#lb-')) return;
+    const img = document.querySelector<HTMLImageElement>(hash + ' img');
+    if (!img || img.complete) return;
+    img.loading = 'eager';
+    img.setAttribute('fetchpriority', 'high');
+    img.srcset = img.srcset;  // garante o disparo em navegadores que não reagem só ao loading
+  };
+  document.querySelectorAll<HTMLAnchorElement>('.lightbox-trigger').forEach((a) => {
+    const alvo = () => acordarLightbox(a.getAttribute('href'));
+    a.addEventListener('pointerenter', alvo, { once: true, passive: true });
+    a.addEventListener('touchstart', alvo, { once: true, passive: true });
+    a.addEventListener('click', alvo);
+  });
+  window.addEventListener('hashchange', () => acordarLightbox(location.hash));
+  acordarLightbox(location.hash);
+
   // O menu mobile é um checkbox CSS-only: fecha ao navegar para a âncora.
   const toggle = document.getElementById('alterna-menu') as HTMLInputElement | null;
   document.querySelectorAll('.cabecalho__nav a').forEach((link) => {
@@ -339,3 +548,4 @@ await writeFile('src/pages/eventos-corporativos.astro', page);
 console.log('✅ src/styles/eventos-corporativos.css');
 console.log('✅ src/pages/eventos-corporativos.astro');
 console.log(`   título: ${title}`);
+console.log(`   imagens por papel: ${Object.entries(usoPorPapel).map(([k, v]) => `${k}=${v}`).join(' · ')}`);

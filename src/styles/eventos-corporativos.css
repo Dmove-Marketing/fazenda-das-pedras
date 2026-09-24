@@ -274,7 +274,7 @@
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
-    background-image: url('https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hero.webp');
+    background-image: url('https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hero-1280.webp');
     background-size: cover;
     background-position: center 30%;
     background-repeat: no-repeat;
@@ -427,7 +427,7 @@
   /* ---------- Depoimento ---------- */
   .depoimento {
     position: relative;
-    background-image: linear-gradient(180deg, rgba(58,62,31,.82) 0%, rgba(42,45,23,.88) 100%), url('https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-estrutura-2.webp');
+    background-image: linear-gradient(180deg, rgba(58,62,31,.82) 0%, rgba(42,45,23,.88) 100%), url('https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-estrutura-2-640.webp');
     background-size: cover;
     background-position: center;
     color: var(--cor-texto-claro);
@@ -899,7 +899,7 @@
   /* ---------- Contato ---------- */
   .contato {
     position: relative;
-    background-image: linear-gradient(180deg, rgba(58,62,31,.82) 0%, rgba(42,45,23,.88) 100%), url('https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-formulario.webp');
+    background-image: linear-gradient(180deg, rgba(58,62,31,.82) 0%, rgba(42,45,23,.88) 100%), url('https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-formulario-640.webp');
     background-size: cover;
     background-position: center;
   }
@@ -1050,6 +1050,76 @@ section[id], header[id] { scroll-margin-top: 84px; }
 }
 .formulario--sucesso p { font-size: 15px; color: var(--cor-texto); margin: 0; }
 
+/* ============================================================
+   Responsividade e toque
+   ============================================================ */
+
+/* iPad paisagem (1024px): "1fr" não encolhe abaixo do min-content do título,
+   e a coluna de 620px do formulário empurrava a página 51px pra fora. */
+@media (min-width: 900px) {
+  .contato__conteudo { grid-template-columns: minmax(0, 1fr) minmax(0, 620px); }
+}
+#form-grid { min-width: 0; }
+
+/* Alvos de toque de no mínimo 44px onde o ponteiro é o dedo.
+   No desktop o design fica como desenhado. */
+@media (max-width: 899px) {
+  .cabecalho__botao-menu {
+    width: 44px; height: 44px;
+    padding: 10px 6px;
+    box-sizing: border-box;
+    margin-right: -6px;
+  }
+  .botao {
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+  .hero__acoes .botao, .botao--largo { min-height: 48px; }
+  .marquee__seta { width: 44px; height: 44px; }
+  .hospedagem-carrossel__seta { width: 44px; height: 44px; }
+  .lightbox__fechar { min-width: 44px; min-height: 44px; display: flex; align-items: center; justify-content: center; }
+
+  /* Campos do formulário: 35px de altura é pouco pro dedo, e fonte abaixo de
+     16px faz o iOS dar zoom ao focar — a página pula na hora da conversão. */
+  .campo input, .campo select, .campo textarea {
+    min-height: 44px;
+    font-size: 16px;
+    padding: 10px 14px;
+  }
+  .campo textarea { min-height: 76px; }
+}
+
+/* Texto abaixo de 12px não se lê bem em tela nenhuma */
+.autoridade__logo-slot { font-size: 12px; }
+
+/* Desktop: o link do menu tem 17px de altura de texto. O padding aumenta a
+   área clicável sem mover nada, porque a nav é mais baixa que o logo. */
+@media (min-width: 900px) {
+  .cabecalho__nav a:not(.botao) { padding-block: 12px; }
+}
+
+/* Celular deitado: a altura útil some. O menu vira lista rolável e o hero
+   para de esticar além do que cabe. */
+@media (max-width: 899px) and (orientation: landscape) {
+  .cabecalho__nav {
+    justify-content: flex-start;
+    gap: 14px;
+    padding: 70px 20px 24px;
+    overflow-y: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+  .cabecalho__nav a { font-size: 20px; }
+  .hero { min-height: 480px; }
+}
+
+/* Telas muito estreitas (320px): o respiro lateral não pode comer o conteúdo */
+@media (max-width: 359px) {
+  :root { --gutter: 16px; }
+  .hero__titulo { font-size: 32px; }
+}
+
 /* Flatpickr na paleta da marca */
 .flatpickr-calendar { font-family: var(--fonte-corpo); border-radius: 12px; box-shadow: 0 12px 40px rgba(58,62,31,.18); }
 .flatpickr-months, .flatpickr-weekdays, .flatpickr-weekdaycontainer { background: var(--cor-primaria); }
@@ -1058,3 +1128,30 @@ section[id], header[id] { scroll-margin-top: 84px; }
 .flatpickr-day.selected, .flatpickr-day.selected:hover { background: var(--cor-destaque-escura); border-color: var(--cor-destaque-escura); color: #fff; }
 .flatpickr-day:hover { background: var(--cor-fundo-creme); border-color: var(--cor-fundo-creme); }
 .flatpickr-day.today { border-color: var(--cor-destaque); }
+
+
+/* ---- Variantes de fundo por largura de viewport ---- */
+@media (min-width: 600px) {
+  .hero { background-image: url('https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hero-1600.webp'); }
+}
+@media (min-width: 1400px) {
+  .hero { background-image: url('https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hero-2000.webp'); }
+}
+@media (min-width: 600px) {
+  .depoimento { background-image: linear-gradient(180deg, rgba(58,62,31,.82) 0%, rgba(42,45,23,.88) 100%), url('https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-estrutura-2-960.webp'); }
+}
+@media (min-width: 1000px) {
+  .depoimento { background-image: linear-gradient(180deg, rgba(58,62,31,.82) 0%, rgba(42,45,23,.88) 100%), url('https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-estrutura-2-1280.webp'); }
+}
+@media (min-width: 1600px) {
+  .depoimento { background-image: linear-gradient(180deg, rgba(58,62,31,.82) 0%, rgba(42,45,23,.88) 100%), url('https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-estrutura-2-1920.webp'); }
+}
+@media (min-width: 600px) {
+  .contato { background-image: linear-gradient(180deg, rgba(58,62,31,.82) 0%, rgba(42,45,23,.88) 100%), url('https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-formulario-960.webp'); }
+}
+@media (min-width: 1000px) {
+  .contato { background-image: linear-gradient(180deg, rgba(58,62,31,.82) 0%, rgba(42,45,23,.88) 100%), url('https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-formulario-1280.webp'); }
+}
+@media (min-width: 1600px) {
+  .contato { background-image: linear-gradient(180deg, rgba(58,62,31,.82) 0%, rgba(42,45,23,.88) 100%), url('https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-formulario-1920.webp'); }
+}

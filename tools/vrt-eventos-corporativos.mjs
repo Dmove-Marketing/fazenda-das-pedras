@@ -28,12 +28,21 @@ const shot = async (url, viewport, file, esconderWidget) => {
   const p = await browser.newPage({ viewport });
   await p.goto(url, { waitUntil: 'networkidle' });
   if (esconderWidget) await p.addStyleTag({ content: '.wa-widget,.wa-teaser,[class*="wa-"]{display:none!important}' });
-  // rola a página inteira para disparar qualquer lazy-load antes do fullPage
+  // rola a página inteira para disparar o lazy-load...
   await p.evaluate(async () => {
-    for (let y = 0; y < document.body.scrollHeight; y += 600) { window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 60)); }
+    for (let y = 0; y < document.body.scrollHeight; y += 400) { window.scrollTo(0, y); await new Promise((r) => setTimeout(r, 90)); }
     window.scrollTo(0, 0);
   });
-  await p.waitForTimeout(800);
+  // ...e espera TODAS as imagens terminarem. Sem isso o fullPage sai com buracos
+  // e a comparação vira ruído: o que se mede é o print, não a página.
+  // as fotos dos lightbox ficam ocultas e só carregam ao abrir — não entram na espera
+  const visiveis = '[...document.images].filter((i) => i.offsetParent !== null)';
+  await p.waitForFunction(`${visiveis}.every((i) => i.complete && i.naturalWidth > 0)`, null, { timeout: 45000 })
+    .catch(async () => {
+      const faltando = await p.evaluate(() => [...document.images].filter((i) => i.offsetParent !== null && (!i.complete || !i.naturalWidth)).map((i) => i.currentSrc.split('/').pop() || i.src));
+      console.warn(`  ⚠️  ${faltando.length} imagem(ns) não carregaram: ${faltando.slice(0, 4).join(', ')}`);
+    });
+  await p.waitForTimeout(600);
   await p.screenshot({ path: file, fullPage: true });
   const h = await p.evaluate(() => document.body.scrollHeight);
   await p.close();

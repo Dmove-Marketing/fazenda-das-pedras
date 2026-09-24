@@ -154,6 +154,9 @@ node tools/build-eventos-corporativos.mjs     # regenera página + CSS
 node tools/optimize-eventos-corporativos.mjs  # imagens → WebP em _work/otimizadas (subir pro CDN)
 node tools/qa-eventos-corporativos.mjs        # QA: fontes, tracking, formulário, menu, screenshots
 node tools/vrt-eventos-corporativos.mjs       # VRT: design × Astro nos 3 viewports
+node tools/audit-responsivo.mjs               # overflow, alvos de toque, texto miúdo, imagem grande demais
+node tools/audit-fontes.mjs                   # tipografia elemento a elemento contra o design
+node tools/medir-peso.mjs                     # bytes transferidos por dispositivo
 ```
 
 O QA e o VRT esperam o preview rodando (`npx astro preview --port 4331`).
@@ -161,7 +164,8 @@ O QA e o VRT esperam o preview rodando (`npx astro preview --port 4331`).
 **O que o build faz além de copiar o design:**
 
 - fontes da marca (`.otf`/`.ttf`) → `.woff2` self-hospedado em `public/fonts/`
-- fotos → WebP no CDN `media.dmove.com.br/clients/fazenda-das-pedras/photos/` (69 MB → 7 MB)
+- fotos → WebP em várias larguras no CDN `media.dmove.com.br/clients/fazenda-das-pedras/photos/`,
+  com `srcset` + `sizes` calculados por foto (ver abaixo) e `loading="lazy"` em tudo que não é o topo
 - formulário do design trocado pelo motor padrão (`form-presets.ts` + `forms.ts`), preset `corporativo`
 - neutraliza o vazamento de tipografia do `global.css` (`line-height` do body/`p`/`h1..h6`), sem o que
   a página inteira desalinha ~6 px por seção em relação ao design
@@ -169,3 +173,24 @@ O QA e o VRT esperam o preview rodando (`npx astro preview --port 4331`).
 
 **Pendência:** `config.json > tracking.gtm_id` ainda está em `GTM-XXXXXXX`. O site inteiro
 (não só esta rota) está no ar sem medição até o ID real do container entrar aí.
+
+
+### Responsividade — como o `sizes` é calculado
+
+Quase toda foto da página é `object-fit: cover` numa caixa de proporção diferente da
+imagem. Nesse caso a largura **renderizada** é maior que a caixa: a imagem é ampliada
+até cobrir e o excedente é cortado. O `sizes` precisa descrever a largura renderizada,
+não a da caixa — senão o navegador baixa uma variante pequena demais e a foto sai borrada.
+
+Por isso `PAPEIS_IMG` guarda a **geometria medida da caixa** por breakpoint
+(`[viewport, larguraCaixa, alturaCaixa]`, de `tools/audit-responsivo.mjs`) e o build
+calcula, para cada foto, `max(larguraCaixa, alturaCaixa × proporção)`. Retrato e paisagem
+na mesma seção recebem `sizes` diferentes: na seção de ambientes o card retrato pede
+290px e o `salaoprincipal`, paisagem, pede 543px.
+
+Os fundos em CSS (hero, depoimento, contato) não têm `srcset`: trocam de variante por
+media query, geradas no fim do CSS.
+
+**Custo conhecido:** os carrosséis do design são CSS puro, então os 8 slides de hospedagem
+e os 10 do marquee de infraestrutura existem no DOM e carregam junto. No tablet isso
+responde por boa parte dos ~2,3 MB. Reduzir exigiria trocar a interação por JS.
