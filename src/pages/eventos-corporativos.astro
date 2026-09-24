@@ -26,6 +26,12 @@ for (const campo of campos) {
 }
 if (par.length) formRows.push(par);
 
+// No celular o formulário vira duas etapas. O corte cai numa borda de linha do
+// grid, então nenhum par do desktop é quebrado: etapa 1 leva empresa, nome,
+// telefone, e-mail e tipo de evento; etapa 2, data, convidados e detalhes.
+// No desktop as duas etapas viram display:contents e nada muda.
+const etapas = [formRows.slice(0, 3), formRows.slice(3)];
+
 const autoComplete: Record<string, string> = {
   empresa: 'organization',
   nome: 'name',
@@ -321,7 +327,7 @@ const jsonLd = {
         <div class="gastronomia__grade">
           <a href="#lb-gastro-1" class="gastronomia__foto lightbox-trigger" aria-label="Ampliar foto"><img alt="Prato preparado pela gastronomia da Fazenda das Pedras" loading="lazy" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-1-900.webp" srcset="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-1-320.webp 320w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-1-480.webp 480w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-1-640.webp 640w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-1-900.webp 900w" sizes="(min-width: 1100px) 276px, (min-width: 900px) 24vw, (min-width: 700px) 23vw, 77vw" width="900" height="1200" decoding="async"></a>
           <a href="#lb-gastro-2" class="gastronomia__foto lightbox-trigger" aria-label="Ampliar foto"><img alt="Mesa de serviço gastronômico personalizado" loading="lazy" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-2-900.webp" srcset="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-2-320.webp 320w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-2-480.webp 480w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-2-640.webp 640w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-2-900.webp 900w" sizes="(min-width: 1100px) 552px, (min-width: 900px) 47vw, (min-width: 700px) 46vw, 87vw" width="900" height="600" decoding="async"></a>
-          <a href="#lb-gastro-3" class="gastronomia__foto lightbox-trigger" aria-label="Ampliar foto"><img alt="Detalhe de menu típico da Fazenda das Pedras" loading="lazy" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-3-900.webp" srcset="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-3-320.webp 320w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-3-480.webp 480w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-3-640.webp 640w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-3-900.webp 900w" sizes="(min-width: 1100px) 276px, (min-width: 900px) 24vw, (min-width: 700px) 23vw, 77vw" width="900" height="1200" decoding="async"></a>
+          <a href="#lb-gastro-3" class="gastronomia__foto lightbox-trigger" aria-label="Ampliar foto"><picture><source media="(max-width: 699px)" srcset="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-3h-320.webp 320w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-3h-480.webp 480w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-3h-640.webp 640w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-3h-900.webp 900w" sizes="(min-width: 1100px) 491px, (min-width: 900px) 42vw, (min-width: 700px) 41vw, 77vw" width="1560" height="1170"><img alt="Detalhe de menu típico da Fazenda das Pedras" loading="lazy" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-3-900.webp" srcset="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-3-320.webp 320w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-3-480.webp 480w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-3-640.webp 640w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-3-900.webp 900w" sizes="(min-width: 1100px) 276px, (min-width: 900px) 24vw, (min-width: 700px) 23vw, 77vw" width="900" height="1200" decoding="async"></picture></a>
           <a href="#lb-gastro-4" class="gastronomia__foto lightbox-trigger" aria-label="Ampliar foto"><img alt="Buffet preparado para evento corporativo" loading="lazy" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-4-900.webp" srcset="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-4-320.webp 320w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-4-480.webp 480w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-4-640.webp 640w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-4-900.webp 900w" sizes="(min-width: 1100px) 552px, (min-width: 900px) 47vw, (min-width: 700px) 46vw, 87vw" width="900" height="600" decoding="async"></a>
         </div>
         <div class="lightbox" id="lb-gastro-1">
@@ -541,7 +547,14 @@ const jsonLd = {
             >
               <input type="text" name="website" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
-              {formRows.map((linha) => (
+              <p class="formulario__passo" aria-live="polite" hidden>
+                <span class="formulario__passo-texto">Etapa <b>1</b> de 2</span>
+                <span class="formulario__passo-barra" aria-hidden="true"><span></span></span>
+              </p>
+
+              {etapas.map((linhas, etapa) => (
+              <div class="form-etapa" data-etapa={etapa + 1}>
+              {linhas.map((linha) => (
                 <div class={linha.length > 1 ? 'campos-duplos' : 'campo-linha'}>
                   {linha.map((field) => (
                     <div class={`campo${field.required ? '' : ' campo--opcional'}`}>
@@ -581,13 +594,26 @@ const jsonLd = {
                   ))}
                 </div>
               ))}
+              </div>
+              ))}
 
               <div class="formulario__msg" id="leadFormMsg"></div>
 
-              <button type="submit" class="botao botao--primario botao--largo form-submit">
-                <span class="btn-text">Enviar solicitação</span>
-                <span class="btn-loading">Enviando…</span>
-              </button>
+              {/* O forms.ts resolve o botão de envio com
+                  querySelector('.form-submit, [type="button"], [type="submit"]'),
+                  que devolve o PRIMEIRO do documento. Por isso o enviar vem antes
+                  dos botões de navegação no DOM; quem põe na ordem visual certa no
+                  celular é o order do flex. Invertendo isso, o motor passa a
+                  escutar o "Voltar" e o envio vira submit nativo: a página recarrega
+                  e o lead se perde. */}
+              <div class="formulario__acoes">
+                <button type="submit" class="botao botao--primario botao--largo form-submit">
+                  <span class="btn-text">Enviar solicitação</span>
+                  <span class="btn-loading">Enviando…</span>
+                </button>
+                <button type="button" class="botao formulario__voltar" hidden>Voltar</button>
+                <button type="button" class="botao botao--primario botao--largo formulario__avancar" hidden>Continuar</button>
+              </div>
             </form>
           </div>
 
@@ -620,7 +646,7 @@ const jsonLd = {
 
 <script>
   import { initForms } from '../scripts/forms';
-  import { initCarrosseis, initAmbientes } from '../scripts/eventos-corporativos-ui';
+  import { initCarrosseis, initAmbientes, initFormularioEtapas } from '../scripts/eventos-corporativos-ui';
   import flatpickr from 'flatpickr';
   import { Portuguese } from 'flatpickr/dist/l10n/pt.js';
   import 'flatpickr/dist/flatpickr.min.css';
@@ -628,6 +654,7 @@ const jsonLd = {
   initForms();
   initCarrosseis();
   initAmbientes();
+  initFormularioEtapas();
 
   const dateEl = document.querySelector<HTMLInputElement>('[data-datepicker="true"]');
   if (dateEl) {

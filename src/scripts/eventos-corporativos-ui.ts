@@ -243,3 +243,128 @@ export function initAmbientes() {
     marcos[destino].scrollIntoView({ block: 'center', behavior: 'smooth' });
   }, { passive: true });
 }
+
+// ------------------------------------------------------------
+// Formulário em duas etapas — só no celular
+// ------------------------------------------------------------
+// Os 8 campos do padrão Dmove empilhados davam 690px numa tela de 844.
+// Aqui viram duas etapas, com validação ao sair de cada campo em vez de só no
+// envio. Nada muda no contrato: mesmos campos, mesmos `name`, mesmo motor de
+// envio (forms.ts) e o mesmo disparo único de `form_submit` no fim.
+// ------------------------------------------------------------
+export function initFormularioEtapas() {
+  const form = document.querySelector<HTMLFormElement>('#lead-form');
+  if (!form) return;
+  if (!window.matchMedia('(max-width: 899px)').matches) return;
+
+  const etapas = [...form.querySelectorAll<HTMLElement>('.form-etapa')];
+  const passo = form.querySelector<HTMLElement>('.formulario__passo');
+  const passoNum = form.querySelector<HTMLElement>('.formulario__passo b');
+  const barra = form.querySelector<HTMLElement>('.formulario__passo-barra span');
+  const voltar = form.querySelector<HTMLButtonElement>('.formulario__voltar');
+  const avancar = form.querySelector<HTMLButtonElement>('.formulario__avancar');
+  const enviar = form.querySelector<HTMLButtonElement>('.form-submit');
+  if (etapas.length !== 2 || !avancar || !voltar || !enviar) return;
+
+  form.classList.add('formulario--etapas');
+  if (passo) passo.hidden = false;
+
+  // —— validação de um campo, espelhando as regras do forms.ts ——
+  const controle = (campo: HTMLElement) =>
+    campo.querySelector<HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement>('input, select, textarea');
+
+  const erroDe = (el: HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement): string | null => {
+    const v = el.value.trim();
+    if ((el as HTMLInputElement).required && !v) return 'Preencha este campo para continuar.';
+    if (!v) return null;
+    if (el.getAttribute('type') === 'email' && !/^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/.test(v))
+      return 'Confira o e-mail: parece faltar algo.';
+    if (el.name === 'telefone') {
+      const digitos = v.replace(/\D/g, '');
+      if (digitos.startsWith('55')) return 'Não inclua o DDI 55 — só DDD e número.';
+      if (digitos.length < 10) return 'Informe o DDD e o número completo.';
+    }
+    if (el.name === 'convidados' && Number(v) < 1) return 'Informe quantas pessoas são esperadas.';
+    return null;
+  };
+
+  const mostrarErro = (campo: HTMLElement, msg: string | null) => {
+    let aviso = campo.querySelector<HTMLElement>('.campo__erro');
+    campo.classList.toggle('tem-erro', !!msg);
+    campo.classList.toggle('esta-ok', !msg && !!controle(campo)?.value.trim());
+    const el = controle(campo);
+    if (el) el.setAttribute('aria-invalid', msg ? 'true' : 'false');
+    if (!msg) { aviso?.remove(); return; }
+    if (!aviso) {
+      aviso = document.createElement('span');
+      aviso.className = 'campo__erro';
+      campo.appendChild(aviso);
+    }
+    aviso.textContent = msg;
+  };
+
+  const campos = [...form.querySelectorAll<HTMLElement>('.campo')];
+  campos.forEach((campo) => {
+    const el = controle(campo);
+    if (!el || el.classList.contains('honeypot')) return;
+    // valida ao sair do campo; ao corrigir, o aviso some na hora
+    el.addEventListener('blur', () => mostrarErro(campo, erroDe(el)));
+    el.addEventListener('input', () => { if (campo.classList.contains('tem-erro')) mostrarErro(campo, erroDe(el)); });
+    el.addEventListener('change', () => { if (campo.classList.contains('tem-erro')) mostrarErro(campo, erroDe(el)); });
+    // teclado do celular avança em vez de mandar
+    if (el.tagName !== 'TEXTAREA') el.setAttribute('enterkeyhint', 'next');
+  });
+
+  const camposDa = (i: number) => campos.filter((c) => etapas[i].contains(c));
+
+  const validarEtapa = (i: number) => {
+    let primeiroErro: HTMLElement | null = null;
+    camposDa(i).forEach((campo) => {
+      const el = controle(campo);
+      if (!el) return;
+      const msg = erroDe(el);
+      mostrarErro(campo, msg);
+      if (msg && !primeiroErro) primeiroErro = campo;
+    });
+    if (primeiroErro) {
+      (primeiroErro as HTMLElement).scrollIntoView({ block: 'center', behavior: 'smooth' });
+      controle(primeiroErro as HTMLElement)?.focus({ preventScroll: true });
+      return false;
+    }
+    return true;
+  };
+
+  let atual = 0;
+  const irParaEtapa = (i: number, focar = false) => {
+    atual = i;
+    etapas.forEach((e, n) => e.classList.toggle('is-ativa', n === i));
+    if (passoNum) passoNum.textContent = String(i + 1);
+    if (barra) barra.style.transform = `scaleX(${(i + 1) / etapas.length})`;
+    voltar.hidden = i === 0;
+    avancar.hidden = i !== 0;
+    enviar.hidden = i === 0;
+    if (focar) {
+      const alvo = camposDa(i)[0];
+      alvo?.scrollIntoView({ block: 'center', behavior: 'smooth' });
+      const el = alvo && controle(alvo);
+      // não dá foco automático no campo de data: abriria o calendário por cima
+      // da tela sem o visitante ter pedido
+      if (el && el.dataset.datepicker !== 'true') setTimeout(() => el.focus({ preventScroll: true }), 220);
+    }
+  };
+
+  avancar.addEventListener('click', () => { if (validarEtapa(0)) irParaEtapa(1, true); });
+  voltar.addEventListener('click', () => irParaEtapa(0, true));
+
+  // O forms.ts envia no Enter. Na etapa 1 o Enter tem que avançar, não enviar.
+  form.addEventListener('keydown', (e) => {
+    if (e.key !== 'Enter' || atual !== 0) return;
+    const alvo = e.target as HTMLElement;
+    if (alvo.tagName === 'TEXTAREA') return;
+    e.preventDefault();
+    e.stopPropagation();
+    if (validarEtapa(0)) irParaEtapa(1, true);
+  }, true);
+
+  irParaEtapa(0);
+}

@@ -73,6 +73,24 @@ for (const w of [480, 640, 800]) {
 }
 console.log('hero do celular copiado para public/images/hero/');
 
+// —— Versão deitada da gastronomia-3 ——
+// A foto é um tomo de cima do buffet: em retrato ela cabe na grade do desktop,
+// mas na faixa horizontal do celular o corte 4:3 come quase tudo. Girada 90° ela
+// vira 1560x1170 — exatamente 4:3 — e mostra a mesa inteira. Só o celular usa.
+{
+  const origem = path.join(SRC, 'fazendadaspedras-corporativo-gastronomia-3.jpg');
+  const base = 'fazendadaspedras-corporativo-gastronomia-3h';
+  const variantes = [];
+  for (const w of [320, 480, 640, 900]) {
+    const nome = `${base}-${w}.webp`;
+    const info = await sharp(origem).rotate(90).resize({ width: w, withoutEnlargement: true }).webp({ quality: 74, effort: 6 }).toFile(path.join(OUT, nome));
+    variantes.push({ w: info.width, h: info.height, arquivo: nome, kb: Math.round(info.size / 1024) });
+  }
+  const maior = variantes[variantes.length - 1];
+  manifesto[base] = { largura: maior.w, altura: maior.h, proporcao: +(maior.w / maior.h).toFixed(4), variantes };
+  console.log(`${base.padEnd(46)} girada 90° → ${variantes.map((v) => `${v.w}(${v.kb}k)`).join(' ')}`);
+}
+
 await writeFile('tools/imagens.manifest.json', JSON.stringify(manifesto, null, 2));
 console.log(`\n${arquivos.length} fotos → ${geradas} variantes`);
 console.log(`originais ${(entrada / 1048576).toFixed(1)} MB · variantes ${(saida / 1048576).toFixed(2)} MB`);

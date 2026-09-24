@@ -1202,5 +1202,36 @@
         "kb": 262
       }
     ]
+  },
+  "fazendadaspedras-corporativo-gastronomia-3h": {
+    "largura": 900,
+    "altura": 675,
+    "proporcao": 1.3333,
+    "variantes": [
+      {
+        "w": 320,
+        "h": 240,
+        "arquivo": "fazendadaspedras-corporativo-gastronomia-3h-320.webp",
+        "kb": 23
+      },
+      {
+        "w": 480,
+        "h": 360,
+        "arquivo": "fazendadaspedras-corporativo-gastronomia-3h-480.webp",
+        "kb": 44
+      },
+      {
+        "w": 640,
+        "h": 480,
+        "arquivo": "fazendadaspedras-corporativo-gastronomia-3h-640.webp",
+        "kb": 69
+      },
+      {
+        "w": 900,
+        "h": 675,
+        "arquivo": "fazendadaspedras-corporativo-gastronomia-3h-900.webp",
+        "kb": 111
+      }
+    ]
   }
 }

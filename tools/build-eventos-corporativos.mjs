@@ -47,7 +47,7 @@ const PAPEIS_IMG = [
   { nome: 'gastronomia', casa: (l) => /gastronomia__foto/.test(l),
     larguras: [320, 480, 640, 900], caixas: [[1440, 276, 368], [1024, 237, 316], [768, 173, 231], [390, 300, 225]] },
   { nome: 'hospedagem', casa: (l, n) => /hospedagem-/.test(n),
-    larguras: [360, 560, 800, 1080], caixas: [[1440, 459, 612], [1024, 393, 524], [768, 728, 546], [390, 350, 263]] },
+    larguras: [360, 560, 800, 1080], caixas: [[1440, 459, 612], [1024, 393, 524], [768, 728, 546], [390, 350, 438]] },
   // Grade original de 4 colunas — o formato que vale do desktop para cima.
   { nome: 'ambiente',  casa: (l, n) => /(jatoba|redario|espacorustico|salaoprincipal)/.test(n),
     larguras: [320, 480, 560, 800], caixas: [[1440, 272, 362], [1024, 233, 310], [768, 355, 266], [390, 170, 128]] },
@@ -384,8 +384,14 @@ section[id], header[id] { scroll-margin-top: 84px; }
 
 /* um por vez, em retrato (chalés) */
 .carrossel--retrato { width: 100%; }
-.carrossel--retrato .carrossel__trilho { gap: 0; }
-.carrossel--retrato .carrossel__item { width: 100%; height: 100%; aspect-ratio: inherit; border-radius: inherit; }
+.carrossel--retrato .carrossel__trilho { gap: 0; height: 100%; }
+.carrossel--retrato .carrossel__item { width: 100%; height: 100%; flex-basis: 100%; aspect-ratio: auto; border-radius: inherit; }
+/* No celular a caixa do design é 4:3 e cortava os chalés, que são fotos em pé.
+   Fica em 4:5, como as faixas de infraestrutura e galeria. A gastronomia é a
+   única que permanece deitada. */
+@media (max-width: 899px) {
+  .carrossel--retrato.sobre__foto { aspect-ratio: 4 / 5; }
+}
 
 .carrossel__seta {
   position: absolute;
@@ -591,6 +597,94 @@ section[id], header[id] { scroll-margin-top: 84px; }
   .palco__dica { animation: none; }
 }
 
+/* ============================================================
+   Formulário em duas etapas (só no celular)
+   ------------------------------------------------------------
+   Os 8 campos empilhados davam 690px — quase uma tela inteira só de
+   formulário. Em duas etapas nenhuma passa de ~420px. O corte cai numa borda
+   de linha do grid, então o desktop não muda: lá as etapas são display:contents
+   e o formulário continua sendo um bloco só.
+   Sem JS também não muda nada: quem esconde etapa é a classe
+   .formulario--etapas, que só o script coloca.
+   ============================================================ */
+.form-etapa { display: contents; }
+.formulario__acoes { display: contents; }
+
+.formulario__passo { display: none; }
+.formulario__voltar, .formulario__avancar { display: none; }
+
+@media (max-width: 899px) {
+  .formulario--etapas .form-etapa { display: none; }
+  .formulario--etapas .form-etapa.is-ativa { display: block; }
+
+  .formulario--etapas .formulario__passo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 14px;
+    font-size: 12px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--cor-label);
+  }
+  .formulario__passo b { color: var(--cor-primaria); font-weight: 600; }
+  .formulario__passo-barra {
+    flex: 1 1 auto; height: 3px; border-radius: 3px;
+    background: var(--cor-borda); overflow: hidden;
+  }
+  .formulario__passo-barra span {
+    display: block; height: 100%;
+    background: var(--cor-destaque-escura);
+    transform-origin: left center; transform: scaleX(.5);
+    transition: transform .35s cubic-bezier(.4, 0, .2, 1);
+  }
+
+  .formulario--etapas .formulario__acoes {
+    display: flex; gap: 10px; align-items: stretch;
+  }
+  .formulario--etapas .formulario__voltar,
+  .formulario--etapas .formulario__avancar { display: inline-flex; }
+  /* a regra de alvo de toque dá display: inline-flex a todo .botao e vencia o
+     atributo [hidden] — os dois botões apareciam juntos na etapa 1 */
+  .formulario__acoes [hidden] { display: none !important; }
+  .formulario__voltar {
+    flex: 0 0 auto;
+    min-width: 104px;
+    background: transparent;
+    border: 1px solid var(--cor-borda);
+    color: var(--cor-primaria);
+  }
+  .formulario__voltar:active { background: var(--cor-fundo-creme); }
+  .formulario--etapas .formulario__avancar,
+  .formulario--etapas .form-submit { flex: 1 1 auto; }
+  /* sem min-width: 0 o rótulo não deixa o botão encolher e ele vaza o cartão */
+  .formulario--etapas .formulario__acoes > .botao { min-width: 0; }
+  .formulario--etapas .formulario__acoes .btn-text { white-space: nowrap; }
+  .formulario--etapas .form-submit { padding-inline: 14px; font-size: 13px; letter-spacing: .06em; }
+  .formulario__voltar { padding-inline: 14px; font-size: 13px; }
+  /* ordem visual, ja que no DOM o enviar precisa vir primeiro (ver comentario no markup) */
+  .formulario__voltar { order: 1; }
+  .formulario__avancar, .formulario--etapas .form-submit { order: 2; }
+}
+
+/* Erro por campo — aparece ao sair do campo, some ao corrigir */
+.campo.tem-erro input,
+.campo.tem-erro select,
+.campo.tem-erro textarea {
+  border-color: #C0544F;
+  background: #FDF6F5;
+}
+.campo__erro {
+  display: block;
+  margin-top: 5px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: #9B2C2C;
+}
+.campo.esta-ok input,
+.campo.esta-ok select,
+.campo.esta-ok textarea { border-color: var(--cor-primaria-clara); }
+
 /* Flatpickr na paleta da marca */
 .flatpickr-calendar { font-family: var(--fonte-corpo); border-radius: 12px; box-shadow: 0 12px 40px rgba(58,62,31,.18); }
 .flatpickr-months, .flatpickr-weekdays, .flatpickr-weekdaycontainer { background: var(--cor-primaria); }
@@ -787,6 +881,21 @@ body = trocarBloco(body, '      <div class="galeria__marquee marquee">', (bloco,
   })
 );
 
+// —— Gastronomia 3: no celular a faixa é horizontal e o corte 4:3 da foto em pé
+// come quase tudo. <picture> serve a versão girada só abaixo de 700px; da grade
+// do desktop (caixa em pé) para cima segue a original. ——
+{
+  const papel = PAPEIS_IMG.find((r) => r.nome === 'gastronomia');
+  const deitada = { ...papel, larguras: [320, 480, 640, 900] };
+  const alvo = body.match(/<img[^>]*gastronomia-3-\d+\.webp[^>]*>/);
+  if (!alvo) throw new Error('Não achei a <img> da gastronomia-3');
+  const attrs = atributosImg('fazendadaspedras-corporativo-gastronomia-3h', deitada);
+  const srcset = attrs.match(/srcset="([^"]*)"/)[1];
+  const sizes = attrs.match(/sizes="([^"]*)"/)[1];
+  body = body.replace(alvo[0],
+    `<picture><source media="(max-width: 699px)" srcset="${srcset}" sizes="${sizes}" width="1560" height="1170">${alvo[0]}</picture>`);
+}
+
 // —— Hero: no celular a foto vira elemento real, inteira, acima do texto ——
 {
   const base = 'fazendadaspedras-corporativo-hero';
@@ -825,7 +934,14 @@ const FORM = `        <!-- Formulário padrão Dmove — campos em src/scripts/f
           >
             <input type="text" name="website" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true" />
 
-            {formRows.map((linha) => (
+            <p class="formulario__passo" aria-live="polite" hidden>
+              <span class="formulario__passo-texto">Etapa <b>1</b> de 2</span>
+              <span class="formulario__passo-barra" aria-hidden="true"><span></span></span>
+            </p>
+
+            {etapas.map((linhas, etapa) => (
+            <div class="form-etapa" data-etapa={etapa + 1}>
+            {linhas.map((linha) => (
               <div class={linha.length > 1 ? 'campos-duplos' : 'campo-linha'}>
                 {linha.map((field) => (
                   <div class={\`campo\${field.required ? '' : ' campo--opcional'}\`}>
@@ -865,13 +981,26 @@ const FORM = `        <!-- Formulário padrão Dmove — campos em src/scripts/f
                 ))}
               </div>
             ))}
+            </div>
+            ))}
 
             <div class="formulario__msg" id="leadFormMsg"></div>
 
-            <button type="submit" class="botao botao--primario botao--largo form-submit">
-              <span class="btn-text">Enviar solicitação</span>
-              <span class="btn-loading">Enviando…</span>
-            </button>
+            {/* O forms.ts resolve o botão de envio com
+                querySelector('.form-submit, [type="button"], [type="submit"]'),
+                que devolve o PRIMEIRO do documento. Por isso o enviar vem antes
+                dos botões de navegação no DOM; quem põe na ordem visual certa no
+                celular é o order do flex. Invertendo isso, o motor passa a
+                escutar o "Voltar" e o envio vira submit nativo: a página recarrega
+                e o lead se perde. */}
+            <div class="formulario__acoes">
+              <button type="submit" class="botao botao--primario botao--largo form-submit">
+                <span class="btn-text">Enviar solicitação</span>
+                <span class="btn-loading">Enviando…</span>
+              </button>
+              <button type="button" class="botao formulario__voltar" hidden>Voltar</button>
+              <button type="button" class="botao botao--primario botao--largo formulario__avancar" hidden>Continuar</button>
+            </div>
           </form>
         </div>
 
@@ -918,6 +1047,12 @@ for (const campo of campos) {
   if (par.length === 2) { formRows.push(par); par = []; }
 }
 if (par.length) formRows.push(par);
+
+// No celular o formulário vira duas etapas. O corte cai numa borda de linha do
+// grid, então nenhum par do desktop é quebrado: etapa 1 leva empresa, nome,
+// telefone, e-mail e tipo de evento; etapa 2, data, convidados e detalhes.
+// No desktop as duas etapas viram display:contents e nada muda.
+const etapas = [formRows.slice(0, 3), formRows.slice(3)];
 
 const autoComplete: Record<string, string> = {
   empresa: 'organization',
@@ -978,7 +1113,7 @@ ${body.split('\n').map((l) => (l.trim() ? '  ' + l : l)).join('\n')}
 
 <script>
   import { initForms } from '../scripts/forms';
-  import { initCarrosseis, initAmbientes } from '../scripts/eventos-corporativos-ui';
+  import { initCarrosseis, initAmbientes, initFormularioEtapas } from '../scripts/eventos-corporativos-ui';
   import flatpickr from 'flatpickr';
   import { Portuguese } from 'flatpickr/dist/l10n/pt.js';
   import 'flatpickr/dist/flatpickr.min.css';
@@ -986,6 +1121,7 @@ ${body.split('\n').map((l) => (l.trim() ? '  ' + l : l)).join('\n')}
   initForms();
   initCarrosseis();
   initAmbientes();
+  initFormularioEtapas();
 
   const dateEl = document.querySelector<HTMLInputElement>('[data-datepicker="true"]');
   if (dateEl) {

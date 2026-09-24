@@ -158,6 +158,7 @@ node tools/audit-responsivo.mjs               # overflow, alvos de toque, texto 
 node tools/audit-fontes.mjs                   # tipografia elemento a elemento contra o design
 node tools/medir-peso.mjs                     # bytes transferidos por dispositivo
 node tools/qa-interacoes.mjs                  # carrosséis, palco de ambientes, hero mobile
+node tools/qa-formulario.mjs                  # etapas no celular, validação e payload do lead
 ```
 
 O QA e o VRT esperam o preview rodando (`npx astro preview --port 4331`).
@@ -246,3 +247,35 @@ Três detalhes que essa troca exigiu, cada um medido:
 precisa de bytes. A nota de performance caiu de 92 para 87 e o LCP de 3,0s para
 3,6s por causa disso, não por a página ter ficado mais lenta: o peso total caiu de
 1,49 MB para 1,19 MB e o CLS melhorou. É o preço de mostrar a foto no topo.
+
+
+### Formulário em duas etapas (celular)
+
+Os 8 campos do padrão Dmove empilhados davam **690px** numa tela de 844 — quase uma
+tela inteira só de formulário. Abaixo de 900px ele vira duas etapas de ~465px:
+
+| Etapa | Campos |
+|---|---|
+| 1 | `empresa` · `nome` · `telefone` · `email` · `tipo_evento` |
+| 2 | `data_evento` · `convidados` · `detalhes_adicionais` |
+
+O corte cai numa **borda de linha do grid**, então nenhum par do desktop é
+quebrado — lá as etapas são `display: contents` e o formulário segue um bloco só
+com os 8 campos. Sem JS também não muda nada: quem esconde etapa é a classe
+`.formulario--etapas`, que só o script coloca.
+
+**O contrato não muda:** mesmos campos, mesmos `name`, mesmo `forms.ts`, um único
+`form_submit` no fim e o mesmo payload canônico (`qa-formulario.mjs` intercepta o
+envio e confere as 8 chaves antes de abortar, sem nunca tocar o n8n).
+
+Melhorias de uso que vieram junto: validação **ao sair do campo** em vez de só no
+envio, aviso que some assim que o visitante corrige, `enterkeyhint` para o teclado
+avançar, e nenhum foco automático no campo de data (abriria o calendário por cima
+da tela sem ter sido pedido).
+
+⚠️ **Armadilha:** o `forms.ts` resolve o botão de envio com
+`querySelector('.form-submit, [type="button"], [type="submit"]')`, que devolve o
+primeiro do documento. Por isso o botão de enviar vem **antes** de "Voltar" e
+"Continuar" no DOM, e a ordem visual no celular sai do `order` do flex. Invertendo,
+o motor escuta o "Voltar" e o envio vira submit nativo — a página recarrega e o
+lead se perde.

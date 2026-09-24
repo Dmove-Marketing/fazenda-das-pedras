@@ -1224,8 +1224,14 @@ section[id], header[id] { scroll-margin-top: 84px; }
 
 /* um por vez, em retrato (chalés) */
 .carrossel--retrato { width: 100%; }
-.carrossel--retrato .carrossel__trilho { gap: 0; }
-.carrossel--retrato .carrossel__item { width: 100%; height: 100%; aspect-ratio: inherit; border-radius: inherit; }
+.carrossel--retrato .carrossel__trilho { gap: 0; height: 100%; }
+.carrossel--retrato .carrossel__item { width: 100%; height: 100%; flex-basis: 100%; aspect-ratio: auto; border-radius: inherit; }
+/* No celular a caixa do design é 4:3 e cortava os chalés, que são fotos em pé.
+   Fica em 4:5, como as faixas de infraestrutura e galeria. A gastronomia é a
+   única que permanece deitada. */
+@media (max-width: 899px) {
+  .carrossel--retrato.sobre__foto { aspect-ratio: 4 / 5; }
+}
 
 .carrossel__seta {
   position: absolute;
@@ -1430,6 +1436,94 @@ section[id], header[id] { scroll-margin-top: 84px; }
   .palco--pronto .palco__cena { transition: none; }
   .palco__dica { animation: none; }
 }
+
+/* ============================================================
+   Formulário em duas etapas (só no celular)
+   ------------------------------------------------------------
+   Os 8 campos empilhados davam 690px — quase uma tela inteira só de
+   formulário. Em duas etapas nenhuma passa de ~420px. O corte cai numa borda
+   de linha do grid, então o desktop não muda: lá as etapas são display:contents
+   e o formulário continua sendo um bloco só.
+   Sem JS também não muda nada: quem esconde etapa é a classe
+   .formulario--etapas, que só o script coloca.
+   ============================================================ */
+.form-etapa { display: contents; }
+.formulario__acoes { display: contents; }
+
+.formulario__passo { display: none; }
+.formulario__voltar, .formulario__avancar { display: none; }
+
+@media (max-width: 899px) {
+  .formulario--etapas .form-etapa { display: none; }
+  .formulario--etapas .form-etapa.is-ativa { display: block; }
+
+  .formulario--etapas .formulario__passo {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin: 0 0 14px;
+    font-size: 12px;
+    letter-spacing: .1em;
+    text-transform: uppercase;
+    color: var(--cor-label);
+  }
+  .formulario__passo b { color: var(--cor-primaria); font-weight: 600; }
+  .formulario__passo-barra {
+    flex: 1 1 auto; height: 3px; border-radius: 3px;
+    background: var(--cor-borda); overflow: hidden;
+  }
+  .formulario__passo-barra span {
+    display: block; height: 100%;
+    background: var(--cor-destaque-escura);
+    transform-origin: left center; transform: scaleX(.5);
+    transition: transform .35s cubic-bezier(.4, 0, .2, 1);
+  }
+
+  .formulario--etapas .formulario__acoes {
+    display: flex; gap: 10px; align-items: stretch;
+  }
+  .formulario--etapas .formulario__voltar,
+  .formulario--etapas .formulario__avancar { display: inline-flex; }
+  /* a regra de alvo de toque dá display: inline-flex a todo .botao e vencia o
+     atributo [hidden] — os dois botões apareciam juntos na etapa 1 */
+  .formulario__acoes [hidden] { display: none !important; }
+  .formulario__voltar {
+    flex: 0 0 auto;
+    min-width: 104px;
+    background: transparent;
+    border: 1px solid var(--cor-borda);
+    color: var(--cor-primaria);
+  }
+  .formulario__voltar:active { background: var(--cor-fundo-creme); }
+  .formulario--etapas .formulario__avancar,
+  .formulario--etapas .form-submit { flex: 1 1 auto; }
+  /* sem min-width: 0 o rótulo não deixa o botão encolher e ele vaza o cartão */
+  .formulario--etapas .formulario__acoes > .botao { min-width: 0; }
+  .formulario--etapas .formulario__acoes .btn-text { white-space: nowrap; }
+  .formulario--etapas .form-submit { padding-inline: 14px; font-size: 13px; letter-spacing: .06em; }
+  .formulario__voltar { padding-inline: 14px; font-size: 13px; }
+  /* ordem visual, ja que no DOM o enviar precisa vir primeiro (ver comentario no markup) */
+  .formulario__voltar { order: 1; }
+  .formulario__avancar, .formulario--etapas .form-submit { order: 2; }
+}
+
+/* Erro por campo — aparece ao sair do campo, some ao corrigir */
+.campo.tem-erro input,
+.campo.tem-erro select,
+.campo.tem-erro textarea {
+  border-color: #C0544F;
+  background: #FDF6F5;
+}
+.campo__erro {
+  display: block;
+  margin-top: 5px;
+  font-size: 12px;
+  line-height: 1.35;
+  color: #9B2C2C;
+}
+.campo.esta-ok input,
+.campo.esta-ok select,
+.campo.esta-ok textarea { border-color: var(--cor-primaria-clara); }
 
 /* Flatpickr na paleta da marca */
 .flatpickr-calendar { font-family: var(--fonte-corpo); border-radius: 12px; box-shadow: 0 12px 40px rgba(58,62,31,.18); }
