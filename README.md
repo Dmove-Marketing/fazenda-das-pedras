@@ -256,13 +256,35 @@ tela inteira só de formulário. Abaixo de 900px ele vira duas etapas de ~465px:
 
 | Etapa | Campos |
 |---|---|
-| 1 | `empresa` · `nome` · `telefone` · `email` · `tipo_evento` |
-| 2 | `data_evento` · `convidados` · `detalhes_adicionais` |
+| 1 — quem está falando | `empresa` + `nome` (mesma linha) · `telefone` + `email` (mesma linha) |
+| 2 — o evento | `tipo_evento` · `data_evento` + `convidados` · `detalhes_adicionais` |
 
-O corte cai numa **borda de linha do grid**, então nenhum par do desktop é
-quebrado — lá as etapas são `display: contents` e o formulário segue um bloco só
+O agrupamento em linhas é **desta página** (`layoutLinhas` no build), não do
+`full` do preset: o preset segue mandando nos campos e nos `name`, que é o que o
+padrão Dmove define. Um `throw` no build quebra se o preset ganhar um campo que
+o layout não cobre.
+
+As duplas ficam lado a lado **já no celular** (de 360px para cima), com
+`align-items: end` para os campos se alinharem mesmo quando um rótulo quebra em
+duas linhas. Em meia largura os placeholders do preset não cabem, então o script
+troca por versões curtas — o rótulo está logo acima e diz o que é.
+
+O corte entre etapas cai numa **borda de linha do grid**, então nada é quebrado
+no desktop: lá as etapas são `display: contents` e o formulário segue um bloco só
 com os 8 campos. Sem JS também não muda nada: quem esconde etapa é a classe
 `.formulario--etapas`, que só o script coloca.
+
+⚠️ **`disableMobile: true` no Flatpickr, de propósito.** Com o fallback nativo, o
+iOS mostra a data como "22 de out. de 2026" — fora do padrão Dmove, que pede
+`dd/mm/aaaa`. Com o calendário do próprio Flatpickr o formato é o mesmo em todo
+aparelho.
+
+⚠️ O design usa `body { text-align: center }` abaixo de 900px, o que centralizava
+rótulos e avisos do formulário. `.campo { text-align: left }` devolve a leitura
+normal sem mexer no resto da página.
+
+O botão flutuante de WhatsApp ficava exatamente em cima do "Enviar solicitação":
+enquanto o formulário está na tela, ele sai de cena.
 
 **O contrato não muda:** mesmos campos, mesmos `name`, mesmo `forms.ts`, um único
 `form_submit` no fim e o mesmo payload canônico (`qa-formulario.mjs` intercepta o

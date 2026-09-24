@@ -24,9 +24,41 @@ const visiveis = (p) => p.evaluate(() =>
   await p.waitForTimeout(700);
 
   const etapa1 = await visiveis(p);
-  JSON.stringify(etapa1) === JSON.stringify(['empresa', 'nome', 'telefone', 'email', 'tipo_evento'])
-    ? ok('celular: etapa 1 com os 5 primeiros campos', etapa1.join(', '))
+  JSON.stringify(etapa1) === JSON.stringify(['empresa', 'nome', 'telefone', 'email'])
+    ? ok('celular: etapa 1 traz quem está falando', etapa1.join(', '))
     : fail('celular: etapa 1 divergente', etapa1.join(', '));
+
+  // empresa+nome numa linha, telefone+email na seguinte
+  const pares = await p.evaluate(() => {
+    const c = [...document.querySelectorAll('#lead-form .campo')].filter((x) => x.offsetParent !== null);
+    const linhas = {};
+    c.forEach((x) => {
+      const t = Math.round(x.getBoundingClientRect().top);
+      (linhas[t] = linhas[t] || []).push(x.querySelector('input, select, textarea').name);
+    });
+    return Object.values(linhas);
+  });
+  JSON.stringify(pares) === JSON.stringify([['empresa', 'nome'], ['telefone', 'email']])
+    ? ok('celular: pares na mesma linha', pares.map((l) => l.join('+')).join(' / '))
+    : fail('celular: pares fora de linha', JSON.stringify(pares));
+
+  const alinhamento = await p.evaluate(() =>
+    [...document.querySelectorAll('#lead-form .campo label')].map((l) => getComputedStyle(l).textAlign));
+  alinhamento.every((a) => a === 'left')
+    ? ok('celular: rótulos alinhados à esquerda')
+    : fail('celular: rótulo centralizado', alinhamento.join(', '));
+
+  const placeholders = await p.evaluate(() =>
+    [...document.querySelectorAll('.campos-duplos .campo input')].filter((i) => i.offsetParent !== null).map((i) => {
+      const ctx = document.createElement('canvas').getContext('2d');
+      const cs = getComputedStyle(i);
+      ctx.font = `${cs.fontSize} ${cs.fontFamily}`;
+      const cabe = ctx.measureText(i.placeholder).width <= i.clientWidth - parseFloat(cs.paddingLeft) - parseFloat(cs.paddingRight);
+      return { n: i.name, cabe };
+    }));
+  placeholders.every((x) => x.cabe)
+    ? ok('celular: nenhum placeholder cortado em meia largura')
+    : fail('celular: placeholder cortado', placeholders.filter((x) => !x.cabe).map((x) => x.n).join(', '));
 
   const alturas = await p.evaluate(() => ({
     form: Math.round(document.querySelector('#lead-form').getBoundingClientRect().height),
@@ -63,13 +95,27 @@ const visiveis = (p) => p.evaluate(() =>
   await p.fill('#form-field-empresa', 'Empresa Teste');
   await p.fill('#form-field-nome', 'Michel Teste');
   await p.fill('#form-field-telefone', '11987654321');
-  await p.selectOption('#form-field-tipo_evento', { index: 1 });
   await p.click('.formulario__avancar');
   await p.waitForTimeout(600);
   const etapa2 = await visiveis(p);
-  JSON.stringify(etapa2) === JSON.stringify(['data_evento', 'convidados', 'detalhes_adicionais'])
+  JSON.stringify(etapa2) === JSON.stringify(['tipo_evento', 'data_evento', 'convidados', 'detalhes_adicionais'])
     ? ok('celular: etapa 2 com os campos do evento', etapa2.join(', '))
     : fail('celular: etapa 2 divergente', etapa2.join(', '));
+
+  // a data tem que ser o Flatpickr pt-BR, nunca o seletor nativo do iOS
+  const data = await p.evaluate(() => {
+    const el = document.querySelector('#form-field-data_evento');
+    el._flatpickr.setDate('22/10/2026', true);
+    const v = el.value;
+    el._flatpickr.close();
+    return { tipo: el.type, nativo: !!document.querySelector('.flatpickr-mobile'), formato: el._flatpickr.config.dateFormat, valor: v };
+  });
+  data.tipo === 'text' && !data.nativo && data.formato === 'd/m/Y' && data.valor === '22/10/2026'
+    ? ok('celular: data no padrão Dmove (dd/mm/aaaa, Flatpickr)', data.valor)
+    : fail('celular: data fora do padrão', JSON.stringify(data));
+
+  const fab = await p.evaluate(() => getComputedStyle(document.querySelector('.wa-fab')).opacity);
+  fab === '0' ? ok('celular: WhatsApp sai da frente do botão de enviar') : fail('celular: WhatsApp cobre o CTA', fab);
 
   const botoes = await p.evaluate(() => ({
     voltar: !document.querySelector('.formulario__voltar').hidden,
@@ -106,8 +152,7 @@ const visiveis = (p) => p.evaluate(() =>
     try { payload = JSON.parse(route.request().postData() || '{}'); } catch {}
     route.abort();   // nunca chega no n8n: nada de lead de teste
   });
-  await p.fill('#form-field-data_evento', '20/12/2026');
-  await p.evaluate(() => document.querySelector('#form-field-data_evento')?._flatpickr?.close());
+  await p.selectOption('#form-field-tipo_evento', { index: 1 });
   await p.fill('#form-field-convidados', '120');
   await p.fill('#form-field-detalhes_adicionais', 'Confraternização de fim de ano');
   await p.click('.form-submit');

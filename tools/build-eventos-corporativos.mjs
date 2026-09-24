@@ -607,6 +607,27 @@ section[id], header[id] { scroll-margin-top: 84px; }
    Sem JS também não muda nada: quem esconde etapa é a classe
    .formulario--etapas, que só o script coloca.
    ============================================================ */
+/* O design centraliza tudo no celular (body com text-align: center), e isso
+   pegava também os rótulos e os avisos do formulário. Campo é leitura de
+   esquerda para a direita. */
+@media (max-width: 899px) {
+  .campo { text-align: left; }
+  .formulario__msg { text-align: left; }
+}
+
+/* Pares lado a lado já no celular: empresa+nome, telefone+e-mail,
+   data+convidados. O align-items: end mantém os campos alinhados mesmo quando
+   um rótulo quebra em duas linhas. Abaixo de 360px volta a empilhar. */
+@media (min-width: 360px) and (max-width: 639px) {
+  .campos-duplos { grid-template-columns: 1fr 1fr; gap: 0 10px; align-items: end; }
+  /* meia largura: o respiro lateral tem que ceder para o texto caber */
+  .campos-duplos .campo input,
+  .campos-duplos .campo select { padding-inline: 11px; }
+}
+@media (max-width: 639px) {
+  .campos-duplos { align-items: end; }
+}
+
 .form-etapa { display: contents; }
 .formulario__acoes { display: contents; }
 
@@ -666,6 +687,25 @@ section[id], header[id] { scroll-margin-top: 84px; }
   .formulario__voltar { order: 1; }
   .formulario__avancar, .formulario--etapas .form-submit { order: 2; }
 }
+
+/* O botão flutuante de WhatsApp fica exatamente por cima do "Enviar
+   solicitação" no celular. Enquanto o formulário está na tela, ele sai de cena:
+   não faz sentido competir com o CTA principal — e pior, o toque ia pra ele. */
+.wa-fab, .wa-teaser { transition: opacity .25s ease, transform .25s ease; }
+@media (max-width: 899px) {
+  body.formulario-na-tela .wa-fab,
+  body.formulario-na-tela .wa-teaser {
+    opacity: 0;
+    transform: translateY(14px);
+    pointer-events: none;
+  }
+}
+
+/* As setinhas do input number roubam largura e ninguém usa no celular —
+   o inputmode numérico já traz o teclado certo */
+.campo input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+.campo input[type="number"]::-webkit-outer-spin-button,
+.campo input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
 /* Erro por campo — aparece ao sair do campo, some ao corrigir */
 .campo.tem-erro input,
@@ -1034,25 +1074,33 @@ import { getPreset } from '../scripts/form-presets';
 const webhookUrl = config.forms['lead-form'].webhooks[0];
 const campos = getPreset('corporativo');
 
-// Campos "full" ocupam a linha toda; os demais fluem em pares no grid do design.
-const formRows: (typeof campos)[] = [];
-let par: typeof campos = [];
-for (const campo of campos) {
-  if (campo.full) {
-    if (par.length) { formRows.push(par); par = []; }
-    formRows.push([campo]);
-    continue;
-  }
-  par.push(campo);
-  if (par.length === 2) { formRows.push(par); par = []; }
+// O preset segue sendo a fonte dos campos e dos names (padrão Dmove). O
+// agrupamento visual é desta página: no celular a etapa 1 precisa caber
+// empresa+nome numa linha e telefone+email na seguinte.
+const layoutLinhas = [
+  ['empresa', 'nome'],
+  ['telefone', 'email'],
+  ['tipo_evento'],
+  ['data_evento', 'convidados'],
+  ['detalhes_adicionais'],
+];
+const porNome = new Map(campos.map((c) => [c.name, c]));
+const formRows = layoutLinhas.map((linha) =>
+  linha.map((nome) => {
+    const campo = porNome.get(nome);
+    if (!campo) throw new Error('Campo "' + nome + '" não existe no preset corporativo');
+    return campo;
+  })
+);
+// trava: se o preset ganhar um campo novo, o build quebra em vez de engolir
+if (formRows.flat().length !== campos.length) {
+  throw new Error('layoutLinhas cobre ' + formRows.flat().length + ' campos, o preset tem ' + campos.length);
 }
-if (par.length) formRows.push(par);
 
-// No celular o formulário vira duas etapas. O corte cai numa borda de linha do
-// grid, então nenhum par do desktop é quebrado: etapa 1 leva empresa, nome,
-// telefone, e-mail e tipo de evento; etapa 2, data, convidados e detalhes.
-// No desktop as duas etapas viram display:contents e nada muda.
-const etapas = [formRows.slice(0, 3), formRows.slice(3)];
+// Etapa 1 = quem está falando (empresa, nome, telefone, e-mail).
+// Etapa 2 = o evento (tipo, data, convidados, detalhes).
+// No desktop as duas viram display:contents e o formulário é um bloco só.
+const etapas = [formRows.slice(0, 2), formRows.slice(2)];
 
 const autoComplete: Record<string, string> = {
   empresa: 'organization',
@@ -1130,10 +1178,11 @@ ${body.split('\n').map((l) => (l.trim() ? '  ' + l : l)).join('\n')}
       dateFormat: 'd/m/Y',
       minDate: 'today',
       allowInput: true,
-      disableMobile: false,
+      // disableMobile: true de propósito. Com o fallback nativo, o iOS mostra
+      // "22 de out. de 2026" — fora do padrão Dmove, que pede dd/mm/aaaa. Com o
+      // calendário do próprio Flatpickr o formato é o mesmo em todo aparelho.
+      disableMobile: true,
     });
-    // O fallback mobile do Flatpickr injeta tabindex="1", que quebra a ordem de foco
-    document.querySelectorAll<HTMLInputElement>('.flatpickr-mobile').forEach((el) => { el.tabIndex = 0; });
   }
 
   // As 21 fotos dos lightbox são lazy para não baixarem todas no load. Em troca,

@@ -12,25 +12,33 @@ import { getPreset } from '../scripts/form-presets';
 const webhookUrl = config.forms['lead-form'].webhooks[0];
 const campos = getPreset('corporativo');
 
-// Campos "full" ocupam a linha toda; os demais fluem em pares no grid do design.
-const formRows: (typeof campos)[] = [];
-let par: typeof campos = [];
-for (const campo of campos) {
-  if (campo.full) {
-    if (par.length) { formRows.push(par); par = []; }
-    formRows.push([campo]);
-    continue;
-  }
-  par.push(campo);
-  if (par.length === 2) { formRows.push(par); par = []; }
+// O preset segue sendo a fonte dos campos e dos names (padrão Dmove). O
+// agrupamento visual é desta página: no celular a etapa 1 precisa caber
+// empresa+nome numa linha e telefone+email na seguinte.
+const layoutLinhas = [
+  ['empresa', 'nome'],
+  ['telefone', 'email'],
+  ['tipo_evento'],
+  ['data_evento', 'convidados'],
+  ['detalhes_adicionais'],
+];
+const porNome = new Map(campos.map((c) => [c.name, c]));
+const formRows = layoutLinhas.map((linha) =>
+  linha.map((nome) => {
+    const campo = porNome.get(nome);
+    if (!campo) throw new Error('Campo "' + nome + '" não existe no preset corporativo');
+    return campo;
+  })
+);
+// trava: se o preset ganhar um campo novo, o build quebra em vez de engolir
+if (formRows.flat().length !== campos.length) {
+  throw new Error('layoutLinhas cobre ' + formRows.flat().length + ' campos, o preset tem ' + campos.length);
 }
-if (par.length) formRows.push(par);
 
-// No celular o formulário vira duas etapas. O corte cai numa borda de linha do
-// grid, então nenhum par do desktop é quebrado: etapa 1 leva empresa, nome,
-// telefone, e-mail e tipo de evento; etapa 2, data, convidados e detalhes.
-// No desktop as duas etapas viram display:contents e nada muda.
-const etapas = [formRows.slice(0, 3), formRows.slice(3)];
+// Etapa 1 = quem está falando (empresa, nome, telefone, e-mail).
+// Etapa 2 = o evento (tipo, data, convidados, detalhes).
+// No desktop as duas viram display:contents e o formulário é um bloco só.
+const etapas = [formRows.slice(0, 2), formRows.slice(2)];
 
 const autoComplete: Record<string, string> = {
   empresa: 'organization',
@@ -663,10 +671,11 @@ const jsonLd = {
       dateFormat: 'd/m/Y',
       minDate: 'today',
       allowInput: true,
-      disableMobile: false,
+      // disableMobile: true de propósito. Com o fallback nativo, o iOS mostra
+      // "22 de out. de 2026" — fora do padrão Dmove, que pede dd/mm/aaaa. Com o
+      // calendário do próprio Flatpickr o formato é o mesmo em todo aparelho.
+      disableMobile: true,
     });
-    // O fallback mobile do Flatpickr injeta tabindex="1", que quebra a ordem de foco
-    document.querySelectorAll<HTMLInputElement>('.flatpickr-mobile').forEach((el) => { el.tabIndex = 0; });
   }
 
   // As 21 fotos dos lightbox são lazy para não baixarem todas no load. Em troca,

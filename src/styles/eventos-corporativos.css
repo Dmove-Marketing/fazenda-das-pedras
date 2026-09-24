@@ -1447,6 +1447,27 @@ section[id], header[id] { scroll-margin-top: 84px; }
    Sem JS também não muda nada: quem esconde etapa é a classe
    .formulario--etapas, que só o script coloca.
    ============================================================ */
+/* O design centraliza tudo no celular (body com text-align: center), e isso
+   pegava também os rótulos e os avisos do formulário. Campo é leitura de
+   esquerda para a direita. */
+@media (max-width: 899px) {
+  .campo { text-align: left; }
+  .formulario__msg { text-align: left; }
+}
+
+/* Pares lado a lado já no celular: empresa+nome, telefone+e-mail,
+   data+convidados. O align-items: end mantém os campos alinhados mesmo quando
+   um rótulo quebra em duas linhas. Abaixo de 360px volta a empilhar. */
+@media (min-width: 360px) and (max-width: 639px) {
+  .campos-duplos { grid-template-columns: 1fr 1fr; gap: 0 10px; align-items: end; }
+  /* meia largura: o respiro lateral tem que ceder para o texto caber */
+  .campos-duplos .campo input,
+  .campos-duplos .campo select { padding-inline: 11px; }
+}
+@media (max-width: 639px) {
+  .campos-duplos { align-items: end; }
+}
+
 .form-etapa { display: contents; }
 .formulario__acoes { display: contents; }
 
@@ -1506,6 +1527,25 @@ section[id], header[id] { scroll-margin-top: 84px; }
   .formulario__voltar { order: 1; }
   .formulario__avancar, .formulario--etapas .form-submit { order: 2; }
 }
+
+/* O botão flutuante de WhatsApp fica exatamente por cima do "Enviar
+   solicitação" no celular. Enquanto o formulário está na tela, ele sai de cena:
+   não faz sentido competir com o CTA principal — e pior, o toque ia pra ele. */
+.wa-fab, .wa-teaser { transition: opacity .25s ease, transform .25s ease; }
+@media (max-width: 899px) {
+  body.formulario-na-tela .wa-fab,
+  body.formulario-na-tela .wa-teaser {
+    opacity: 0;
+    transform: translateY(14px);
+    pointer-events: none;
+  }
+}
+
+/* As setinhas do input number roubam largura e ninguém usa no celular —
+   o inputmode numérico já traz o teclado certo */
+.campo input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+.campo input[type="number"]::-webkit-outer-spin-button,
+.campo input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
 /* Erro por campo — aparece ao sair do campo, some ao corrigir */
 .campo.tem-erro input,

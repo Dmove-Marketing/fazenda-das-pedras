@@ -303,7 +303,21 @@ export function initFormularioEtapas() {
     aviso.textContent = msg;
   };
 
+  // Em meia largura os placeholders do preset não cabem e saem cortados. O
+  // rótulo está logo acima, então a dica pode ser mais curta no celular.
+  const placeholderCurto: Record<string, string> = {
+    empresa: 'Sua empresa',
+    nome: 'Seu nome',
+    telefone: 'Com DDD',
+    email: 'Seu e-mail',
+  };
+
   const campos = [...form.querySelectorAll<HTMLElement>('.campo')];
+  campos.forEach((campo) => {
+    const el = controle(campo);
+    const curto = el && placeholderCurto[el.name];
+    if (el && curto && campo.closest('.campos-duplos')) el.setAttribute('placeholder', curto);
+  });
   campos.forEach((campo) => {
     const el = controle(campo);
     if (!el || el.classList.contains('honeypot')) return;
@@ -367,4 +381,12 @@ export function initFormularioEtapas() {
   }, true);
 
   irParaEtapa(0);
+
+  // O botão flutuante de WhatsApp fica em cima do "Enviar solicitação".
+  // Enquanto o formulário está na tela, ele sai de cena.
+  const cartao = form.closest('#form-grid') || form;
+  new IntersectionObserver(
+    (e) => document.body.classList.toggle('formulario-na-tela', e[0].isIntersecting),
+    { threshold: 0.25 }
+  ).observe(cartao);
 }
