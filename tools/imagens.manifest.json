@@ -776,6 +776,12 @@
     "proporcao": 1.5012,
     "variantes": [
       {
+        "w": 480,
+        "h": 320,
+        "arquivo": "fazendadaspedras-corporativo-hero-480.webp",
+        "kb": 36
+      },
+      {
         "w": 640,
         "h": 426,
         "arquivo": "fazendadaspedras-corporativo-hero-640.webp",

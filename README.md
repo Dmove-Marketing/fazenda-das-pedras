@@ -157,6 +157,7 @@ node tools/vrt-eventos-corporativos.mjs       # VRT: design × Astro nos 3 viewp
 node tools/audit-responsivo.mjs               # overflow, alvos de toque, texto miúdo, imagem grande demais
 node tools/audit-fontes.mjs                   # tipografia elemento a elemento contra o design
 node tools/medir-peso.mjs                     # bytes transferidos por dispositivo
+node tools/qa-interacoes.mjs                  # carrosséis, palco de ambientes, hero mobile
 ```
 
 O QA e o VRT esperam o preview rodando (`npx astro preview --port 4331`).
@@ -194,3 +195,30 @@ media query, geradas no fim do CSS.
 **Custo conhecido:** os carrosséis do design são CSS puro, então os 8 slides de hospedagem
 e os 10 do marquee de infraestrutura existem no DOM e carregam junto. No tablet isso
 responde por boa parte dos ~2,3 MB. Reduzir exigiria trocar a interação por JS.
+
+
+### Componentes reconstruídos (fora do design original)
+
+O HTML de criação trouxe os carrosséis como **animação CSS infinita com setas em
+`href="#id"`**. Não dava para arrastar com o dedo e cada seta navegava por hash, o
+que rolava a **página** na vertical em vez de mover as fotos. Os três foram
+reconstruídos em `src/scripts/eventos-corporativos-ui.ts`:
+
+- **Carrossel** (`[data-carrossel]`) — rolagem nativa com `scroll-snap`, setas que
+  chamam `scrollTo` no trilho (nunca hash), indicadores (bolinhas até 6 fotos,
+  contador + barra acima disso), teclado, arrasto com mouse e avanço automático que
+  pausa ao primeiro toque e só roda enquanto o carrossel está na tela.
+- **Palco de ambientes** (`[data-ambientes]`) — a grade de 4 colunas não deixava
+  entender ambiente nenhum. Agora cada um ocupa a tela e troca conforme a rolagem,
+  com marcos invisíveis dando o compasso via IntersectionObserver. Só mudam opacidade
+  e escala, então a troca roda no compositor.
+
+Ambos são melhoria progressiva: **sem JS** o carrossel continua sendo uma faixa
+rolável e o palco vira uma lista de fotos grandes. `prefers-reduced-motion` desliga
+o palco e o avanço automático. Nenhum listener de `scroll` — só IntersectionObserver.
+
+**Hero no celular:** o design ampliava o fundo em 420%, o que mostrava um recorte
+pequeno demais do espaço. Abaixo de 900px a foto virou um `<img>` de largura total
+com a proporção original preservada, e o texto desceu para o verde da marca. Como
+passou a ser o elemento de LCP, o srcset é limitado a 960px (a faixa tem ~275px de
+altura; acima disso não há ganho visível e o LCP paga a conta).

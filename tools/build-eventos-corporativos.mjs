@@ -45,8 +45,9 @@ const PAPEIS_IMG = [
     larguras: [320, 480, 640, 900], caixas: [[1440, 276, 368], [1024, 237, 316], [768, 173, 231], [390, 300, 225]] },
   { nome: 'hospedagem', casa: (l, n) => /hospedagem-/.test(n),
     larguras: [360, 560, 800, 1080], caixas: [[1440, 459, 612], [1024, 393, 524], [768, 728, 546], [390, 350, 263]] },
+  // O palco mostra um ambiente por vez, quase em tela cheia — a caixa é outra.
   { nome: 'ambiente',  casa: (l, n) => /(jatoba|redario|espacorustico|salaoprincipal)/.test(n),
-    larguras: [320, 480, 560, 800], caixas: [[1440, 272, 362], [1024, 233, 310], [768, 355, 266], [390, 170, 128]] },
+    larguras: [320, 480, 560, 800, 1100, 1400], caixas: [[1440, 720, 620], [1024, 620, 560], [768, 560, 520], [390, 340, 480]] },
   { nome: 'sobre',     casa: (l, n) => /sobre/.test(n),
     larguras: [480, 700, 1000, 1200, 1600], caixas: [[1440, 540, 405], [1024, 462, 347], [768, 728, 546], [390, 350, 263]] },
 ];
@@ -67,7 +68,8 @@ const montarSizes = (papel, proporcao) => {
 
 // Fundos em CSS: o browser não tem srcset, então troca-se a variante por media query.
 const FUNDOS = [
-  { seletor: '.hero',       base: 'fazendadaspedras-corporativo-hero',       menor: 1280, camadas: [[600, 1600], [1400, 2000]] },
+  // Abaixo de 900px o hero não usa fundo em CSS: a foto é um <img> inteiro.
+  { seletor: '.hero',       base: 'fazendadaspedras-corporativo-hero',       menor: 1280, camadas: [[900, 1600], [1400, 2000]] },
   { seletor: '.depoimento', base: 'fazendadaspedras-corporativo-estrutura-2', menor: 640,  camadas: [[600, 960], [1000, 1280], [1600, 1920]] },
   { seletor: '.contato',    base: 'fazendadaspedras-corporativo-formulario',  menor: 640,  camadas: [[600, 960], [1000, 1280], [1600, 1920]] },
 ];
@@ -91,6 +93,13 @@ css = css.replace(/url\('imagens\/([^']+)\.(jpe?g|png)'\)/gi, (_m, name) => {
   if (!fundo) throw new Error(`Background sem regra de variante: ${name}`);
   return `url('${url(name, fundo.menor)}')`;
 });
+
+// O texto do depoimento é serifado e claro sobre foto: com o véu original
+// (.82/.88) a leitura sofria. Escurece só o do depoimento, antes de gerar as camadas.
+css = css.replace(
+  /(\.depoimento\s*\{[^}]*?background-image:\s*linear-gradient\(180deg,\s*)rgba\(58,62,31,\.82\)(\s*0%,\s*)rgba\(42,45,23,\.88\)/s,
+  '$1rgba(40,43,20,.90)$2rgba(28,31,14,.94)'
+);
 
 // Camadas por largura de viewport: cada fundo sobe de variante conforme a tela cresce.
 const camadasFundo = FUNDOS.map((f) => {
@@ -244,6 +253,283 @@ section[id], header[id] { scroll-margin-top: 84px; }
   .hero__titulo { font-size: 32px; }
 }
 
+/* ============================================================
+   Cabeçalho legível sobre foto clara
+   ------------------------------------------------------------
+   O véu do design (.55 → .28) some quando a foto atrás é clara — no hero
+   do celular e no palco de ambientes o logo e o menu ficavam lavados.
+   ============================================================ */
+.cabecalho {
+  background: linear-gradient(180deg, rgba(34, 37, 17, .74) 0%, rgba(34, 37, 17, .34) 70%, rgba(34, 37, 17, 0) 100%);
+}
+
+/* ============================================================
+   Hero no celular: a foto inteira, não um recorte
+   ------------------------------------------------------------
+   O design amplia o fundo em 420% no mobile, o que mostra um pedaço
+   pequeno demais do espaço. Abaixo de 900px a foto vira um <img> de
+   largura total (proporção original preservada) e o texto desce para
+   o verde da marca. De 900px para cima nada muda.
+   ============================================================ */
+.hero__foto { display: none; }
+
+@media (max-width: 899px) {
+  .hero {
+    background-image: none;
+    background-color: var(--cor-primaria-escura);
+    min-height: 0;
+    display: block;
+    padding: 0 0 36px;
+  }
+  .hero__foto {
+    display: block;
+    width: 100%;
+    height: auto;
+    margin: 0;
+  }
+  .hero__conteudo { padding-top: 28px; }
+}
+
+/* ============================================================
+   Depoimento: o peso 300 sobre foto escura ficava ilegível
+   ============================================================ */
+.depoimento__texto {
+  font-weight: 400;
+  text-shadow: 0 1px 12px rgba(26, 28, 14, .45);
+}
+
+/* ============================================================
+   Carrossel — rolagem nativa, arrastável com o dedo
+   ------------------------------------------------------------
+   Substitui a animação infinita com setas em href="#id" do design, que
+   não permitia arrastar e fazia a PÁGINA pular na vertical a cada seta.
+   Sem JS continua sendo uma faixa rolável: as setas e os indicadores só
+   aparecem quando o script assume (.carrossel--pronto).
+   ============================================================ */
+.carrossel { position: relative; }
+
+.carrossel__trilho {
+  display: flex;
+  gap: 14px;
+  overflow-x: auto;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scroll-padding-inline: var(--gutter);
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  padding-block: 2px;
+}
+.carrossel__trilho::-webkit-scrollbar { display: none; }
+.carrossel__trilho:focus-visible { outline: 2px solid var(--cor-destaque-escura); outline-offset: 4px; border-radius: var(--radius); }
+.carrossel__trilho.esta-arrastando { cursor: grabbing; scroll-snap-type: none; }
+.carrossel__trilho.esta-arrastando * { pointer-events: none; }
+
+.carrossel__item {
+  flex: 0 0 auto;
+  scroll-snap-align: start;
+  border-radius: var(--radius);
+  overflow: hidden;
+  position: relative;
+}
+.carrossel__item img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.carrossel__item > a { display: block; width: 100%; height: 100%; }
+
+/* faixa horizontal (infraestrutura e galeria no mobile) */
+.carrossel--faixa .carrossel__item { width: min(76vw, 320px); aspect-ratio: 4 / 5; }
+@media (min-width: 700px) {
+  .carrossel--faixa .carrossel__item { width: 320px; aspect-ratio: 4 / 5; }
+}
+
+/* um por vez, em retrato (chalés) */
+.carrossel--retrato { width: 100%; }
+.carrossel--retrato .carrossel__trilho { gap: 0; }
+.carrossel--retrato .carrossel__item { width: 100%; height: 100%; aspect-ratio: inherit; border-radius: inherit; }
+
+.carrossel__seta {
+  position: absolute;
+  top: calc(50% - 22px);
+  width: 44px; height: 44px;
+  border: 0; padding: 0;
+  border-radius: 50%;
+  background: rgba(250, 248, 240, .92);
+  color: var(--cor-primaria);
+  font-family: var(--fonte-titulo);
+  font-size: 22px; line-height: 1;
+  display: none;
+  align-items: center; justify-content: center;
+  cursor: pointer;
+  z-index: 3;
+  box-shadow: 0 2px 14px rgba(26, 28, 14, .22);
+  transition: background .2s ease, transform .2s ease;
+}
+.carrossel--pronto .carrossel__seta { display: flex; }
+.carrossel__seta:hover { background: var(--cor-fundo); transform: scale(1.07); }
+.carrossel__seta:active { transform: scale(.96); }
+.carrossel__seta--prev { left: 8px; }
+.carrossel__seta--next { right: 8px; }
+@media (min-width: 700px) {
+  .carrossel__seta--prev { left: 12px; }
+  .carrossel__seta--next { right: 12px; }
+}
+
+.carrossel__pontos {
+  display: none;
+  align-items: center; justify-content: center;
+  gap: 2px;
+  margin-top: 14px;
+}
+.carrossel--pronto .carrossel__pontos { display: flex; }
+.carrossel__ponto {
+  width: 40px; height: 40px;
+  border: 0; padding: 0; background: none;
+  position: relative; cursor: pointer;
+}
+.carrossel__ponto::before {
+  content: '';
+  position: absolute;
+  top: 18px; left: 16px;
+  width: 8px; height: 4px;
+  border-radius: 4px;
+  background: rgba(74, 79, 39, .26);
+  transition: width .28s ease, left .28s ease, background .28s ease;
+}
+.carrossel__ponto.is-ativo::before { width: 24px; left: 8px; background: var(--cor-destaque-escura); }
+.hospedagem-verde .carrossel__ponto::before { background: rgba(245, 238, 220, .32); }
+.hospedagem-verde .carrossel__ponto.is-ativo::before { background: var(--cor-destaque-clara); }
+
+/* muitos itens: contador + barra, que lê melhor que 9 bolinhas */
+.carrossel__medidor { display: none; align-items: center; gap: 12px; justify-content: center; margin-top: 14px; }
+.carrossel--pronto .carrossel__medidor { display: flex; }
+.carrossel__contagem { font-size: 12px; letter-spacing: .14em; color: var(--cor-label); font-variant-numeric: tabular-nums; }
+.carrossel__barra { width: min(180px, 42vw); height: 3px; border-radius: 3px; background: rgba(74, 79, 39, .18); overflow: hidden; }
+.carrossel__barra span { display: block; height: 100%; border-radius: 3px; background: var(--cor-destaque-escura); transform-origin: left center; transition: transform .35s cubic-bezier(.4, 0, .2, 1); }
+.hospedagem-verde .carrossel__contagem { color: var(--cor-destaque-clara); }
+.hospedagem-verde .carrossel__barra { background: rgba(245, 238, 220, .22); }
+.hospedagem-verde .carrossel__barra span { background: var(--cor-destaque-clara); }
+
+/* ============================================================
+   Palco de ambientes — um ambiente por vez, trocando com a rolagem
+   ------------------------------------------------------------
+   Em grade de 4 colunas não dava para entender ambiente nenhum. Aqui cada
+   um ocupa a tela; marcos invisíveis dão o compasso e as cenas só mudam
+   de opacidade e escala, então a troca roda no compositor.
+   Sem JS (ou com "reduzir movimento") vira uma lista de fotos grandes.
+   ============================================================ */
+.palco__fixo { display: grid; gap: 18px; }
+.palco__quadro { display: grid; gap: 18px; }
+.palco__cena { position: relative; margin: 0; border-radius: var(--radius); overflow: hidden; }
+.palco__cena img { width: 100%; height: 100%; object-fit: cover; display: block; }
+.palco__trilha, .palco__dica, .palco__barra { display: none; }
+.palco__indice { display: none; }
+
+.palco__legenda {
+  position: absolute; left: 0; right: 0; bottom: 0;
+  padding: 54px 20px 18px;
+  display: flex; align-items: baseline; gap: 12px;
+  background: linear-gradient(180deg, transparent 0%, rgba(42, 45, 23, .86) 100%);
+  color: var(--cor-texto-claro);
+  text-align: left;
+}
+.palco__numero { font-family: var(--fonte-titulo); font-size: 13px; letter-spacing: .18em; color: var(--cor-destaque-clara); }
+.palco__nome { font-family: var(--fonte-titulo); font-size: 26px; line-height: 1.1; }
+@media (min-width: 900px) { .palco__nome { font-size: 32px; } }
+
+/* —— com JS —— */
+/* 280svh = a tela fixa (100) + 180 de rolagem divididos entre os 4 ambientes,
+   ~45svh cada. Mais que isso vira arrastado e empurra o formulário para longe. */
+.palco--pronto { position: relative; height: 280svh; }
+.palco--pronto .palco__fixo {
+  position: sticky; top: 0;
+  height: 100svh;
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  gap: 16px;
+}
+.palco--pronto .palco__quadro {
+  position: relative;
+  display: block;
+  width: min(92vw, 560px);
+  height: 62svh;
+  border-radius: var(--radius);
+  overflow: hidden;
+  box-shadow: 0 18px 60px rgba(42, 45, 23, .18);
+  touch-action: pan-y;
+}
+@media (min-width: 900px) {
+  .palco--pronto .palco__quadro { width: min(62vw, 760px); height: 70svh; }
+}
+.palco--pronto .palco__cena {
+  position: absolute; inset: 0;
+  border-radius: 0;
+  opacity: 0;
+  transform: scale(1.07);
+  transition: opacity .65s cubic-bezier(.4, 0, .2, 1), transform 1.2s cubic-bezier(.4, 0, .2, 1);
+  will-change: opacity, transform;
+}
+.palco--pronto .palco__cena.is-ativa { opacity: 1; transform: scale(1); }
+.palco--pronto .palco__cena.is-passada { transform: scale(.96); }
+
+.palco--pronto .palco__trilha { display: block; position: absolute; inset: 0; z-index: -1; }
+.palco--pronto .palco__marco { height: 25%; }
+
+.palco--pronto .palco__barra {
+  display: block;
+  width: min(280px, 60vw); height: 3px;
+  border-radius: 3px;
+  background: rgba(74, 79, 39, .16);
+  overflow: hidden;
+}
+.palco--pronto .palco__barra span {
+  display: block; height: 100%;
+  background: var(--cor-destaque-escura);
+  transform-origin: left center; transform: scaleX(.25);
+  transition: transform .5s cubic-bezier(.4, 0, .2, 1);
+}
+
+.palco--pronto .palco__indice {
+  display: flex; flex-wrap: wrap; gap: 6px; justify-content: center;
+  max-width: min(92vw, 560px);   /* sem isto os 4 nomes ficam numa linha só e vazam */
+}
+@media (min-width: 900px) { .palco--pronto .palco__indice { max-width: min(62vw, 760px); } }
+.palco__atalho {
+  border: 0; cursor: pointer;
+  background: none;
+  font-family: var(--fonte-corpo);
+  font-size: 12px; letter-spacing: .04em;
+  color: var(--cor-texto);
+  opacity: .5;
+  padding: 10px 12px;
+  min-height: 40px;
+  border-radius: 999px;
+  transition: opacity .25s ease, background .25s ease;
+}
+.palco__atalho.is-ativo { opacity: 1; background: var(--cor-fundo-creme); color: var(--cor-primaria); font-weight: 600; }
+
+.palco--pronto .palco__dica {
+  display: block;
+  position: absolute; left: 0; right: 0; bottom: 74px;
+  margin: 0;
+  text-align: center;
+  font-size: 12px; letter-spacing: .12em; text-transform: uppercase;
+  color: var(--cor-texto-claro);
+  opacity: .85;
+  animation: palco-dica 2.4s ease-in-out infinite;
+  pointer-events: none;
+  transition: opacity .4s ease;
+}
+.palco--iniciado .palco__dica { opacity: 0; }
+@keyframes palco-dica {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(5px); }
+}
+
+/* lista simples quando o visitante pede menos movimento */
+.palco--simples .palco__quadro { gap: 16px; }
+@media (prefers-reduced-motion: reduce) {
+  .palco--pronto .palco__cena { transition: none; }
+  .palco__dica { animation: none; }
+}
+
 /* Flatpickr na paleta da marca */
 .flatpickr-calendar { font-family: var(--fonte-corpo); border-radius: 12px; box-shadow: 0 12px 40px rgba(58,62,31,.18); }
 .flatpickr-months, .flatpickr-weekdays, .flatpickr-weekdaycontainer { background: var(--cor-primaria); }
@@ -332,6 +618,120 @@ body = body
 
 const restantes = [...body.matchAll(/(?:src|url\()["']?imagens\/[^"')]+/g)].map((m) => m[0]);
 if (restantes.length) throw new Error(`Referências não convertidas: ${restantes.join(', ')}`);
+
+// ============================================================
+// Reconstrução de componentes
+// ------------------------------------------------------------
+// O design entregou os carrosséis como animação CSS infinita com setas em
+// `href="#id"`. Isso não permite arrastar com o dedo e, pior, cada seta
+// navegava por hash — o que rolava a PÁGINA na vertical em vez de mover as
+// fotos. Aqui os três viram carrossel nativo (scroll-snap + botões), e a
+// grade de ambientes vira um palco que troca de ambiente conforme a rolagem.
+// ============================================================
+
+// Troca o bloco que começa em `abertura` (e fecha no </div> de mesma indentação).
+const trocarBloco = (txt, abertura, montar) => {
+  const i = txt.indexOf(abertura);
+  if (i < 0) throw new Error(`Bloco não encontrado: ${abertura.trim()}`);
+  const indent = abertura.match(/^[ ]*/)[0];
+  const fecha = `\n${indent}</div>`;
+  const j = txt.indexOf(fecha, i);
+  if (j < 0) throw new Error(`Fechamento não encontrado: ${abertura.trim()}`);
+  return txt.slice(0, i) + montar(txt.slice(i, j + fecha.length), indent) + txt.slice(j + fecha.length);
+};
+
+const imagensDe = (bloco, { soComAlt = true } = {}) =>
+  (bloco.match(/<img[^>]*>/g) || []).filter((t) => (soComAlt ? !/alt=""/.test(t) : true));
+
+const carrossel = (indent, { id, rotulo, classe = '', autoplay = 0, itens }) => {
+  const i2 = indent + '  ';
+  const i3 = indent + '    ';
+  return [
+    `${indent}<div class="carrossel ${classe}" data-carrossel="${id}"${autoplay ? ` data-autoplay="${autoplay}"` : ''}>`,
+    `${i2}<div class="carrossel__trilho" role="group" aria-roledescription="carrossel" aria-label="${rotulo}">`,
+    ...itens.map((c) => `${i3}<div class="carrossel__item">${c}</div>`),
+    `${i2}</div>`,
+    `${i2}<button class="carrossel__seta carrossel__seta--prev" type="button" aria-label="Foto anterior"><span aria-hidden="true">‹</span></button>`,
+    `${i2}<button class="carrossel__seta carrossel__seta--next" type="button" aria-label="Próxima foto"><span aria-hidden="true">›</span></button>`,
+    `${i2}<div class="carrossel__pontos" role="group" aria-label="Escolher foto"></div>`,
+    `${indent}</div>`,
+  ].join('\n');
+};
+
+// —— Ambientes: palco com troca por rolagem ——
+body = trocarBloco(body, '      <div class="ambientes__grade">', (bloco, indent) => {
+  const imgs = imagensDe(bloco);
+  const nomes = [...bloco.matchAll(/<span class="ambiente-card__rotulo">([^<]+)<\/span>/g)].map((m) => m[1]);
+  if (imgs.length !== 4 || nomes.length !== 4) throw new Error('Ambientes: esperava 4 cards');
+
+  const i2 = indent + '  ', i3 = indent + '    ', i4 = indent + '      ', i5 = indent + '        ';
+  return [
+    `${indent}<div class="palco" data-ambientes>`,
+    `${i2}<div class="palco__fixo">`,
+    `${i3}<div class="palco__quadro">`,
+    ...imgs.flatMap((img, n) => [
+      `${i4}<figure class="palco__cena${n === 0 ? ' is-ativa' : ''}" aria-hidden="${n === 0 ? 'false' : 'true'}">`,
+      `${i5}${img}`,
+      `${i5}<figcaption class="palco__legenda">`,
+      `${i5}  <span class="palco__numero">${String(n + 1).padStart(2, '0')}</span>`,
+      `${i5}  <span class="palco__nome">${nomes[n]}</span>`,
+      `${i5}</figcaption>`,
+      `${i4}</figure>`,
+    ]),
+    `${i4}<p class="palco__dica"><span aria-hidden="true">↓</span> role para conhecer os ambientes</p>`,
+    `${i3}</div>`,
+    `${i3}<div class="palco__barra" aria-hidden="true"><span></span></div>`,
+    `${i3}<nav class="palco__indice" aria-label="Ambientes">`,
+    ...nomes.map((nome, n) => `${i4}<button type="button" class="palco__atalho${n === 0 ? ' is-ativo' : ''}">${nome}</button>`),
+    `${i3}</nav>`,
+    `${i2}</div>`,
+    `${i2}<div class="palco__trilha" aria-hidden="true">`,
+    ...nomes.map(() => `${i3}<div class="palco__marco"></div>`),
+    `${i2}</div>`,
+    `${indent}</div>`,
+  ].join('\n');
+});
+
+// —— Infraestrutura ——
+body = trocarBloco(body, '      <div class="infra__galeria marquee">', (bloco, indent) =>
+  carrossel(indent, {
+    id: 'infra', rotulo: 'Fotos da infraestrutura', classe: 'carrossel--faixa infra__galeria',
+    autoplay: 6500, itens: imagensDe(bloco),
+  })
+);
+
+// —— Hospedagem (cada slide abre o lightbox, então o item inteiro vai junto) ——
+body = trocarBloco(body, '        <div class="sobre__foto hospedagem-carrossel">', (bloco, indent) => {
+  const slides = bloco.match(/<a href="#lb-hosp-\d+"[\s\S]*?<\/a>/g) || [];
+  if (slides.length !== 8) throw new Error(`Hospedagem: esperava 8 slides, achei ${slides.length}`);
+  return carrossel(indent, {
+    id: 'hospedagem', rotulo: 'Fotos dos chalés', classe: 'carrossel--retrato sobre__foto',
+    autoplay: 5500, itens: slides,
+  });
+});
+
+// —— Galeria (faixa do mobile) ——
+body = trocarBloco(body, '      <div class="galeria__marquee marquee">', (bloco, indent) =>
+  carrossel(indent, {
+    id: 'galeria', rotulo: 'Galeria de fotos', classe: 'carrossel--faixa galeria__marquee',
+    autoplay: 5000, itens: imagensDe(bloco),
+  })
+);
+
+// —— Hero: no celular a foto vira elemento real, inteira, acima do texto ——
+{
+  const base = 'fazendadaspedras-corporativo-hero';
+  const item = MANIFESTO[base];
+  // A foto ocupa a largura da tela mas só ~275px de altura: acima de 960 não
+  // há ganho visível e o LCP paga a conta (o 1280 custava 1,7s a mais no 4G).
+  const larguras = [480, 640, 960].filter((w) => item.variantes.some((v) => v.w === w));
+  const maior = larguras[larguras.length - 1];
+  const dims = item.variantes.find((v) => v.w === maior);
+  const img = `<img class="hero__foto" src="${url(base, maior)}" srcset="${larguras.map((w) => `${url(base, w)} ${w}w`).join(', ')}" sizes="100vw" width="${dims.w}" height="${dims.h}" alt="Confraternização de empresa ao ar livre na Fazenda das Pedras, em Itu" fetchpriority="high" decoding="async">`;
+  const alvo = '    <div class="container hero__conteudo">'.slice(2);
+  if (!body.includes(alvo)) throw new Error('Hero: não achei o container do conteúdo');
+  body = body.replace(alvo, `    ${img}\n${alvo}`);
+}
 
 // O formulário do design é substituído pelo motor padrão Dmove (campos vêm do preset).
 const formStart = body.indexOf('        <!-- Formulário padrão Dmove');
@@ -484,8 +884,18 @@ const jsonLd = {
   whatsAppMessage={'Olá! Quero planejar a confraternização da minha empresa na Fazenda das Pedras.'}
 >
   <Fragment slot="head">
-    <!-- LCP: o hero é background-image, então o browser só o descobre depois do CSS -->
-    <link rel="preload" as="image" href="${HERO_PRELOAD}" fetchpriority="high" />
+    <!-- LCP: no desktop o hero é background-image (o browser só descobre depois do CSS);
+         no celular é <img>, então o preload acompanha o mesmo srcset. -->
+    <link rel="preload" as="image" href="${url('fazendadaspedras-corporativo-hero', 1600)}" media="(min-width: 900px)" fetchpriority="high" />
+    <link
+      rel="preload"
+      as="image"
+      href="${url('fazendadaspedras-corporativo-hero', 960)}"
+      imagesrcset="${[480, 640, 960].map((w) => `${url('fazendadaspedras-corporativo-hero', w)} ${w}w`).join(', ')}"
+      imagesizes="100vw"
+      media="(max-width: 899px)"
+      fetchpriority="high"
+    />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/Kalista-Serif-Regular.woff2" crossorigin />
     <link rel="preload" as="font" type="font/woff2" href="/fonts/Gotham-Book.woff2" crossorigin />
   </Fragment>
@@ -495,11 +905,14 @@ ${body.split('\n').map((l) => (l.trim() ? '  ' + l : l)).join('\n')}
 
 <script>
   import { initForms } from '../scripts/forms';
+  import { initCarrosseis, initAmbientes } from '../scripts/eventos-corporativos-ui';
   import flatpickr from 'flatpickr';
   import { Portuguese } from 'flatpickr/dist/l10n/pt.js';
   import 'flatpickr/dist/flatpickr.min.css';
 
   initForms();
+  initCarrosseis();
+  initAmbientes();
 
   const dateEl = document.querySelector<HTMLInputElement>('[data-datepicker="true"]');
   if (dateEl) {
