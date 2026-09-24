@@ -173,8 +173,13 @@ O QA e o VRT esperam o preview rodando (`npx astro preview --port 4331`).
   a página inteira desalinha ~6 px por seção em relação ao design
 - corrige no design: `aria-label` proibido em `<label>` e o seletor do hamburger que nunca virava "X"
 
-**Pendência:** `config.json > tracking.gtm_id` ainda está em `GTM-XXXXXXX`. O site inteiro
-(não só esta rota) está no ar sem medição até o ID real do container entrar aí.
+**Tracking:** `config.json > tracking.gtm_id` = `GTM-WZS74TP6` (container do cliente,
+instalado em 24/09/2026). O `Base.astro` injeta o snippet padrão no topo do `<head>`
+e o `noscript` logo após a abertura do `<body>`, **em todas as páginas do site**.
+O webhook do formulário e o do popup de WhatsApp são o mesmo:
+`https://server3n8n.dmove.com.br/webhook/fazenda-das-pedras`.
+`tools/qa-formulario.mjs` confere container único, posição do snippet, dataLayer
+ativo e webhook único.
 
 
 ### Responsividade — como o `sizes` é calculado
@@ -256,18 +261,18 @@ tela inteira só de formulário. Abaixo de 900px ele vira duas etapas de ~465px:
 
 | Etapa | Campos |
 |---|---|
-| 1 — quem está falando | `empresa` + `nome` (mesma linha) · `telefone` + `email` (mesma linha) |
-| 2 — o evento | `tipo_evento` · `data_evento` + `convidados` · `detalhes_adicionais` |
+| 1 — quem está falando | `empresa` · `nome` · `telefone` · `email` (um por linha) |
+| 2 — o evento | `tipo_evento` · `data_evento` + `convidados` (par) · `detalhes_adicionais` |
 
 O agrupamento em linhas é **desta página** (`layoutLinhas` no build), não do
 `full` do preset: o preset segue mandando nos campos e nos `name`, que é o que o
 padrão Dmove define. Um `throw` no build quebra se o preset ganhar um campo que
 o layout não cobre.
 
-As duplas ficam lado a lado **já no celular** (de 360px para cima), com
-`align-items: end` para os campos se alinharem mesmo quando um rótulo quebra em
-duas linhas. Em meia largura os placeholders do preset não cabem, então o script
-troca por versões curtas — o rótulo está logo acima e diz o que é.
+No celular **só a etapa 2 emparelha** (`data_evento` + `convidados`): são campos
+curtos e o par economiza uma linha. A etapa 1 fica com um campo por linha —
+nome de empresa e e-mail precisam da largura inteira. No desktop os pares do
+grid valem para as duas etapas.
 
 O corte entre etapas cai numa **borda de linha do grid**, então nada é quebrado
 no desktop: lá as etapas são `display: contents` e o formulário segue um bloco só

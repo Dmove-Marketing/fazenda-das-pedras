@@ -1455,14 +1455,20 @@ section[id], header[id] { scroll-margin-top: 84px; }
   .formulario__msg { text-align: left; }
 }
 
-/* Pares lado a lado já no celular: empresa+nome, telefone+e-mail,
-   data+convidados. O align-items: end mantém os campos alinhados mesmo quando
-   um rótulo quebra em duas linhas. Abaixo de 360px volta a empilhar. */
+/* No celular só a etapa 2 emparelha (data+convidados): são campos curtos e o
+   par economiza uma linha. A etapa 1 fica com um campo por linha — nome de
+   empresa e e-mail precisam da largura inteira para serem digitados sem
+   apertar. O align-items: end alinha os campos quando um rótulo quebra em
+   duas linhas. */
 @media (min-width: 360px) and (max-width: 639px) {
-  .campos-duplos { grid-template-columns: 1fr 1fr; gap: 0 10px; align-items: end; }
+  .form-etapa[data-etapa="2"] .campos-duplos {
+    grid-template-columns: 1fr 1fr;
+    gap: 0 10px;
+    align-items: end;
+  }
   /* meia largura: o respiro lateral tem que ceder para o texto caber */
-  .campos-duplos .campo input,
-  .campos-duplos .campo select { padding-inline: 11px; }
+  .form-etapa[data-etapa="2"] .campos-duplos .campo input,
+  .form-etapa[data-etapa="2"] .campos-duplos .campo select { padding-inline: 11px; }
 }
 @media (max-width: 639px) {
   .campos-duplos { align-items: end; }

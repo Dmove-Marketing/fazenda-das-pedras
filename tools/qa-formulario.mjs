@@ -38,9 +38,9 @@ const visiveis = (p) => p.evaluate(() =>
     });
     return Object.values(linhas);
   });
-  JSON.stringify(pares) === JSON.stringify([['empresa', 'nome'], ['telefone', 'email']])
-    ? ok('celular: pares na mesma linha', pares.map((l) => l.join('+')).join(' / '))
-    : fail('celular: pares fora de linha', JSON.stringify(pares));
+  JSON.stringify(pares) === JSON.stringify([['empresa'], ['nome'], ['telefone'], ['email']])
+    ? ok('celular: etapa 1 com um campo por linha', pares.map((l) => l.join('+')).join(' / '))
+    : fail('celular: etapa 1 fora de linha', JSON.stringify(pares));
 
   const alinhamento = await p.evaluate(() =>
     [...document.querySelectorAll('#lead-form .campo label')].map((l) => getComputedStyle(l).textAlign));
@@ -49,7 +49,7 @@ const visiveis = (p) => p.evaluate(() =>
     : fail('celular: rótulo centralizado', alinhamento.join(', '));
 
   const placeholders = await p.evaluate(() =>
-    [...document.querySelectorAll('.campos-duplos .campo input')].filter((i) => i.offsetParent !== null).map((i) => {
+    [...document.querySelectorAll('#lead-form .campo input')].filter((i) => i.offsetParent !== null).map((i) => {
       const ctx = document.createElement('canvas').getContext('2d');
       const cs = getComputedStyle(i);
       ctx.font = `${cs.fontSize} ${cs.fontFamily}`;
@@ -116,6 +116,20 @@ const visiveis = (p) => p.evaluate(() =>
 
   const fab = await p.evaluate(() => getComputedStyle(document.querySelector('.wa-fab')).opacity);
   fab === '0' ? ok('celular: WhatsApp sai da frente do botão de enviar') : fail('celular: WhatsApp cobre o CTA', fab);
+
+  // etapa 2 mantém data+convidados no par (campos curtos)
+  const linhas2 = await p.evaluate(() => {
+    const c = [...document.querySelectorAll('#lead-form .campo')].filter((x) => x.offsetParent !== null);
+    const l = {};
+    c.forEach((x) => {
+      const t = Math.round(x.getBoundingClientRect().top);
+      (l[t] = l[t] || []).push(x.querySelector('input, select, textarea').name);
+    });
+    return Object.values(l);
+  });
+  JSON.stringify(linhas2) === JSON.stringify([['tipo_evento'], ['data_evento', 'convidados'], ['detalhes_adicionais']])
+    ? ok('celular: etapa 2 mantém data+convidados no par', linhas2.map((l) => l.join('+')).join(' / '))
+    : fail('celular: etapa 2 mudou de layout', JSON.stringify(linhas2));
 
   const botoes = await p.evaluate(() => ({
     voltar: !document.querySelector('.formulario__voltar').hidden,
@@ -190,6 +204,46 @@ const visiveis = (p) => p.evaluate(() =>
   !ui.classe && ui.passo === 'none' && ui.avancar === 'none' && ui.etapaDisplay === 'contents'
     ? ok('desktop: sem etapas, sem botões extras')
     : fail('desktop: interface de etapas vazou', JSON.stringify(ui));
+  await p.close();
+}
+
+// ———————————————————— tracking e destino do lead ————————————————————
+{
+  const p = await b.newPage({ viewport: { width: 390, height: 844 } });
+  await p.goto(URL, { waitUntil: 'domcontentloaded' });
+  const t = await p.evaluate(() => {
+    const doc = document.documentElement.outerHTML;
+    const head = doc.slice(0, doc.indexOf('</head>'));
+    const script = [...document.querySelectorAll('head script')].find((s) => s.textContent.includes('gtm.start'));
+    const ns = document.querySelector('noscript');
+    return {
+      id: (doc.match(/GTM-[A-Z0-9]+/g) || [])[0] || '',
+      ids: [...new Set(doc.match(/GTM-[A-Z0-9]+/g) || [])],
+      scriptNoHead: !!script,
+      altoNoHead: script ? head.indexOf('gtm.start') < head.indexOf('<style') : false,
+      noscriptPrimeiro: !!ns && ns.innerHTML.includes('ns.html'),
+      posNoscript: doc.indexOf('ns.html') - doc.indexOf('<body'),
+      webhooks: [...new Set((doc.match(/server3n8n\.dmove\.com\.br\/webhook\/[a-z-]+/g) || []))],
+      formWebhook: document.querySelector('#lead-form')?.dataset.submitUrl || '',
+      carregou: !!document.querySelector('script[src*="googletagmanager.com/gtm.js"]'),
+    };
+  });
+  await p.waitForTimeout(2500);
+  const rodando = await p.evaluate(() => ({ dataLayer: Array.isArray(window.dataLayer), eventos: (window.dataLayer || []).map((e) => e && e.event).filter(Boolean) }));
+
+  t.ids.length === 1 && t.id.length > 7
+    ? ok('GTM: um único container na página', t.id)
+    : fail('GTM: container ausente ou duplicado', t.ids.join(', ') || 'nenhum');
+  t.scriptNoHead && t.altoNoHead
+    ? ok('GTM: script no topo do <head>, antes do CSS')
+    : fail('GTM: script fora do topo do head');
+  t.noscriptPrimeiro && t.posNoscript < 300
+    ? ok('GTM: noscript logo após a abertura do <body>', `${t.posNoscript} bytes`)
+    : fail('GTM: noscript fora de posição', String(t.posNoscript));
+  rodando.dataLayer ? ok('GTM: dataLayer inicializado', rodando.eventos.slice(0, 4).join(', ')) : fail('GTM: sem dataLayer');
+  t.webhooks.length === 1 && t.webhooks[0].endsWith('/fazenda-das-pedras')
+    ? ok('Webhook único no formulário e no WhatsApp', t.webhooks[0])
+    : fail('Webhooks divergentes', t.webhooks.join(' | '));
   await p.close();
 }
 
