@@ -419,6 +419,8 @@ section[id], header[id] { scroll-margin-top: 84px; }
 .palco__quadro { display: grid; gap: 18px; }
 .palco__cena { position: relative; margin: 0; border-radius: var(--radius); overflow: hidden; }
 .palco__cena img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* cena ainda não acordada: sem src, não deve desenhar ícone de imagem quebrada */
+.palco__foto[data-src] { display: none; }
 .palco__trilha, .palco__dica, .palco__barra { display: none; }
 .palco__indice { display: none; }
 
@@ -669,9 +671,14 @@ body = trocarBloco(body, '      <div class="ambientes__grade">', (bloco, indent)
     `${indent}<div class="palco" data-ambientes>`,
     `${i2}<div class="palco__fixo">`,
     `${i3}<div class="palco__quadro">`,
+    // Só o primeiro ambiente carrega junto com a página. Os outros três pesam
+    // ~550KB e ficam invisíveis até o visitante rolar — vão de data-src e são
+    // acordados pelo palco (o atual e o próximo). <noscript> cobre quem não tem JS.
     ...imgs.flatMap((img, n) => [
       `${i4}<figure class="palco__cena${n === 0 ? ' is-ativa' : ''}" aria-hidden="${n === 0 ? 'false' : 'true'}">`,
-      `${i5}${img}`,
+      n === 0
+        ? `${i5}${img.replace('<img ', '<img class="palco__foto" ').replace(' loading="lazy"', '').replace('decoding="async"', 'fetchpriority="low" decoding="async"')}`
+        : `${i5}${img.replace('<img ', '<img class="palco__foto" ').replace(/\bsrc=/, 'data-src=').replace(/\bsrcset=/, 'data-srcset=').replace(/\bsizes=/, 'data-sizes=')}\n${i5}<noscript>${img}</noscript>`,
       `${i5}<figcaption class="palco__legenda">`,
       `${i5}  <span class="palco__numero">${String(n + 1).padStart(2, '0')}</span>`,
       `${i5}  <span class="palco__nome">${nomes[n]}</span>`,

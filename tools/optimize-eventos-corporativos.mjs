@@ -24,7 +24,7 @@ const PAPEIS = [
   { test: /formulario\./,  larguras: [640, 960, 1280, 1920], quality: 70 },         // fundo da seção de contato
   { test: /hospedagem-/,   larguras: [360, 560, 800, 1080], quality: 76 },
   // Fotos vindas de PNG com muito detalhe: pesam o dobro no mesmo tamanho.
-  { test: /(jatoba|redario|espacorustico)\./, larguras: [320, 480, 560, 800], quality: 68 },
+  { test: /(jatoba|redario|espacorustico)\./, larguras: [320, 480, 560, 800], quality: 62 },
   { test: /sobre\./,       larguras: [480, 700, 1000, 1200, 1600], quality: 74 },
   { test: /salaoprincipal\./, larguras: [320, 480, 560, 800, 1400], quality: 75 },
   { test: /galeria-/,      larguras: [320, 480, 640, 800, 1400], quality: 74 },

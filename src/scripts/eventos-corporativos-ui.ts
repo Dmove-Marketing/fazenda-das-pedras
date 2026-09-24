@@ -166,13 +166,29 @@ export function initAmbientes() {
   const barra = palco.querySelector<HTMLElement>('.palco__barra span');
   if (cenas.length < 2 || marcos.length !== cenas.length) return;
 
-  if (menosMovimento()) { palco.classList.add('palco--simples'); return; }
+  // As cenas 2..4 vêm com data-src para não baixarem junto com a página.
+  const acordarCena = (i: number) => {
+    const img = cenas[i]?.querySelector<HTMLImageElement>('img[data-src]');
+    if (!img) return;
+    if (img.dataset.srcset) img.srcset = img.dataset.srcset;
+    if (img.dataset.sizes) img.sizes = img.dataset.sizes;
+    img.src = img.dataset.src!;
+    delete img.dataset.src;
+  };
+
+  if (menosMovimento()) {
+    palco.classList.add('palco--simples');
+    cenas.forEach((_, i) => acordarCena(i));
+    return;
+  }
   palco.classList.add('palco--pronto');
 
   let atual = -1;
   const ativar = (i: number) => {
     if (i === atual) return;
     atual = i;
+    acordarCena(i);
+    acordarCena(i + 1);   // adianta a próxima, para a troca não esperar download
     cenas.forEach((c, n) => {
       c.classList.toggle('is-ativa', n === i);
       c.classList.toggle('is-passada', n < i);

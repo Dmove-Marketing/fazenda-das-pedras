@@ -1286,6 +1286,8 @@ section[id], header[id] { scroll-margin-top: 84px; }
 .palco__quadro { display: grid; gap: 18px; }
 .palco__cena { position: relative; margin: 0; border-radius: var(--radius); overflow: hidden; }
 .palco__cena img { width: 100%; height: 100%; object-fit: cover; display: block; }
+/* cena ainda não acordada: sem src, não deve desenhar ícone de imagem quebrada */
+.palco__foto[data-src] { display: none; }
 .palco__trilha, .palco__dica, .palco__barra { display: none; }
 .palco__indice { display: none; }
 
