@@ -208,10 +208,21 @@ reconstruídos em `src/scripts/eventos-corporativos-ui.ts`:
   chamam `scrollTo` no trilho (nunca hash), indicadores (bolinhas até 6 fotos,
   contador + barra acima disso), teclado, arrasto com mouse e avanço automático que
   pausa ao primeiro toque e só roda enquanto o carrossel está na tela.
-- **Palco de ambientes** (`[data-ambientes]`) — a grade de 4 colunas não deixava
-  entender ambiente nenhum. Agora cada um ocupa a tela e troca conforme a rolagem,
-  com marcos invisíveis dando o compasso via IntersectionObserver. Só mudam opacidade
-  e escala, então a troca roda no compositor.
+- **Palco de ambientes** (`[data-ambientes]`) — **só abaixo de 900px**. No celular a
+  grade de 4 colunas não deixava entender ambiente nenhum, então cada um passa a
+  ocupar a tela e trocar conforme a rolagem, com marcos invisíveis dando o compasso
+  via IntersectionObserver. Só mudam opacidade e escala, então a troca roda no
+  compositor. **De 900px para cima vale a grade original do design, intacta.**
+
+  Os dois blocos convivem no HTML e o CSS mostra um ou outro. Nenhum dos dois
+  desperdiça banda: a grade é `lazy` (oculta, não baixa) e as cenas 2..4 do palco
+  só têm `data-src`. A mesma foto tem `sizes` diferente em cada bloco — a caixa da
+  grade tem 272px e a do palco quase a tela inteira.
+
+  A tela fixa do palco usa `top: 14svh` (e não `0`) de propósito: engata ~118px
+  **antes** do topo da seção alcançar o topo da tela, e o conteúdo centrado numa
+  caixa de 86svh deixa a foto no centro vertical exato (desvio de 1px numa tela de
+  844px). Com `top: 0` a troca só engatava com a foto colada no topo.
 
 Ambos são melhoria progressiva: **sem JS** o carrossel continua sendo uma faixa
 rolável e o palco vira uma lista de fotos grandes. `prefers-reduced-motion` desliga

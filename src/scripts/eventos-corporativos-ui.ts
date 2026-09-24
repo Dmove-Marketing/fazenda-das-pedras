@@ -160,6 +160,16 @@ export function initAmbientes() {
   const palco = document.querySelector<HTMLElement>('[data-ambientes]');
   if (!palco) return;
 
+  // O palco é do celular. No desktop vale a grade de 4 colunas do design; se a
+  // janela encolher para a faixa do celular, monta na hora.
+  const celular = window.matchMedia('(max-width: 899px)');
+  if (!celular.matches) {
+    celular.addEventListener('change', () => initAmbientes(), { once: true });
+    return;
+  }
+  if (palco.dataset.montado) return;
+  palco.dataset.montado = 'sim';
+
   const cenas = [...palco.querySelectorAll<HTMLElement>('.palco__cena')];
   const marcos = [...palco.querySelectorAll<HTMLElement>('.palco__marco')];
   const atalhos = [...palco.querySelectorAll<HTMLButtonElement>('.palco__atalho')];

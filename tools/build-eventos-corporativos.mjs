@@ -48,9 +48,9 @@ const PAPEIS_IMG = [
     larguras: [320, 480, 640, 900], caixas: [[1440, 276, 368], [1024, 237, 316], [768, 173, 231], [390, 300, 225]] },
   { nome: 'hospedagem', casa: (l, n) => /hospedagem-/.test(n),
     larguras: [360, 560, 800, 1080], caixas: [[1440, 459, 612], [1024, 393, 524], [768, 728, 546], [390, 350, 263]] },
-  // O palco mostra um ambiente por vez, quase em tela cheia — a caixa é outra.
+  // Grade original de 4 colunas — o formato que vale do desktop para cima.
   { nome: 'ambiente',  casa: (l, n) => /(jatoba|redario|espacorustico|salaoprincipal)/.test(n),
-    larguras: [320, 480, 560, 800, 1100, 1400], caixas: [[1440, 720, 620], [1024, 620, 560], [768, 560, 520], [390, 340, 480]] },
+    larguras: [320, 480, 560, 800], caixas: [[1440, 272, 362], [1024, 233, 310], [768, 355, 266], [390, 170, 128]] },
   { nome: 'sobre',     casa: (l, n) => /sobre/.test(n),
     larguras: [480, 700, 1000, 1200, 1600], caixas: [[1440, 540, 405], [1024, 462, 347], [768, 728, 546], [390, 350, 263]] },
 ];
@@ -69,6 +69,10 @@ const montarSizes = (papel, proporcao) => {
   return faixas.map((f, i) => (i === faixas.length - 1 && f.min === 0 ? f.valor : `(min-width: ${f.min}px) ${f.valor}`)).join(', ');
 };
 
+// O palco existe só abaixo de 900px e mostra um ambiente por vez, quase em tela
+// cheia — geometria completamente diferente da grade, logo `sizes` próprio.
+const PAPEL_PALCO = { nome: 'palco', larguras: [320, 480, 560, 800], caixas: [[390, 340, 480]] };
+
 // Fundos em CSS: o browser não tem srcset, então troca-se a variante por media query.
 const FUNDOS = [
   // Abaixo de 900px o hero não usa fundo em CSS: a foto é um <img> inteiro.
@@ -76,6 +80,26 @@ const FUNDOS = [
   { seletor: '.depoimento', base: 'fazendadaspedras-corporativo-estrutura-2', menor: 640,  camadas: [[600, 960], [1000, 1280], [1600, 1920]] },
   { seletor: '.contato',    base: 'fazendadaspedras-corporativo-formulario',  menor: 640,  camadas: [[600, 960], [1000, 1280], [1600, 1920]] },
 ];
+
+// src/srcset/sizes/width/height de uma foto para um papel — a mesma foto pode
+// aparecer em dois papéis (grade no desktop, palco no celular) e pedir tamanhos
+// completamente diferentes.
+const atributosImg = (nome, papel) => {
+  const item = MANIFESTO[nome];
+  const disponiveis = item.variantes.map((v) => v.w);
+  let escolhidas = papel.larguras.map((w) => Math.min(w, item.largura)).filter((w) => disponiveis.includes(w));
+  if (!escolhidas.length) escolhidas = [disponiveis[disponiveis.length - 1]];
+  escolhidas = [...new Set(escolhidas)].sort((a, b) => a - b);
+  const maior = escolhidas[escolhidas.length - 1];
+  const dims = item.variantes.find((v) => v.w === maior);
+  return [
+    `src="${url(nome, maior)}"`,
+    `srcset="${escolhidas.map((w) => `${url(nome, w)} ${w}w`).join(', ')}"`,
+    `sizes="${montarSizes(papel, item.proporcao)}"`,
+    `width="${dims.w}"`,
+    `height="${dims.h}"`,
+  ].join(' ');
+};
 
 const html = await readFile(SRC, 'utf8');
 
@@ -426,6 +450,18 @@ section[id], header[id] { scroll-margin-top: 84px; }
 .hospedagem-verde .carrossel__barra span { background: var(--cor-destaque-clara); }
 
 /* ============================================================
+   Ambientes: grade original no desktop, palco no celular
+   ------------------------------------------------------------
+   Os dois blocos existem no HTML. O que está oculto não baixa foto: a grade
+   é lazy e as cenas 2..4 do palco só têm data-src.
+   ============================================================ */
+.palco { display: none; }
+@media (max-width: 899px) {
+  .ambientes__grade { display: none; }
+  .palco { display: block; }
+}
+
+/* ============================================================
    Palco de ambientes — um ambiente por vez, trocando com a rolagem
    ------------------------------------------------------------
    Em grade de 4 colunas não dava para entender ambiente nenhum. Aqui cada
@@ -458,9 +494,14 @@ section[id], header[id] { scroll-margin-top: 84px; }
 /* 280svh = a tela fixa (100) + 180 de rolagem divididos entre os 4 ambientes,
    ~45svh cada. Mais que isso vira arrastado e empurra o formulário para longe. */
 .palco--pronto { position: relative; height: 280svh; }
+/* top: 14svh (e não 0) por dois motivos: a tela fixa engata ~118px ANTES, então
+   a troca já começa com a foto posicionada; e o conteúdo, centrado numa caixa de
+   86svh que começa logo abaixo do cabeçalho, deixa a foto no centro vertical da
+   tela. Com top: 0 a foto ficava ~60px acima do centro e a troca só engatava
+   com o topo dela colado no topo da tela. */
 .palco--pronto .palco__fixo {
-  position: sticky; top: 0;
-  height: 100svh;
+  position: sticky; top: 14svh;
+  height: 86svh;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   gap: 16px;
@@ -608,18 +649,10 @@ body = body.split('\n').map((linha) => {
     if (!escolhidas.length) escolhidas = [disponiveis[disponiveis.length - 1]];
     escolhidas = [...new Set(escolhidas)].sort((a, b) => a - b);
 
-    const maior = escolhidas[escolhidas.length - 1];
-    const dims = item.variantes.find((v) => v.w === maior);
-    const srcset = escolhidas.map((w) => `${url(nome, w)} ${w}w`).join(', ');
-
     const resto = `${antes}${depois}`.trim();
     const temLazy = /loading=/.test(resto);
     const atributos = [
-      `src="${url(nome, maior)}"`,
-      `srcset="${srcset}"`,
-      `sizes="${montarSizes(papel, item.proporcao)}"`,
-      `width="${dims.w}"`,
-      `height="${dims.h}"`,
+      atributosImg(nome, papel),
       temLazy ? '' : 'loading="lazy"',
       'decoding="async"',
     ].filter(Boolean).join(' ');
@@ -678,25 +711,36 @@ const carrossel = (indent, { id, rotulo, classe = '', autoplay = 0, itens }) => 
   ].join('\n');
 };
 
-// —— Ambientes: palco com troca por rolagem ——
+// —— Ambientes: a grade original continua (desktop) e ganha o palco ao lado (celular) ——
 body = trocarBloco(body, '      <div class="ambientes__grade">', (bloco, indent) => {
   const imgs = imagensDe(bloco);
   const nomes = [...bloco.matchAll(/<span class="ambiente-card__rotulo">([^<]+)<\/span>/g)].map((m) => m[1]);
   if (imgs.length !== 4 || nomes.length !== 4) throw new Error('Ambientes: esperava 4 cards');
 
+  // A mesma foto num contexto totalmente diferente: recalcula srcset/sizes para
+  // a caixa do palco, senão o celular baixaria a variante da grade (170px).
+  const paraPalco = (tag) => {
+    const nome = tag.match(/src="[^"]*\/([^"/]+?)-\d+\.webp"/)?.[1];
+    if (!nome) throw new Error(`Não consegui identificar a foto do palco em: ${tag.slice(0, 80)}`);
+    const alt = tag.match(/alt="[^"]*"/)?.[0] || '';
+    return `<img class="palco__foto" ${alt} ${atributosImg(nome, PAPEL_PALCO)} loading="lazy" decoding="async">`;
+  };
+  const imgsPalco = imgs.map(paraPalco);
+
   const i2 = indent + '  ', i3 = indent + '    ', i4 = indent + '      ', i5 = indent + '        ';
   return [
+    bloco,   // grade original, intacta — é o que aparece de 900px para cima
     `${indent}<div class="palco" data-ambientes>`,
     `${i2}<div class="palco__fixo">`,
     `${i3}<div class="palco__quadro">`,
     // Só o primeiro ambiente carrega junto com a página. Os outros três pesam
     // ~550KB e ficam invisíveis até o visitante rolar — vão de data-src e são
     // acordados pelo palco (o atual e o próximo). <noscript> cobre quem não tem JS.
-    ...imgs.flatMap((img, n) => [
+    ...imgsPalco.flatMap((img, n) => [
       `${i4}<figure class="palco__cena${n === 0 ? ' is-ativa' : ''}" aria-hidden="${n === 0 ? 'false' : 'true'}">`,
       n === 0
-        ? `${i5}${img.replace('<img ', '<img class="palco__foto" ')}`
-        : `${i5}${img.replace('<img ', '<img class="palco__foto" ').replace(/\bsrc=/, 'data-src=').replace(/\bsrcset=/, 'data-srcset=').replace(/\bsizes=/, 'data-sizes=')}\n${i5}<noscript>${img}</noscript>`,
+        ? `${i5}${img}`
+        : `${i5}${img.replace(/\bsrc=/, 'data-src=').replace(/\bsrcset=/, 'data-srcset=').replace(/\bsizes=/, 'data-sizes=')}\n${i5}<noscript>${img}</noscript>`,
       `${i5}<figcaption class="palco__legenda">`,
       `${i5}  <span class="palco__numero">${String(n + 1).padStart(2, '0')}</span>`,
       `${i5}  <span class="palco__nome">${nomes[n]}</span>`,

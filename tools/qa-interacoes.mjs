@@ -86,9 +86,60 @@ for (const [rotulo, vw, vh] of [['mobile', 390, 844], ['desktop', 1440, 900]]) {
     comHash === 0 ? ok(`${rotulo}/${id}: sem navegação por hash`) : fail(`${rotulo}/${id}: ainda há ${comHash} link de hash`);
   }
 
-  // —— palco de ambientes ——
-  const palcoPronto = await p.evaluate(() => document.querySelector('[data-ambientes]')?.classList.contains('palco--pronto'));
-  palcoPronto ? ok(`${rotulo}: palco de ambientes inicializado`) : fail(`${rotulo}: palco não inicializou`);
+  // —— ambientes: grade no desktop, palco no celular ——
+  const ambientes = await p.evaluate(() => ({
+    grade: getComputedStyle(document.querySelector('.ambientes__grade')).display,
+    palco: getComputedStyle(document.querySelector('.palco')).display,
+    pronto: document.querySelector('[data-ambientes]').classList.contains('palco--pronto'),
+    cards: document.querySelectorAll('.ambiente-card').length,
+    cenasBaixadas: [...document.querySelectorAll('.palco__cena img')].filter((i) => i.naturalWidth > 0).length,
+  }));
+
+  if (rotulo === 'desktop') {
+    ambientes.grade !== 'none' && ambientes.palco === 'none'
+      ? ok('desktop: ambientes na grade original do design', `${ambientes.cards} cards`)
+      : fail('desktop: ambientes fora da grade', JSON.stringify(ambientes));
+    !ambientes.pronto ? ok('desktop: palco não é montado') : fail('desktop: palco montado onde não devia');
+    ambientes.cenasBaixadas === 0 ? ok('desktop: fotos do palco não são baixadas') : fail(`desktop: ${ambientes.cenasBaixadas} foto(s) do palco baixadas à toa`);
+    erros.length ? fail(`${rotulo}: erros de JS`, erros.join(' | ')) : ok(`${rotulo}: sem erro de JS`);
+    await p.close();
+    continue;
+  }
+
+  ambientes.palco !== 'none' && ambientes.grade === 'none'
+    ? ok('mobile: ambientes no palco (grade oculta)')
+    : fail('mobile: ambientes fora do palco', JSON.stringify(ambientes));
+  ambientes.pronto ? ok(`${rotulo}: palco de ambientes inicializado`) : fail(`${rotulo}: palco não inicializou`);
+
+  // a foto precisa estar CENTRADA na tela quando a troca acontece
+  const centragem = await p.evaluate(() => {
+    const palco = document.querySelector('[data-ambientes]');
+    const quadro = palco.querySelector('.palco__quadro');
+    const P = palco.getBoundingClientRect().top + window.scrollY;
+    document.documentElement.style.scrollBehavior = 'auto';
+    window.scrollTo(0, P + 300);
+    const r = quadro.getBoundingClientRect();
+    return { centroQuadro: Math.round(r.top + r.height / 2), centroTela: Math.round(window.innerHeight / 2) };
+  });
+  Math.abs(centragem.centroQuadro - centragem.centroTela) <= 24
+    ? ok('mobile: foto centralizada na tela durante a troca', `quadro ${centragem.centroQuadro} · tela ${centragem.centroTela}`)
+    : fail('mobile: foto fora do centro', JSON.stringify(centragem));
+
+  // e a tela fixa precisa engatar ANTES do topo da seção chegar ao topo
+  const engate = await p.evaluate(() => {
+    const palco = document.querySelector('[data-ambientes]');
+    const fixo = palco.querySelector('.palco__fixo');
+    const P = palco.getBoundingClientRect().top + window.scrollY;
+    const alvo = Math.round(window.innerHeight * 0.14);
+    for (let rel = -300; rel <= 0; rel += 5) {
+      window.scrollTo(0, P + rel);
+      if (Math.abs(fixo.getBoundingClientRect().top - alvo) < 3) return rel;
+    }
+    return 0;
+  });
+  engate < -40
+    ? ok('mobile: a tela fixa engata antes do topo da seção', `${Math.abs(engate)}px antes`)
+    : fail('mobile: engate tarde demais', `${engate}px`);
 
   // Rola o palco de ponta a ponta e registra a cena ativa a cada passo:
   // é assim que o visitante percorre, e não pulando de marco em marco.

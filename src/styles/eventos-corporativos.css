@@ -1290,6 +1290,18 @@ section[id], header[id] { scroll-margin-top: 84px; }
 .hospedagem-verde .carrossel__barra span { background: var(--cor-destaque-clara); }
 
 /* ============================================================
+   Ambientes: grade original no desktop, palco no celular
+   ------------------------------------------------------------
+   Os dois blocos existem no HTML. O que está oculto não baixa foto: a grade
+   é lazy e as cenas 2..4 do palco só têm data-src.
+   ============================================================ */
+.palco { display: none; }
+@media (max-width: 899px) {
+  .ambientes__grade { display: none; }
+  .palco { display: block; }
+}
+
+/* ============================================================
    Palco de ambientes — um ambiente por vez, trocando com a rolagem
    ------------------------------------------------------------
    Em grade de 4 colunas não dava para entender ambiente nenhum. Aqui cada
@@ -1322,9 +1334,14 @@ section[id], header[id] { scroll-margin-top: 84px; }
 /* 280svh = a tela fixa (100) + 180 de rolagem divididos entre os 4 ambientes,
    ~45svh cada. Mais que isso vira arrastado e empurra o formulário para longe. */
 .palco--pronto { position: relative; height: 280svh; }
+/* top: 14svh (e não 0) por dois motivos: a tela fixa engata ~118px ANTES, então
+   a troca já começa com a foto posicionada; e o conteúdo, centrado numa caixa de
+   86svh que começa logo abaixo do cabeçalho, deixa a foto no centro vertical da
+   tela. Com top: 0 a foto ficava ~60px acima do centro e a troca só engatava
+   com o topo dela colado no topo da tela. */
 .palco--pronto .palco__fixo {
-  position: sticky; top: 0;
-  height: 100svh;
+  position: sticky; top: 14svh;
+  height: 86svh;
   display: flex; flex-direction: column;
   align-items: center; justify-content: center;
   gap: 16px;
