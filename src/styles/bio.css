@@ -292,6 +292,10 @@ h1, h2, h3 { font-family: var(--fonte-titulo); line-height: normal; letter-spaci
   transition: transform .35s cubic-bezier(.4, 0, .2, 1);
 }
 .formulario--etapas .formulario__acoes { display: flex; gap: 10px; align-items: stretch; }
+/* .botao tem width: 100% para o envio ocupar a linha inteira na etapa 1. Na
+   barra de dois botões isso fazia o "Voltar" reivindicar a largura toda e
+   empurrar o "Enviar" para fora. */
+.formulario--etapas .formulario__acoes > .botao { width: auto; }
 .formulario--etapas .formulario__voltar,
 .formulario--etapas .formulario__avancar { display: inline-flex; }
 .formulario__acoes [hidden] { display: none !important; }

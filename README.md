@@ -159,7 +159,22 @@ node tools/audit-fontes.mjs                   # tipografia elemento a elemento c
 node tools/medir-peso.mjs                     # bytes transferidos por dispositivo
 node tools/qa-interacoes.mjs                  # carrosséis, palco de ambientes, hero mobile
 node tools/qa-formulario.mjs                  # etapas no celular, validação e payload do lead
+node tools/qa-bio.mjs                         # portas, popup, etapas e payload da /bio
+node tools/lint-cascata.mjs                   # regras mobile anuladas por regra base posterior
 ```
+
+### `lint-cascata.mjs` — por que existe
+
+O CSS do design declara a posição mobile do pontinho da hospedagem **dentro** de
+`@media (max-width: 899px)`, mas repete a regra base logo **depois** no arquivo,
+com a mesma especificidade. A base vence, e a variação mobile — que está escrita
+ali, visível no código — simplesmente não vale. No celular o ponto ia parar no
+canto superior esquerdo da célula, solto do texto centralizado.
+
+Esse tipo de erro não aparece lendo o CSS: a regra existe. O linter varre as duas
+folhas procurando regras mobile anuladas por uma base posterior, e ignora as que
+uma media query mais adiante restabelece — que é como a normalização do build
+conserta o design sem reescrevê-lo.
 
 O QA e o VRT esperam o preview rodando (`npx astro preview --port 4331`).
 

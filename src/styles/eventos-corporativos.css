@@ -1561,6 +1561,15 @@ section[id], header[id] { scroll-margin-top: 84px; }
 .campo input[type="number"]::-webkit-outer-spin-button,
 .campo input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
 
+/* O CSS do design declara a posição mobile do pontinho dentro do
+   @media (max-width: 899px), mas a regra base ".hospedagem__destaque::before"
+   aparece DEPOIS no arquivo, com a mesma especificidade — e vence. Resultado:
+   no celular o ponto ia para o canto superior esquerdo da célula, solto do
+   texto centralizado. Redeclarado aqui, que é o fim da folha. */
+@media (max-width: 899px) {
+  .hospedagem__destaque::before { left: 50%; top: 0; transform: translateX(-50%); }
+}
+
 /* Erro por campo — aparece ao sair do campo, some ao corrigir */
 .campo.tem-erro input,
 .campo.tem-erro select,
