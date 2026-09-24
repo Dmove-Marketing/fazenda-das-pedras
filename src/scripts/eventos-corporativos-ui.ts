@@ -252,10 +252,13 @@ export function initAmbientes() {
 // envio. Nada muda no contrato: mesmos campos, mesmos `name`, mesmo motor de
 // envio (forms.ts) e o mesmo disparo único de `form_submit` no fim.
 // ------------------------------------------------------------
-export function initFormularioEtapas() {
+export function initFormularioEtapas({ sempre = false }: { sempre?: boolean } = {}) {
   const form = document.querySelector<HTMLFormElement>('#lead-form');
   if (!form) return;
-  if (!window.matchMedia('(max-width: 899px)').matches) return;
+  // Na LP as etapas são só do celular: no desktop o formulário cabe inteiro.
+  // Na /bio valem sempre — é uma página de celular por natureza, e mesmo no
+  // desktop ela é estreita.
+  if (!sempre && !window.matchMedia('(max-width: 899px)').matches) return;
 
   const etapas = [...form.querySelectorAll<HTMLElement>('.form-etapa')];
   const passo = form.querySelector<HTMLElement>('.formulario__passo');

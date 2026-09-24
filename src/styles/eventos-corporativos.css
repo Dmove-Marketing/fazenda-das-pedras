@@ -1288,7 +1288,11 @@ section[id], header[id] { scroll-margin-top: 84px; }
 /* muitos itens: contador + barra, que lê melhor que 9 bolinhas */
 .carrossel__medidor { display: none; align-items: center; gap: 12px; justify-content: center; margin-top: 14px; }
 .carrossel--pronto .carrossel__medidor { display: flex; }
-.carrossel__contagem { font-size: 12px; letter-spacing: .14em; color: var(--cor-label); font-variant-numeric: tabular-nums; }
+.carrossel__contagem {
+  font-size: 12px; letter-spacing: .14em; font-variant-numeric: tabular-nums;
+  /* --cor-label (#AE9C72) dá 2,3:1 sobre o creme da galeria; este tom dá 4,5:1 */
+  color: #7D6A3F;
+}
 .carrossel__barra { width: min(180px, 42vw); height: 3px; border-radius: 3px; background: rgba(74, 79, 39, .18); overflow: hidden; }
 .carrossel__barra span { display: block; height: 100%; border-radius: 3px; background: var(--cor-destaque-escura); transform-origin: left center; transition: transform .35s cubic-bezier(.4, 0, .2, 1); }
 .hospedagem-verde .carrossel__contagem { color: var(--cor-destaque-clara); }
@@ -1404,7 +1408,9 @@ section[id], header[id] { scroll-margin-top: 84px; }
   font-family: var(--fonte-corpo);
   font-size: 12px; letter-spacing: .04em;
   color: var(--cor-texto);
-  opacity: .5;
+  /* .5 de opacidade dava 2,8:1 sobre o fundo claro — abaixo do mínimo.
+     .72 mantém a hierarquia com o item ativo e chega a 4,9:1. */
+  opacity: .72;
   padding: 10px 12px;
   min-height: 40px;
   border-radius: 999px;
@@ -1492,7 +1498,9 @@ section[id], header[id] { scroll-margin-top: 84px; }
     font-size: 12px;
     letter-spacing: .1em;
     text-transform: uppercase;
-    color: var(--cor-label);
+    /* --cor-label (#AE9C72) sobre branco dá 2,7:1 — abaixo do mínimo.
+       Este tom da mesma família dá 5,2:1. */
+    color: #7D6A3F;
   }
   .formulario__passo b { color: var(--cor-primaria); font-weight: 600; }
   .formulario__passo-barra {

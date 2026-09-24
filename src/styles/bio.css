@@ -1,0 +1,340 @@
+/* ============================================================
+   /bio — link da bio do Instagram
+   ------------------------------------------------------------
+   Página curta, pensada para o dedo e para a tela do celular: a marca,
+   as quatro portas de saída e o formulário logo abaixo. Não reaproveita
+   o CSS da LP corporativa de propósito — lá são 1.400 linhas de um
+   design específico; aqui bastam os tokens da marca e o formulário.
+   ============================================================ */
+
+/* ---------- Fontes da marca (mesmos arquivos da LP) ---------- */
+@font-face {
+  font-family: 'Kalista Serif';
+  src: url('/fonts/Kalista-Serif-Light.woff2') format('woff2');
+  font-weight: 300; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Kalista Serif';
+  src: url('/fonts/Kalista-Serif-Regular.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Gotham';
+  src: url('/fonts/Gotham-Book.woff2') format('woff2');
+  font-weight: 400; font-style: normal; font-display: swap;
+}
+@font-face {
+  font-family: 'Gotham';
+  src: url('/fonts/Gotham-Medium.woff2') format('woff2');
+  font-weight: 600; font-style: normal; font-display: swap;
+}
+
+:root {
+  --cor-primaria: #4A4F27;
+  --cor-primaria-escura: #3A3E1F;
+  --cor-primaria-clara: #979F59;
+  --cor-destaque: #D9A85C;
+  --cor-destaque-escura: #B37B31;
+  --cor-destaque-clara: #EDC17A;
+  --cor-label: #AE9C72;
+  --cor-fundo: #FFFFFF;
+  --cor-fundo-creme: #F5EEDC;
+  --cor-texto: #34381d;
+  --cor-texto-claro: #F5EEDC;
+  --cor-borda: #E4DCC8;
+
+  --fonte-titulo: 'Kalista Serif', Georgia, 'Times New Roman', serif;
+  --fonte-corpo: 'Gotham', 'Segoe UI', Arial, sans-serif;
+
+  /* o global.css aplica estes dois em h1..h6 e no body */
+  --font-display: 'Kalista Serif', Georgia, 'Times New Roman', serif;
+  --font-body: 'Gotham', 'Segoe UI', Arial, sans-serif;
+
+  --largura: 460px;
+  --gutter: 20px;
+  --radius: 16px;
+}
+
+/* O global.css impõe line-height, cor e peso próprios — aqui a página
+   assume o padrão do navegador, como no CSS do design. */
+body {
+  font-family: var(--fonte-corpo);
+  line-height: normal;
+  color: var(--cor-texto);
+  background: var(--cor-primaria-escura);
+}
+p { color: inherit; line-height: normal; }
+h1, h2, h3 { font-family: var(--fonte-titulo); line-height: normal; letter-spacing: normal; margin: 0; }
+
+.bio {
+  min-height: 100svh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 0 0 40px;
+}
+.bio__miolo {
+  width: 100%;
+  max-width: calc(var(--largura) + var(--gutter) * 2);
+  padding-inline: var(--gutter);
+  box-sizing: border-box;
+}
+
+/* ---------- Topo: marca e promessa ---------- */
+/* A faixa atravessa a tela inteira; só o conteúdo respeita a coluna, senão
+   no desktop a foto vira um retângulo solto no meio do verde. */
+.bio__capa {
+  position: relative;
+  width: 100%;
+  padding: 34px var(--gutter) 30px;
+  text-align: center;
+  color: var(--cor-texto-claro);
+  overflow: hidden;
+  box-sizing: border-box;
+}
+.bio__capa-miolo {
+  position: relative;
+  max-width: var(--largura);
+  margin-inline: auto;
+}
+.bio__capa::before {
+  content: '';
+  position: absolute;
+  inset: 0;
+  background:
+    linear-gradient(180deg, rgba(40, 43, 20, .72) 0%, rgba(58, 62, 31, .94) 78%, var(--cor-primaria-escura) 100%),
+    url('/images/hero/fazendadaspedras-corporativo-hero-800.webp') center 38% / cover no-repeat;
+}
+
+
+.bio__logo { width: 116px; height: auto; margin: 0 auto 18px; display: block; }
+
+.bio__segmentos {
+  margin: 0 0 14px;
+  font-size: 12px;
+  letter-spacing: .1em;
+  text-transform: uppercase;
+  color: var(--cor-destaque-clara);
+  /* sem isto a linha quebra em "EVENTOS / SOCIAIS" num celular de 390px */
+  text-wrap: balance;
+}
+.bio__titulo {
+  font-size: 26px;
+  font-weight: 400;
+  line-height: 1.18;
+  margin: 0 0 12px;
+  text-wrap: balance;
+}
+@media (min-width: 380px) { .bio__titulo { font-size: 29px; } }
+.bio__subtitulo {
+  font-size: 15px;
+  line-height: 1.5;
+  margin: 0;
+  opacity: .92;
+  max-width: 34ch;
+  margin-inline: auto;
+}
+@media (min-width: 480px) {
+  .bio__titulo { font-size: 34px; }
+  .bio__logo { width: 132px; }
+}
+
+/* ---------- Botões ---------- */
+.bio__portas {
+  display: grid;
+  gap: 10px;
+  margin: 26px 0 0;
+}
+.bio__porta {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  min-height: 60px;
+  padding: 12px 18px;
+  border-radius: var(--radius);
+  background: var(--cor-fundo-creme);
+  color: var(--cor-primaria);
+  text-decoration: none;
+  border: 1px solid transparent;
+  transition: transform .18s ease, background .18s ease, border-color .18s ease;
+}
+.bio__porta:active { transform: scale(.985); }
+@media (hover: hover) {
+  .bio__porta:hover { background: var(--cor-fundo); border-color: var(--cor-destaque-clara); }
+}
+.bio__porta--destaque {
+  background: var(--cor-destaque);
+  color: var(--cor-primaria-escura);
+}
+@media (hover: hover) {
+  .bio__porta--destaque:hover { background: var(--cor-destaque-clara); border-color: transparent; }
+}
+
+.bio__icone {
+  flex: 0 0 auto;
+  width: 26px; height: 26px;
+  display: grid; place-items: center;
+}
+.bio__icone svg { width: 24px; height: 24px; display: block; }
+.bio__porta-texto { display: flex; flex-direction: column; gap: 2px; text-align: left; min-width: 0; }
+.bio__porta-titulo { font-size: 15px; font-weight: 600; letter-spacing: .01em; }
+/* opacity .72 dava 3,7:1 sobre o creme e 3,1:1 sobre o mostarda — abaixo do
+   mínimo de 4,5:1. Cor cheia, com o contraste medido: 5,5:1 e 5,1:1. */
+.bio__porta-apoio { font-size: 12px; color: #5F623D; }
+.bio__porta--destaque .bio__porta-apoio { color: var(--cor-primaria-escura); }
+.bio__seta { margin-left: auto; flex: 0 0 auto; opacity: .45; font-size: 18px; line-height: 1; }
+
+/* ---------- Formulário ---------- */
+.bio__form {
+  margin-top: 30px;
+  background: var(--cor-fundo);
+  border-radius: var(--radius);
+  padding: 22px 20px;
+  box-shadow: 0 12px 40px rgba(26, 28, 14, .28);
+}
+.bio__form-titulo { font-size: 22px; font-weight: 400; color: var(--cor-primaria-escura); margin: 0 0 4px; }
+.bio__form-apoio { font-size: 13px; color: var(--cor-texto); opacity: .78; margin: 0 0 18px; }
+
+.campo { margin-bottom: 12px; text-align: left; }
+.campo label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: var(--cor-primaria);
+  margin-bottom: 6px;
+}
+.campo label span { color: var(--cor-label); font-weight: 400; }
+.campo input,
+.campo select,
+.campo textarea {
+  width: 100%;
+  font-family: var(--fonte-corpo);
+  font-size: 16px;   /* abaixo de 16px o iOS dá zoom ao focar */
+  color: var(--cor-texto);
+  background: var(--cor-fundo-creme);
+  border: 1px solid var(--cor-borda);
+  border-radius: 10px;
+  padding: 11px 14px;
+  min-height: 46px;
+  box-sizing: border-box;
+}
+.campo select {
+  appearance: none;
+  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='none' stroke='%234A4F27' stroke-width='2'><polyline points='6 9 12 15 18 9'/></svg>");
+  background-repeat: no-repeat; background-position: right 14px center; background-size: 16px;
+}
+.campo textarea { resize: vertical; min-height: 76px; }
+.campo input:focus, .campo select:focus, .campo textarea:focus {
+  outline: none; border-color: var(--cor-destaque-escura); background: var(--cor-fundo);
+}
+.campo input[type="number"] { -moz-appearance: textfield; appearance: textfield; }
+.campo input[type="number"]::-webkit-outer-spin-button,
+.campo input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+.campos-duplos { display: grid; grid-template-columns: 1fr; gap: 0 10px; align-items: end; }
+@media (min-width: 360px) {
+  .form-etapa[data-etapa="2"] .campos-duplos { grid-template-columns: 1fr 1fr; }
+  .form-etapa[data-etapa="2"] .campos-duplos .campo input { padding-inline: 11px; }
+}
+
+.formulario .honeypot {
+  position: absolute; left: -9999px; width: 1px; height: 1px;
+  opacity: 0; pointer-events: none; font-family: inherit;
+}
+
+.botao {
+  display: inline-flex; align-items: center; justify-content: center;
+  min-height: 50px;
+  width: 100%;
+  border: 0; cursor: pointer;
+  border-radius: 999px;
+  font-family: var(--fonte-corpo);
+  font-size: 14px; font-weight: 600;
+  letter-spacing: .06em; text-transform: uppercase;
+  background: var(--cor-destaque); color: var(--cor-primaria-escura);
+  transition: background .2s ease, transform .15s ease;
+}
+.botao:active { transform: scale(.99); }
+.botao[disabled] { opacity: .7; cursor: progress; }
+.botao .btn-loading { display: none; }
+
+/* estados do formulário padrão */
+.formulario__msg {
+  display: none; margin-bottom: 12px; padding: 10px 14px; border-radius: 10px;
+  background: #FDECEC; border: 1px solid #F3C4C4; color: #9B2C2C; font-size: 13px; text-align: left;
+}
+.campo.tem-erro input, .campo.tem-erro select, .campo.tem-erro textarea {
+  border-color: #C0544F; background: #FDF6F5;
+}
+.campo__erro { display: block; margin-top: 5px; font-size: 12px; line-height: 1.35; color: #9B2C2C; }
+.campo.esta-ok input, .campo.esta-ok select, .campo.esta-ok textarea { border-color: var(--cor-primaria-clara); }
+
+/* etapas — mesma mecânica da LP, aqui valendo em qualquer largura,
+   porque a bio é uma página de celular por natureza */
+.form-etapa { display: contents; }
+.formulario__acoes { display: contents; }
+.formulario__passo { display: none; }
+.formulario__voltar, .formulario__avancar { display: none; }
+
+.formulario--etapas .form-etapa { display: none; }
+.formulario--etapas .form-etapa.is-ativa { display: block; }
+.formulario--etapas .formulario__passo {
+  display: flex; align-items: center; gap: 10px; margin: 0 0 14px;
+  font-size: 12px; letter-spacing: .1em; text-transform: uppercase;
+  /* --cor-label (#AE9C72) sobre branco dá 2,7:1; este tom dá 5,2:1 */
+  color: #7D6A3F;
+}
+.formulario__passo b { color: var(--cor-primaria); font-weight: 600; }
+.formulario__passo-barra { flex: 1 1 auto; height: 3px; border-radius: 3px; background: var(--cor-borda); overflow: hidden; }
+.formulario__passo-barra span {
+  display: block; height: 100%; background: var(--cor-destaque-escura);
+  transform-origin: left center; transform: scaleX(.5);
+  transition: transform .35s cubic-bezier(.4, 0, .2, 1);
+}
+.formulario--etapas .formulario__acoes { display: flex; gap: 10px; align-items: stretch; }
+.formulario--etapas .formulario__voltar,
+.formulario--etapas .formulario__avancar { display: inline-flex; }
+.formulario__acoes [hidden] { display: none !important; }
+.formulario__voltar {
+  flex: 0 0 auto; min-width: 104px; padding-inline: 14px; font-size: 13px;
+  background: transparent; border: 1px solid var(--cor-borda); color: var(--cor-primaria);
+}
+.formulario--etapas .formulario__avancar,
+.formulario--etapas .form-submit { flex: 1 1 auto; min-width: 0; padding-inline: 14px; font-size: 13px; }
+.formulario__voltar { order: 1; }
+.formulario__avancar, .formulario--etapas .form-submit { order: 2; }
+
+/* confirmação */
+.formulario--sucesso { display: none; text-align: center; padding: 34px 20px; }
+.formulario--sucesso.active { display: block; }
+.formulario--sucesso svg { width: 44px; height: 44px; margin-bottom: 12px; color: var(--cor-primaria); stroke-width: 1.6; }
+.formulario--sucesso h3 {
+  font-family: var(--fonte-titulo); font-weight: 400; font-size: 24px;
+  color: var(--cor-primaria-escura); margin: 0 0 10px;
+}
+.formulario--sucesso p { font-size: 15px; margin: 0; }
+
+/* ---------- Rodapé ---------- */
+.bio__rodape {
+  margin-top: 28px;
+  text-align: center;
+  color: var(--cor-texto-claro);
+  font-size: 12px;
+  line-height: 1.6;
+  opacity: .7;
+}
+.bio__rodape a { color: inherit; }
+
+/* Flatpickr na paleta da marca */
+.flatpickr-calendar { font-family: var(--fonte-corpo); border-radius: 12px; box-shadow: 0 12px 40px rgba(58,62,31,.18); }
+.flatpickr-months, .flatpickr-weekdays, .flatpickr-weekdaycontainer { background: var(--cor-primaria); }
+.flatpickr-months .flatpickr-month, .flatpickr-current-month, .flatpickr-weekday { color: var(--cor-texto-claro); fill: var(--cor-texto-claro); }
+.flatpickr-months .flatpickr-prev-month svg, .flatpickr-months .flatpickr-next-month svg { fill: var(--cor-texto-claro); }
+.flatpickr-day.selected, .flatpickr-day.selected:hover { background: var(--cor-destaque-escura); border-color: var(--cor-destaque-escura); color: #fff; }
+.flatpickr-day:hover { background: var(--cor-fundo-creme); border-color: var(--cor-fundo-creme); }
+.flatpickr-day.today { border-color: var(--cor-destaque); }
+
+/* o widget de WhatsApp flutuante cobriria o botão de enviar */
+.wa-fab, .wa-teaser { transition: opacity .25s ease, transform .25s ease; }
+body.formulario-na-tela .wa-fab,
+body.formulario-na-tela .wa-teaser { opacity: 0; transform: translateY(14px); pointer-events: none; }

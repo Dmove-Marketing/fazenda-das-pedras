@@ -1,0 +1,311 @@
+---
+// ============================================================
+// /bio — página do link na bio do Instagram
+// ------------------------------------------------------------
+// @espacofazendadaspedras atende todos os segmentos, então o formulário usa o
+// preset `social` (sem "empresa") com a lista completa de tipo de evento. Quem
+// vier de um assunto corporativo informa a empresa no popup de WhatsApp, que
+// pergunta isso só quando o tipo escolhido é corporativo.
+//
+// Ordem da página: marca → as quatro portas de saída → formulário. É o que se
+// espera de um link na bio, sem esconder a conversão.
+// ============================================================
+import Base from '../layouts/Base.astro';
+import '../styles/bio.css';
+import config from '../../config.json';
+import { getPreset } from '../scripts/form-presets';
+
+const webhookUrl = config.forms['lead-form'].webhooks[0];
+const campos = getPreset('social');
+
+const layoutLinhas = [
+  ['nome'],
+  ['telefone'],
+  ['email'],
+  ['tipo_evento'],
+  ['data_evento', 'convidados'],
+  ['detalhes_adicionais'],
+];
+const porNome = new Map(campos.map((c) => [c.name, c]));
+const formRows = layoutLinhas.map((linha) =>
+  linha.map((nome) => {
+    const campo = porNome.get(nome);
+    if (!campo) throw new Error('Campo "' + nome + '" não existe no preset social');
+    return campo;
+  })
+);
+if (formRows.flat().length !== campos.length) {
+  throw new Error('layoutLinhas cobre ' + formRows.flat().length + ' campos, o preset tem ' + campos.length);
+}
+// Etapa 1 = contato. Etapa 2 = o evento.
+const etapas = [formRows.slice(0, 3), formRows.slice(3)];
+
+const autoComplete: Record<string, string> = { nome: 'name', telefone: 'tel', email: 'email' };
+
+const HERO = '/images/hero/fazendadaspedras-corporativo-hero-800.webp';
+
+const portas = [
+  {
+    id: 'whatsapp',
+    href: `https://wa.me/${config.whatsapp.phone}`,
+    titulo: 'Falar no WhatsApp',
+    apoio: 'Orçamento e datas disponíveis',
+    destaque: true,
+    icone: 'whatsapp',
+  },
+  {
+    id: 'site',
+    href: `https://${config.domain}/`,
+    titulo: 'Conhecer o espaço',
+    apoio: 'Fotos, estrutura e ambientes',
+    icone: 'site',
+  },
+  {
+    id: 'maps',
+    href: 'https://maps.app.goo.gl/i77wFj8ofu5B11qi6',
+    titulo: 'Como chegar',
+    apoio: 'Abrir no Google Maps',
+    icone: 'mapa',
+  },
+  {
+    id: 'waze',
+    href: 'https://waze.com/ul/h6gy7tpncz',
+    titulo: 'Traçar rota',
+    apoio: 'Abrir no Waze',
+    icone: 'waze',
+  },
+];
+
+const jsonLd = {
+  '@context': 'https://schema.org',
+  '@type': 'EventVenue',
+  name: 'Espaço Fazenda das Pedras',
+  description: 'Espaço de eventos em Itu, São Paulo, para casamentos, eventos corporativos e celebrações sociais.',
+  image: `https://${config.domain}${HERO}`,
+  url: `https://${config.domain}/bio`,
+  telephone: '+5511963701306',
+  address: {
+    '@type': 'PostalAddress',
+    streetAddress: 'Rod. Dom Gabriel Paulino Bueno Couto, s/n — km 98',
+    addressLocality: 'Itu',
+    addressRegion: 'SP',
+    postalCode: '13304-350',
+    addressCountry: 'BR',
+  },
+};
+---
+
+<Base
+  title="Espaço Fazenda das Pedras | Casamentos, Corporativos e Eventos Sociais em Itu"
+  description="A Fazenda mais charmosa de Itu para o seu evento. Fale com a gente, veja o espaço ou trace a rota até aqui."
+  ogImage="/images/og-eventos-corporativos.jpg"
+  canonical={`https://${config.domain}/bio`}
+  noIndex={true}
+  theme="light"
+  jsonLd={jsonLd}
+  whatsAppEmpresaCondicional={true}
+  whatsAppMessage={'Olá! Vim pelo Instagram e quero saber sobre o espaço para o meu evento.'}
+>
+  <Fragment slot="head">
+    <link rel="preload" as="image" href={HERO} fetchpriority="high" />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/Kalista-Serif-Regular.woff2" crossorigin />
+    <link rel="preload" as="font" type="font/woff2" href="/fonts/Gotham-Book.woff2" crossorigin />
+  </Fragment>
+
+  <main class="bio">
+
+    <!-- =================== MARCA =================== -->
+    <header class="bio__capa">
+      <div class="bio__capa-miolo">
+        <img
+          class="bio__logo"
+          src="/images/eventos-corporativos/logo-vertical-claro.svg"
+          alt="Espaço Fazenda das Pedras Eventos"
+          width="132"
+          height="141"
+          fetchpriority="high"
+        />
+        <p class="bio__segmentos">Casamentos | Corporativos | Eventos Sociais</p>
+        <h1 class="bio__titulo">A Fazenda mais charmosa de Itu para o seu evento</h1>
+        <p class="bio__subtitulo">Um espaço cercado pela natureza para celebrar do seu jeito.</p>
+      </div>
+    </header>
+
+    <div class="bio__miolo">
+
+      <!-- =================== PORTAS =================== -->
+      <nav class="bio__portas" aria-label="Atalhos">
+        {portas.map((porta) => (
+          <a
+            class={`bio__porta${porta.destaque ? ' bio__porta--destaque' : ''}`}
+            href={porta.href}
+            data-bio={porta.id}
+            target="_blank"
+            rel="noopener"
+          >
+            <span class="bio__icone" aria-hidden="true">
+              {porta.icone === 'whatsapp' && (
+                <svg viewBox="0 0 24 24" fill="currentColor"><path d="M17.5 14.4c-.3-.1-1.7-.9-2-1-.3-.1-.5-.1-.7.1-.2.3-.7 1-.9 1.2-.2.2-.3.2-.6.1-.3-.1-1.2-.5-2.3-1.4-.9-.8-1.4-1.7-1.6-2-.2-.3 0-.5.1-.6l.5-.5c.1-.2.2-.3.3-.5 0-.2 0-.4 0-.5 0-.1-.7-1.6-.9-2.2-.2-.6-.5-.5-.7-.5h-.6c-.2 0-.5.1-.8.4-.3.3-1 1-1 2.5s1.1 2.9 1.2 3.1c.2.2 2.1 3.2 5.1 4.5.7.3 1.3.5 1.7.6.7.2 1.4.2 1.9.1.6-.1 1.7-.7 2-1.4.2-.7.2-1.3.2-1.4-.1-.1-.3-.2-.6-.3z"/><path d="M12 2a10 10 0 0 0-8.6 15L2 22l5.2-1.4A10 10 0 1 0 12 2zm0 18.2c-1.5 0-3-.4-4.3-1.2l-.3-.2-3.1.8.8-3-.2-.3A8.2 8.2 0 1 1 12 20.2z"/></svg>
+              )}
+              {porta.icone === 'site' && (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M3 12h18M12 3a15 15 0 0 1 0 18 15 15 0 0 1 0-18z"/></svg>
+              )}
+              {porta.icone === 'mapa' && (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M12 21s7-5.4 7-11a7 7 0 1 0-14 0c0 5.6 7 11 7 11z"/><circle cx="12" cy="10" r="2.6"/></svg>
+              )}
+              {porta.icone === 'waze' && (
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"><path d="M20.5 11.2c0 4.3-3.9 7.8-8.6 7.8-1 0-2-.2-2.9-.5-.8.7-2 1.2-3.3 1.2.5-.6.9-1.3 1-2.1A7.4 7.4 0 0 1 3.3 11.2C3.3 6.9 7.2 3.4 12 3.4s8.5 3.5 8.5 7.8z"/><path d="M9.2 9.6h.01M14.8 9.6h.01M9.5 13.8a3.2 3.2 0 0 0 5 0"/></svg>
+              )}
+            </span>
+            <span class="bio__porta-texto">
+              <span class="bio__porta-titulo">{porta.titulo}</span>
+              <span class="bio__porta-apoio">{porta.apoio}</span>
+            </span>
+            <span class="bio__seta" aria-hidden="true">›</span>
+          </a>
+        ))}
+      </nav>
+
+      <!-- =================== FORMULÁRIO =================== -->
+      <section class="bio__form" id="form-grid" aria-labelledby="bio-form-titulo">
+        <h2 class="bio__form-titulo" id="bio-form-titulo">Peça seu orçamento</h2>
+        <p class="bio__form-apoio">Conte um pouco sobre o evento e a gente retorna com as datas e os valores.</p>
+
+        <form
+          class="formulario"
+          id="lead-form"
+          data-form-id="lead-form"
+          data-submit-url={webhookUrl}
+          data-grid-id="form-grid"
+          data-success-id="form-success"
+          novalidate
+        >
+          <input type="text" name="website" class="honeypot" tabindex="-1" autocomplete="off" aria-hidden="true" />
+
+          <p class="formulario__passo" aria-live="polite" hidden>
+            <span class="formulario__passo-texto">Etapa <b>1</b> de 2</span>
+            <span class="formulario__passo-barra" aria-hidden="true"><span></span></span>
+          </p>
+
+          {etapas.map((linhas, etapa) => (
+          <div class="form-etapa" data-etapa={etapa + 1}>
+          {linhas.map((linha) => (
+            <div class={linha.length > 1 ? 'campos-duplos' : 'campo-linha'}>
+              {linha.map((field) => (
+                <div class={`campo${field.required ? '' : ' campo--opcional'}`}>
+                  <label for={`form-field-${field.name}`}>
+                    {field.label}
+                    {field.hint && <span> ({field.hint})</span>}
+                  </label>
+
+                  {field.type === 'select' ? (
+                    <select id={`form-field-${field.name}`} name={field.name} required={field.required}>
+                      {field.options?.map((opt) => (
+                        <option value={opt.value} disabled={opt.disabled} selected={opt.selected}>{opt.label}</option>
+                      ))}
+                    </select>
+                  ) : field.type === 'textarea' ? (
+                    <textarea
+                      id={`form-field-${field.name}`}
+                      name={field.name}
+                      placeholder={field.placeholder}
+                      required={field.required}
+                      rows={3}
+                    />
+                  ) : (
+                    <input
+                      id={`form-field-${field.name}`}
+                      type={field.type}
+                      name={field.name}
+                      placeholder={field.placeholder}
+                      required={field.required}
+                      min={field.type === 'number' ? '1' : undefined}
+                      autocomplete={autoComplete[field.name]}
+                      inputmode={field.type === 'tel' ? 'tel' : field.type === 'number' ? 'numeric' : undefined}
+                      data-datepicker={field.datepicker ? 'true' : undefined}
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          ))}
+          </div>
+          ))}
+
+          <div class="formulario__msg" id="leadFormMsg"></div>
+
+          {/* O forms.ts resolve o botão de envio pegando o PRIMEIRO
+              [type=button]/[type=submit] do documento — por isso o enviar vem
+              antes dos de navegação no DOM, e a ordem visual sai do flex. */}
+          <div class="formulario__acoes">
+            <button type="submit" class="botao form-submit">
+              <span class="btn-text">Enviar</span>
+              <span class="btn-loading">Enviando…</span>
+            </button>
+            <button type="button" class="botao formulario__voltar" hidden>Voltar</button>
+            <button type="button" class="botao formulario__avancar" hidden>Continuar</button>
+          </div>
+        </form>
+
+        <div class="formulario formulario--sucesso" id="form-success" role="alert">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+            <path d="M22 11.08V12a10 10 0 1 1-5.93-9.14" /><polyline points="22 4 12 14.01 9 11.01" />
+          </svg>
+          <h3>Recebemos seu pedido</h3>
+          <p>A gente retorna em breve pelo WhatsApp ou e-mail com as datas e os valores.</p>
+        </div>
+      </section>
+
+      <footer class="bio__rodape">
+        <p>Rod. Dom Gabriel Paulino Bueno Couto, km 98 — Itu/SP</p>
+        <p>© {new Date().getFullYear()} Espaço Fazenda das Pedras</p>
+      </footer>
+
+    </div>
+  </main>
+</Base>
+
+<script>
+  import { initForms } from '../scripts/forms';
+  import { initFormularioEtapas } from '../scripts/eventos-corporativos-ui';
+  import flatpickr from 'flatpickr';
+  import { Portuguese } from 'flatpickr/dist/l10n/pt.js';
+  import 'flatpickr/dist/flatpickr.min.css';
+
+  initForms();
+  initFormularioEtapas({ sempre: true });
+
+  const dateEl = document.querySelector<HTMLInputElement>('[data-datepicker="true"]');
+  if (dateEl) {
+    flatpickr(dateEl, {
+      locale: Portuguese,
+      dateFormat: 'd/m/Y',
+      minDate: 'today',
+      allowInput: true,
+      disableMobile: true,   // o fallback nativo do iOS quebra o formato dd/mm/aaaa
+    });
+  }
+
+  // Cada porta vira um evento no dataLayer, para o GTM medir o que a bio entrega.
+  document.querySelectorAll<HTMLAnchorElement>('[data-bio]').forEach((porta) => {
+    porta.addEventListener('click', () => {
+      (window as any).dataLayer?.push({
+        event: 'bio_click',
+        bio_destino: porta.dataset.bio,
+        bio_url: porta.href,
+      });
+    });
+  });
+
+  // O botão de WhatsApp abre o popup de qualificação em vez de jogar direto no
+  // wa.me: assim o lead chega no n8n qualificado e o form_submit é disparado.
+  // Sem JS o href continua valendo.
+  const botaoWhats = document.querySelector<HTMLAnchorElement>('[data-bio="whatsapp"]');
+  const fab = document.getElementById('wa-toggle');
+  if (botaoWhats && fab) {
+    botaoWhats.addEventListener('click', (e) => {
+      e.preventDefault();
+      fab.click();
+    });
+  }
+</script>

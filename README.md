@@ -306,3 +306,46 @@ primeiro do documento. Por isso o botão de enviar vem **antes** de "Voltar" e
 "Continuar" no DOM, e a ordem visual no celular sai do `order` do flex. Invertendo,
 o motor escuta o "Voltar" e o envio vira submit nativo — a página recarrega e o
 lead se perde.
+
+
+---
+
+## Rota `/bio` — link da bio do Instagram
+
+Página curta de conversão para o tráfego que vem do perfil. Diferente da LP, ela é
+**escrita à mão** (`src/pages/bio.astro` + `src/styles/bio.css`): não há HTML de
+design por trás, então não passa pelo gerador.
+
+**Ordem:** marca → quatro portas de saída → formulário. É o que se espera de um
+link na bio, sem esconder a conversão de quem quer orçamento.
+
+| Porta | Destino |
+|---|---|
+| Falar no WhatsApp | abre o popup de qualificação (não o `wa.me` cru) |
+| Conhecer o espaço | home do site |
+| Como chegar | Google Maps |
+| Traçar rota | Waze |
+
+**Decisões que valem registrar:**
+
+- **Preset `social`**, sem o campo "empresa": o @espacofazendadaspedras atende
+  casamento, corporativo e social, e pedir o nome da empresa para quem quer
+  casamento atrapalha. Quem vem de assunto corporativo informa a empresa no popup
+  de WhatsApp, que só pergunta isso quando o tipo escolhido é corporativo
+  (`whatsAppEmpresaCondicional`).
+- **`noIndex`**: a bio não deve competir no Google com o site. Por isso o
+  Lighthouse marca SEO 66 nessa rota — é o efeito pretendido, não um defeito.
+- O botão de WhatsApp **abre o popup** em vez de mandar para o `wa.me`: assim o
+  lead chega qualificado no n8n e o `form_submit` é disparado. Sem JS o `href`
+  continua valendo.
+- Cada porta dispara `bio_click` no dataLayer com o destino, para o GTM medir o
+  que a bio entrega.
+- O `Fonte` do lead sai como `Landing page/bio` automaticamente, pelo `pathname`.
+
+As etapas do formulário valem **em qualquer largura** aqui (`initFormularioEtapas({ sempre: true })`),
+porque a bio é uma página de celular por natureza e mesmo no desktop é estreita.
+
+`tools/qa-bio.mjs` cobre as portas, o popup, as duas etapas, a data no padrão, o
+payload canônico, as UTMs, o `noindex` e o contrato de tracking. Ele responde 200
+no lugar do n8n em vez de abortar, então o caminho feliz inteiro é exercitado sem
+que nenhum lead saia da máquina.
