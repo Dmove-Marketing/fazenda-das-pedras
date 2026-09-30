@@ -51,7 +51,7 @@ const jsonLd = {
   '@context': 'https://schema.org',
   '@type': 'EventVenue',
   name: 'Espaço Fazenda das Pedras — Eventos Corporativos',
-  description: "Celebre as conquistas da sua empresa em meio à natureza. Espaço para até 600 pessoas em Itu/SP, a poucos km de São Paulo. Salão climatizado, gastronomia personalizada e hospedagem no local.",
+  description: "Celebre as conquistas da sua empresa em meio à natureza. Espaço para até 600 pessoas em Itu/SP, a poucos km de São Paulo. Salão climatizado e hospedagem no local.",
   image: 'https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hero-1280.webp',
   url: `https://${config.domain}/eventos-corporativos`,
   telephone: '+5511963701306',
@@ -69,7 +69,7 @@ const jsonLd = {
 
 <Base
   title="Fazenda das Pedras Eventos | Confraternização de Fim de Ano Corporativa em Itu/SP"
-  description="Celebre as conquistas da sua empresa em meio à natureza. Espaço para até 600 pessoas em Itu/SP, a poucos km de São Paulo. Salão climatizado, gastronomia personalizada e hospedagem no local."
+  description="Celebre as conquistas da sua empresa em meio à natureza. Espaço para até 600 pessoas em Itu/SP, a poucos km de São Paulo. Salão climatizado e hospedagem no local."
   ogImage="/images/og-eventos-corporativos.jpg"
   canonical={`https://${config.domain}/eventos-corporativos`}
   theme="light"
@@ -107,7 +107,6 @@ const jsonLd = {
       <nav class="cabecalho__nav" aria-label="Navegação principal">
         <a href="#sobre">Sobre</a>
         <a href="#ambientes">Ambientes</a>
-        <a href="#gastronomia">Gastronomia</a>
         <a href="#hospedagem">Hospedagem</a>
         <a href="#galeria">Galeria</a>
         <a href="#localizacao">Localização</a>
@@ -258,17 +257,17 @@ const jsonLd = {
               <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2v20M4.9 4.9l14.2 14.2M19.1 4.9 4.9 19.1M2 12h20"/></svg>
             </span>
             <div>
-              <p class="infra-item__titulo">Salão climatizado</p>
+              <p class="infra-item__titulo">Salão climatizado e gerador</p>
               <p class="infra-item__texto">Conforto em qualquer clima</p>
             </div>
           </div>
           <div class="infra-item">
             <span class="infra-item__icone">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M13 2 4 14h7l-1 8 9-12h-7l1-8Z"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 13.9A4 4 0 0 1 7.1 6.1a5 5 0 0 1 9.8 0A4 4 0 0 1 18 13.9V21H6Z"/><path d="M6 17h12"/></svg>
             </span>
             <div>
-              <p class="infra-item__titulo">Gerador próprio</p>
-              <p class="infra-item__texto">Para a festa sempre continuar</p>
+              <p class="infra-item__titulo">Cozinha de apoio</p>
+              <p class="infra-item__texto">Estrutura para receber diferentes opções de gastronomia</p>
             </div>
           </div>
           <div class="infra-item">
@@ -291,11 +290,11 @@ const jsonLd = {
           </div>
           <div class="infra-item">
             <span class="infra-item__icone">
-              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 22c6-2 9-6 9-12a9 9 0 0 0-9-9 9 9 0 0 0-9 9c0 6 3 10 9 12Z"/><path d="M12 22V10"/></svg>
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/><circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.9M16 3.1a4 4 0 0 1 0 7.8"/></svg>
             </span>
             <div>
-              <p class="infra-item__titulo">Contato com a natureza</p>
-              <p class="infra-item__texto">Áreas verdes para respirar e sair da rotina</p>
+              <p class="infra-item__titulo">Parceiros de confiança</p>
+              <p class="infra-item__texto">Indicamos parceiros para completar seu evento</p>
             </div>
           </div>
           <div class="infra-item">
@@ -324,39 +323,6 @@ const jsonLd = {
       </div>
     </section>
 
-    <!-- =================== GASTRONOMIA =================== -->
-    <section id="gastronomia">
-      <div class="container">
-        <div class="cabecalho-secao centralizado">
-          <p class="rotulo">Gastronomia</p>
-          <h2 class="titulo-secao">Gastronomia com<br class="quebra-mobile"> sabor de Fazenda</h2>
-          <p class="paragrafo">Surpreenda seus convidados com sabores típicos em um menu personalizado.</p>
-        </div>
-        <div class="gastronomia__grade">
-          <a href="#lb-gastro-1" class="gastronomia__foto lightbox-trigger" aria-label="Ampliar foto"><img alt="Prato preparado pela gastronomia da Fazenda das Pedras" loading="lazy" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-1-900.webp" srcset="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-1-320.webp 320w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-1-480.webp 480w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-1-640.webp 640w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-1-900.webp 900w" sizes="(min-width: 1100px) 276px, (min-width: 900px) 24vw, (min-width: 700px) 23vw, 77vw" width="900" height="1200" decoding="async"></a>
-          <a href="#lb-gastro-2" class="gastronomia__foto lightbox-trigger" aria-label="Ampliar foto"><img alt="Mesa de serviço gastronômico personalizado" loading="lazy" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-2-900.webp" srcset="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-2-320.webp 320w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-2-480.webp 480w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-2-640.webp 640w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-2-900.webp 900w" sizes="(min-width: 1100px) 552px, (min-width: 900px) 47vw, (min-width: 700px) 46vw, 87vw" width="900" height="600" decoding="async"></a>
-          <a href="#lb-gastro-3" class="gastronomia__foto lightbox-trigger" aria-label="Ampliar foto"><picture><source media="(max-width: 699px)" srcset="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-3h-320.webp 320w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-3h-480.webp 480w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-3h-640.webp 640w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-3h-900.webp 900w" sizes="(min-width: 1100px) 491px, (min-width: 900px) 42vw, (min-width: 700px) 41vw, 77vw" width="1560" height="1170"><img alt="Detalhe de menu típico da Fazenda das Pedras" loading="lazy" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-3-900.webp" srcset="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-3-320.webp 320w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-3-480.webp 480w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-3-640.webp 640w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-3-900.webp 900w" sizes="(min-width: 1100px) 276px, (min-width: 900px) 24vw, (min-width: 700px) 23vw, 77vw" width="900" height="1200" decoding="async"></picture></a>
-          <a href="#lb-gastro-4" class="gastronomia__foto lightbox-trigger" aria-label="Ampliar foto"><img alt="Buffet preparado para evento corporativo" loading="lazy" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-4-900.webp" srcset="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-4-320.webp 320w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-4-480.webp 480w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-4-640.webp 640w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-4-900.webp 900w" sizes="(min-width: 1100px) 552px, (min-width: 900px) 47vw, (min-width: 700px) 46vw, 87vw" width="900" height="600" decoding="async"></a>
-        </div>
-        <div class="lightbox" id="lb-gastro-1">
-          <a href="#gastronomia" class="lightbox__fechar" aria-label="Fechar">×</a>
-          <img class="lightbox__img"  alt="Prato preparado pela gastronomia da Fazenda das Pedras" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-1-1170.webp" srcset="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-1-1170.webp 1170w" sizes="100vw" width="1170" height="1560" loading="lazy" decoding="async">
-        </div>
-        <div class="lightbox" id="lb-gastro-2">
-          <a href="#gastronomia" class="lightbox__fechar" aria-label="Fechar">×</a>
-          <img class="lightbox__img"  alt="Mesa de serviço gastronômico personalizado" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-2-1400.webp" srcset="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-2-1400.webp 1400w" sizes="100vw" width="1400" height="933" loading="lazy" decoding="async">
-        </div>
-        <div class="lightbox" id="lb-gastro-3">
-          <a href="#gastronomia" class="lightbox__fechar" aria-label="Fechar">×</a>
-          <img class="lightbox__img"  alt="Detalhe de menu típico da Fazenda das Pedras" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-3-1170.webp" srcset="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-3-1170.webp 1170w" sizes="100vw" width="1170" height="1560" loading="lazy" decoding="async">
-        </div>
-        <div class="lightbox" id="lb-gastro-4">
-          <a href="#gastronomia" class="lightbox__fechar" aria-label="Fechar">×</a>
-          <img class="lightbox__img"  alt="Buffet preparado para evento corporativo" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-4-1400.webp" srcset="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-gastronomia-4-1400.webp 1400w" sizes="100vw" width="1400" height="933" loading="lazy" decoding="async">
-        </div>
-      </div>
-    </section>
-
     <!-- =================== HOSPEDAGEM =================== -->
     <section class="hospedagem-verde" id="hospedagem">
       <div class="container">
@@ -365,7 +331,6 @@ const jsonLd = {
             <div class="carrossel__trilho" role="group" aria-roledescription="carrossel" aria-label="Fotos dos chalés">
               <div class="carrossel__item"><a href="#lb-hosp-1" class="lightbox-trigger" aria-label="Ampliar foto"><img alt="Chalé de hospedagem da Fazenda das Pedras — 1" loading="lazy" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-1-1080.webp" srcset="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-1-360.webp 360w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-1-560.webp 560w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-1-800.webp 800w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-1-1080.webp 1080w" sizes="(min-width: 1100px) 490px, (min-width: 900px) 42vw, (min-width: 700px) 95vw, 90vw" width="1080" height="1350" decoding="async"></a></div>
               <div class="carrossel__item"><a href="#lb-hosp-2" class="lightbox-trigger" aria-label="Ampliar foto"><img alt="Chalé de hospedagem da Fazenda das Pedras — 2" loading="lazy" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-2-1080.webp" srcset="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-2-360.webp 360w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-2-560.webp 560w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-2-800.webp 800w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-2-1080.webp 1080w" sizes="(min-width: 1100px) 490px, (min-width: 900px) 42vw, (min-width: 700px) 95vw, 90vw" width="1080" height="1350" decoding="async"></a></div>
-              <div class="carrossel__item"><a href="#lb-hosp-3" class="lightbox-trigger" aria-label="Ampliar foto"><img alt="Chalé de hospedagem da Fazenda das Pedras — 3" loading="lazy" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-3-1080.webp" srcset="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-3-360.webp 360w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-3-560.webp 560w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-3-800.webp 800w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-3-1080.webp 1080w" sizes="(min-width: 1100px) 490px, (min-width: 900px) 42vw, (min-width: 700px) 95vw, 90vw" width="1080" height="1350" decoding="async"></a></div>
               <div class="carrossel__item"><a href="#lb-hosp-4" class="lightbox-trigger" aria-label="Ampliar foto"><img alt="Chalé de hospedagem da Fazenda das Pedras — 4" loading="lazy" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-4-1080.webp" srcset="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-4-360.webp 360w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-4-560.webp 560w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-4-800.webp 800w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-4-1080.webp 1080w" sizes="(min-width: 1100px) 490px, (min-width: 900px) 42vw, (min-width: 700px) 95vw, 90vw" width="1080" height="1350" decoding="async"></a></div>
               <div class="carrossel__item"><a href="#lb-hosp-5" class="lightbox-trigger" aria-label="Ampliar foto"><img alt="Chalé de hospedagem da Fazenda das Pedras — 5" loading="lazy" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-5-1080.webp" srcset="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-5-360.webp 360w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-5-560.webp 560w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-5-800.webp 800w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-5-1080.webp 1080w" sizes="(min-width: 1100px) 490px, (min-width: 900px) 42vw, (min-width: 700px) 95vw, 90vw" width="1080" height="1350" decoding="async"></a></div>
               <div class="carrossel__item"><a href="#lb-hosp-6" class="lightbox-trigger" aria-label="Ampliar foto"><img alt="Chalé de hospedagem da Fazenda das Pedras — 6" loading="lazy" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-6-1080.webp" srcset="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-6-360.webp 360w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-6-560.webp 560w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-6-800.webp 800w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-6-1080.webp 1080w" sizes="(min-width: 1100px) 490px, (min-width: 900px) 42vw, (min-width: 700px) 95vw, 90vw" width="1080" height="1350" decoding="async"></a></div>
@@ -382,7 +347,7 @@ const jsonLd = {
             <p class="paragrafo" style="margin-top:16px;">Com hospedagem na própria Fazenda, o encontro pode continuar por mais tempo.</p>
             <div class="hospedagem__destaques">
               <span class="hospedagem__destaque">60<br class="quebra-mobile"> chalés</span>
-              <span class="hospedagem__destaque">Até 150<br class="quebra-mobile"> pessoas</span>
+              <span class="hospedagem__destaque">Até 80<br class="quebra-mobile"> pessoas</span>
               <span class="hospedagem__destaque">Café da<br class="quebra-mobile"> manhã incluso</span>
             </div>
           </div>
@@ -395,10 +360,6 @@ const jsonLd = {
         <div class="lightbox" id="lb-hosp-2">
           <a href="#hospedagem" class="lightbox__fechar" aria-label="Fechar">×</a>
           <img class="lightbox__img"  alt="Chalé de hospedagem da Fazenda das Pedras — 2" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-2-1080.webp" srcset="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-2-800.webp 800w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-2-1080.webp 1080w" sizes="100vw" width="1080" height="1350" loading="lazy" decoding="async">
-        </div>
-        <div class="lightbox" id="lb-hosp-3">
-          <a href="#hospedagem" class="lightbox__fechar" aria-label="Fechar">×</a>
-          <img class="lightbox__img"  alt="Chalé de hospedagem da Fazenda das Pedras — 3" src="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-3-1080.webp" srcset="https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-3-800.webp 800w, https://media.dmove.com.br/clients/fazenda-das-pedras/photos/fazendadaspedras-corporativo-hospedagem-3-1080.webp 1080w" sizes="100vw" width="1080" height="1350" loading="lazy" decoding="async">
         </div>
         <div class="lightbox" id="lb-hosp-4">
           <a href="#hospedagem" class="lightbox__fechar" aria-label="Fechar">×</a>
@@ -428,12 +389,24 @@ const jsonLd = {
         <p class="rotulo">Quem já celebrou aqui</p>
         <h2 class="titulo-secao">Um lugar que já faz parte de muitas histórias</h2>
         <p class="paragrafo" style="margin:16px auto 0;">Empresas que escolheram sair da rotina para celebrar na Fazenda das Pedras.</p>
-        <!-- Logos aguardando envio pelo cliente — substituir cada .autoridade__logo-slot por <img src="imagens/logo-empresa-x.png" alt="Nome da empresa"> quando recebidos. -->
-        <div class="autoridade__logos">
-          <div class="autoridade__logo-slot">Logo cliente</div>
-          <div class="autoridade__logo-slot">Logo cliente</div>
-          <div class="autoridade__logo-slot">Logo cliente</div>
-          <div class="autoridade__logo-slot">Logo cliente</div>
+        <!-- Carrossel infinito: o script duplica a lista (cópia aria-hidden).
+             Desktop: faixa correndo sozinha, pausa no hover. Celular: setas. -->
+        <div class="autoridade__logos" data-logos>
+          <button class="carrossel__seta carrossel__seta--prev autoridade__seta autoridade__seta--prev" type="button" aria-label="Logo anterior"><span aria-hidden="true">‹</span></button>
+          <div class="autoridade__janela">
+          <div class="autoridade__trilho" role="list" aria-label="Empresas que já celebraram na Fazenda das Pedras">
+          <div class="autoridade__logo" role="listitem"><img src="/logos/fasano.webp" alt="Fasano" width="360" height="60" loading="lazy" decoding="async"></div>
+          <div class="autoridade__logo" role="listitem"><img src="/logos/roche.webp" alt="Roche" width="308" height="160" loading="lazy" decoding="async"></div>
+          <div class="autoridade__logo" role="listitem"><img src="/logos/bobs.webp" alt="Bob's" width="250" height="126" loading="lazy" decoding="async"></div>
+          <div class="autoridade__logo" role="listitem"><img src="/logos/ceunsp.webp" alt="CEUNSP" width="360" height="126" loading="lazy" decoding="async"></div>
+          <div class="autoridade__logo" role="listitem"><img src="/logos/monin.webp" alt="Monin" width="360" height="110" loading="lazy" decoding="async"></div>
+          <div class="autoridade__logo" role="listitem"><img src="/logos/pizza-hut.webp" alt="Pizza Hut" width="191" height="160" loading="lazy" decoding="async"></div>
+          <div class="autoridade__logo" role="listitem"><img src="/logos/rumo.webp" alt="Rumo" width="360" height="82" loading="lazy" decoding="async"></div>
+          <div class="autoridade__logo" role="listitem"><img src="/logos/senar.webp" alt="SENAR São Paulo" width="119" height="160" loading="lazy" decoding="async"></div>
+          <div class="autoridade__logo" role="listitem"><img src="/logos/plaza-shopping-itu.webp" alt="Plaza Shopping Itu" width="325" height="144" loading="lazy" decoding="async"></div>
+          </div>
+          </div>
+          <button class="carrossel__seta carrossel__seta--next autoridade__seta autoridade__seta--next" type="button" aria-label="Próximo logo"><span aria-hidden="true">›</span></button>
         </div>
       </div>
     </section>
@@ -654,7 +627,7 @@ const jsonLd = {
 
 <script>
   import { initForms } from '../scripts/forms';
-  import { initCarrosseis, initAmbientes, initFormularioEtapas } from '../scripts/eventos-corporativos-ui';
+  import { initCarrosseis, initAmbientes, initFormularioEtapas, initLogos } from '../scripts/eventos-corporativos-ui';
   import flatpickr from 'flatpickr';
   import { Portuguese } from 'flatpickr/dist/l10n/pt.js';
   import 'flatpickr/dist/flatpickr.min.css';
@@ -663,6 +636,7 @@ const jsonLd = {
   initCarrosseis();
   initAmbientes();
   initFormularioEtapas();
+  initLogos();
 
   const dateEl = document.querySelector<HTMLInputElement>('[data-datepicker="true"]');
   if (dateEl) {

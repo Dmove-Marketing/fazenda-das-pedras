@@ -379,3 +379,94 @@ export function initFormularioEtapas({ sempre = false }: { sempre?: boolean } = 
     { threshold: 0.25 }
   ).observe(cartao);
 }
+
+// ------------------------------------------------------------
+// Logos "Quem já celebrou aqui": carrossel infinito.
+// A lista é duplicada (cópia aria-hidden) para o loop não ter emenda.
+// Desktop: faixa em CSS que corre sozinha e pausa no hover.
+// Celular (ou menos movimento): setas + arrastar, dando a volta nas pontas.
+// ------------------------------------------------------------
+export function initLogos() {
+  const raiz = document.querySelector<HTMLElement>('[data-logos]');
+  const trilho = raiz?.querySelector<HTMLElement>('.autoridade__trilho');
+  if (!raiz || !trilho) return;
+
+  const originais = [...trilho.children] as HTMLElement[];
+  const total = originais.length;
+  if (total < 2) return;
+
+  originais.forEach((item) => {
+    const copia = item.cloneNode(true) as HTMLElement;
+    copia.setAttribute('aria-hidden', 'true');
+    copia.querySelectorAll('img').forEach((img) => (img.alt = ''));
+    trilho.appendChild(copia);
+  });
+  raiz.classList.add('autoridade__logos--pronto');
+
+  const desktop = window.matchMedia('(min-width: 900px)');
+  let atual = 0;
+
+  const posicionar = (animar: boolean) => {
+    // offsetLeft é relativo ao offsetParent (a seção), então desconta o 1º item
+    const alvo = trilho.children[atual] as HTMLElement;
+    const inicio = (trilho.children[0] as HTMLElement).offsetLeft;
+    if (!animar) trilho.style.transition = 'none';
+    trilho.style.transform = `translateX(${inicio - alvo.offsetLeft}px)`;
+    if (!animar) {
+      void trilho.offsetWidth; // aplica o salto antes de religar a transição
+      trilho.style.transition = '';
+    }
+  };
+
+  const ir = (passo: 1 | -1) => {
+    // toque rápido pode chegar antes do transitionend: normaliza aqui também
+    if (atual >= total) {
+      atual -= total;
+      posicionar(false);
+    }
+    if (passo === -1 && atual === 0) {
+      // salta para a mesma posição na cópia e anima um para trás
+      atual = total;
+      posicionar(false);
+    }
+    atual += passo;
+    posicionar(!menosMovimento());
+  };
+
+  // ao chegar na cópia, volta pro original sem animação (mesma imagem)
+  trilho.addEventListener('transitionend', (e) => {
+    if (e.target !== trilho || atual < total) return;
+    atual -= total;
+    posicionar(false);
+  });
+
+  raiz.querySelector('.autoridade__seta--prev')?.addEventListener('click', () => ir(-1));
+  raiz.querySelector('.autoridade__seta--next')?.addEventListener('click', () => ir(1));
+
+  // arrastar com o dedo
+  let inicioX: number | null = null;
+  trilho.addEventListener('pointerdown', (e) => { inicioX = e.clientX; });
+  trilho.addEventListener('pointerup', (e) => {
+    if (inicioX === null || !raiz.classList.contains('autoridade__logos--setas')) return;
+    const dx = e.clientX - inicioX;
+    inicioX = null;
+    if (Math.abs(dx) > 40) ir(dx < 0 ? 1 : -1);
+  });
+  trilho.addEventListener('pointercancel', () => { inicioX = null; });
+
+  const aplicarModo = () => {
+    const faixa = desktop.matches && !menosMovimento();
+    raiz.classList.toggle('autoridade__logos--faixa', faixa);
+    raiz.classList.toggle('autoridade__logos--setas', !faixa);
+    trilho.style.transform = '';
+    if (!faixa) {
+      atual %= total;
+      posicionar(false);
+    }
+  };
+  aplicarModo();
+  desktop.addEventListener('change', aplicarModo);
+  window.addEventListener('resize', () => {
+    if (raiz.classList.contains('autoridade__logos--setas')) posicionar(false);
+  }, { passive: true });
+}

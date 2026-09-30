@@ -860,25 +860,69 @@
 
   /* ---------- Autoridade ---------- */
   .autoridade { text-align: center; }
+  /* Logos "Quem já celebrou aqui" — carrossel infinito.
+     O script duplica a lista e escolhe o modo:
+       --faixa (desktop): a faixa corre sozinha e pausa no hover.
+       --setas (celular, ou quem pede menos movimento): setas em loop.
+     Espaço entre logos é margin-right (não gap) para as duas cópias medirem
+     exatamente o mesmo e o -50% da animação fechar sem tranco.
+     Cartão branco porque alguns logos (Plaza) vêm com fundo branco. */
   .autoridade__logos {
+    --logo-gap: 10px;
+    --logos-por-tela: 2;
+    position: relative;
     margin-top: 36px;
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
-    gap: 14px;
   }
-  .autoridade__logo-slot {
-    aspect-ratio: 16/9;
-    border: 1px dashed var(--cor-borda);
+  .autoridade__janela { overflow: hidden; }
+  .autoridade__trilho { display: flex; }
+  .autoridade__logo {
+    flex: 0 0 calc((100% - (var(--logos-por-tela) - 1) * var(--logo-gap)) / var(--logos-por-tela));
+    margin-right: var(--logo-gap);
+    aspect-ratio: 16/10;
+    border: 1px solid var(--cor-borda);
     border-radius: 12px;
+    background: #fff;
     display: flex; align-items: center; justify-content: center;
-    color: var(--cor-label);
-    font-size: 11px;
-    letter-spacing: .1em;
-    text-transform: uppercase;
-    background: var(--cor-fundo-creme);
+    padding: 16px 20px;
+    min-width: 0;
   }
+  .autoridade__logo img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+  }
+  /* sem JS: faixa rolável com o dedo/trackpad */
+  .autoridade__logos:not(.autoridade__logos--pronto) .autoridade__janela { overflow-x: auto; }
+  .autoridade__seta { display: none; }
+
+  /* —— modo setas —— */
+  .autoridade__logos--setas .autoridade__janela { margin-inline: 48px; touch-action: pan-y; }
+  .autoridade__logos--setas .autoridade__trilho { transition: transform .45s cubic-bezier(.25, .8, .25, 1); }
+  .autoridade__logos--setas .autoridade__seta { display: flex; }
+  .autoridade__logos .autoridade__seta--prev { left: 0; }
+  .autoridade__logos .autoridade__seta--next { right: 0; }
+
+  /* —— modo faixa —— */
+  .autoridade__logos--faixa .autoridade__janela {
+    -webkit-mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+            mask-image: linear-gradient(90deg, transparent, #000 6%, #000 94%, transparent);
+  }
+  .autoridade__logos--faixa .autoridade__trilho {
+    width: max-content;
+    animation: logos-faixa 40s linear infinite;
+  }
+  .autoridade__logos--faixa .autoridade__logo { flex-basis: 200px; }
+  .autoridade__logos--faixa .autoridade__janela:hover .autoridade__trilho,
+  .autoridade__logos--faixa .autoridade__janela:focus-within .autoridade__trilho { animation-play-state: paused; }
+  @keyframes logos-faixa { to { transform: translateX(-50%); } }
+
   @media (min-width: 700px) {
-    .autoridade__logos { grid-template-columns: repeat(4, 1fr); }
+    .autoridade__logos { --logo-gap: 16px; --logos-por-tela: 4; }
+    .autoridade__logo { padding: 22px 28px; }
+    .autoridade__logos--setas .autoridade__janela { margin-inline: 60px; }
   }
 
   /* ---------- Localização ---------- */
@@ -1092,7 +1136,6 @@ section[id], header[id] { scroll-margin-top: 84px; }
 }
 
 /* Texto abaixo de 12px não se lê bem em tela nenhuma */
-.autoridade__logo-slot { font-size: 12px; }
 
 /* Desktop: o link do menu tem 17px de altura de texto. O padding aumenta a
    área clicável sem mover nada, porque a nav é mais baixa que o logo. */
