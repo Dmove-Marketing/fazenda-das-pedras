@@ -45,6 +45,8 @@
   body {
     margin: 0;
     font-family: var(--fonte-corpo);
+    font-size: 16px;
+    line-height: normal;
     color: var(--cor-texto);
     background: var(--cor-fundo);
     -webkit-font-smoothing: antialiased;
