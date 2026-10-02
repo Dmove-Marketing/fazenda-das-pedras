@@ -59,6 +59,14 @@
   a { color: inherit; text-decoration: none; }
   ul { margin: 0; padding: 0; list-style: none; }
   h1, h2, h3, p, blockquote, figure { margin: 0; }
+  /* Anula os resets de heading do global.css (font-weight:700, h2 clamp grande, etc.) */
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--fonte-titulo);
+    font-weight: 300;
+    font-size: inherit;
+    letter-spacing: normal;
+    line-height: normal;
+  }
 
   .container { width: 100%; max-width: var(--container-max); margin: 0 auto; padding: 0 var(--gutter); }
 
