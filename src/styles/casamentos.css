@@ -345,6 +345,7 @@
     font-family: var(--fonte-titulo); font-weight: 300;
     font-size: clamp(20px, 3.4vw, 32px); line-height: 1.45;
     max-width: 860px; margin: 0 auto; text-wrap: balance;
+    color: var(--cor-texto-claro);
   }
   .depoimento__autor {
     margin-top: 28px; font-weight: 600; font-size: 13px;
@@ -525,7 +526,7 @@
   .rodape__topo { text-align: center; }
   .rodape__logo { height: 84px; width: auto; margin: 0 auto; }
   .rodape__linha { margin: 34px 0 22px; border: none; border-top: 1px solid rgba(245,238,220,.15); }
-  .rodape__copy { text-align: center; font-size: 12px; opacity: .65; letter-spacing: .02em; }
+  .rodape__copy { text-align: center; font-size: 12px; opacity: .65; letter-spacing: .02em; color: var(--cor-texto-claro); }
 
   /* ---------- Lightbox (apenas desktop) ---------- */
   .lightbox {
