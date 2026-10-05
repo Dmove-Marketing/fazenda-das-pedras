@@ -55,6 +55,26 @@
   @media (max-width: 899px) { body { text-align: center; } }
   br.quebra-mobile { display: none; }
   @media (max-width: 899px) { br.quebra-mobile { display: block; } br.esconde-mobile { display: none; } }
+  /* Quebras manuais no desktop: o texto quebra só nos <br>, sem o limite de 58ch */
+  @media (min-width: 900px) {
+    .paragrafo.quebras-desktop { max-width: none; }
+    .paragrafo.linha-unica-desktop { max-width: none; white-space: nowrap; }
+  }
+  /* Quebras manuais no mobile: quebra só no <br>; a fonte encolhe para a linha mais
+     longa caber (--linha-mobile = largura dessa linha a 16px, coluna = 100vw - 56px) */
+  @media (max-width: 899px) {
+    .paragrafo.quebras-mobile {
+      max-width: none;
+      white-space: nowrap;
+      font-size: min(16px, calc((100vw - 56px) * 16 / var(--linha-mobile, 340)));
+    }
+  }
+  /* Coluna estreita (Sobre): as quebras só cabem quando a coluna atinge a largura cheia */
+  br.quebra-larga { display: none; }
+  @media (min-width: 1200px) {
+    br.quebra-larga { display: inline; }
+    .paragrafo.quebras-larga { max-width: none; }
+  }
   img { max-width: 100%; display: block; }
   a { color: inherit; text-decoration: none; }
   ul { margin: 0; padding: 0; list-style: none; }
