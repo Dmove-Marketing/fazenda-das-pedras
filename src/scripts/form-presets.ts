@@ -67,7 +67,7 @@ const detalhes: PresetField = {
 const nucleo: PresetField[] = [
   { name: 'nome',      type: 'text',   label: 'Nome',                  placeholder: 'Seu nome completo',  required: true },
   { name: 'telefone',  type: 'tel',    label: 'Telefone',              placeholder: '(11) 00000-0000',    required: true },
-  { name: 'email',     type: 'email',  label: 'E-mail',                placeholder: 'voce@empresa.com.br', required: true },
+  { name: 'email',     type: 'email',  label: 'E-mail',                placeholder: 'seu@email.com', required: true },
   tipoEvento,
   { name: 'data_evento', type: 'text', label: 'Data do evento',        placeholder: 'dd/mm/aaaa', datepicker: true, required: true },
   { name: 'convidados', type: 'number', label: 'Número de convidados', placeholder: 'Ex: 150',            required: true },

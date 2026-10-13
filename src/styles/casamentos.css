@@ -149,8 +149,11 @@
     position: fixed; top: 0; left: 0; right: 0; z-index: 100;
     padding: 12px 0;
     background: rgba(245,238,220,.82);
-    backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+    backdrop-filter: blur(10px);
     box-shadow: 0 1px 0 rgba(74,79,39,.10);
+  }
+  @supports (-webkit-backdrop-filter: blur(1px)) {
+    .cabecalho { -webkit-backdrop-filter: blur(10px) }
   }
   .cabecalho__barra { display: flex; align-items: center; justify-content: space-between; }
   .cabecalho__logo { height: 50px; width: auto; }
@@ -483,7 +486,7 @@
 
   /* ---------- Localização ---------- */
   .localizacao__mapa { border-radius: var(--radius); overflow: hidden; aspect-ratio: 4/3; border: 1px solid var(--cor-borda); }
-  .localizacao__mapa iframe { width: 100%; height: 100%; border: 0; display: block; }
+  .localizacao__mapa iframe { width: 100%; height: 100%; border: 0; display: block; pointer-events: none; }
   @media (min-width: 900px) { .localizacao__mapa { aspect-ratio: 21/8; } }
 
   /* ---------- Contato ---------- */
