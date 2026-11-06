@@ -384,8 +384,18 @@ const introMessages = [
     await wait(350);
   }
 
+  // Anti-duplicidade com o formulário da página: mesma chave/formato do forms.ts.
+  const SENT_KEY = 'dmove_leads_sent';
+  const digitsOf = (v) => String(v || '').replace(/\D/g, '');
+  function sentList() {
+    try { return JSON.parse(sessionStorage.getItem(SENT_KEY) || '[]'); } catch (_) { return []; }
+  }
+
   async function submitLead() {
     const a = state.answers;
+    const telDigits = digitsOf(a.tel?.value);
+    // O formulário já enviou este telefone nesta sessão: não reenvia ao n8n nem repete o form_submit.
+    if (telDigits && sentList().includes(telDigits)) return;
     const trackingRaw = sessionStorage.getItem('dmove_tracking');
     const tracking = trackingRaw ? JSON.parse(trackingRaw) : {};
     const qs = new URLSearchParams();
@@ -424,6 +434,13 @@ const introMessages = [
         });
       }
     } catch (_) { /* falha silenciosa */ }
+
+    if (telDigits) {
+      try {
+        const list = sentList();
+        if (!list.includes(telDigits)) sessionStorage.setItem(SENT_KEY, JSON.stringify([...list, telDigits]));
+      } catch (_) {}
+    }
 
     window.dataLayer = window.dataLayer || [];
     window.dataLayer.push({

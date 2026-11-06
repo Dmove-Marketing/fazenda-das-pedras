@@ -26,6 +26,25 @@ export function getClientIp(): Promise<string> {
   return clientIpPromise;
 }
 
+// Anti-duplicidade entre canais (formulário × popup de WhatsApp): quem envia primeiro
+// registra o telefone na sessão; o outro canal reconhece e não reenvia o lead ao n8n.
+// O WhatsAppWidget usa a mesma chave/formato — mantenha os dois em sincronia.
+const SENT_KEY = 'dmove_leads_sent';
+const phoneDigits = (v: string) => (v || '').replace(/\D/g, '');
+function leadAlreadySent(phone: string): boolean {
+  const d = phoneDigits(phone);
+  if (!d) return false;
+  try { return (JSON.parse(sessionStorage.getItem(SENT_KEY) || '[]') as string[]).includes(d); } catch { return false; }
+}
+function markLeadSent(phone: string) {
+  const d = phoneDigits(phone);
+  if (!d) return;
+  try {
+    const list = JSON.parse(sessionStorage.getItem(SENT_KEY) || '[]') as string[];
+    if (!list.includes(d)) sessionStorage.setItem(SENT_KEY, JSON.stringify([...list, d]));
+  } catch {}
+}
+
 function applyPhoneMask(input: HTMLInputElement) {
   input.addEventListener('input', () => {
     let v = input.value.replace(/\D/g, '');
@@ -52,6 +71,7 @@ export function initForms() {
     (form as any).__formsInitialized = true;
 
     let started = false;
+    let sending = false; // trava de envio em andamento (Enter repetido / duplo toque)
     const formId  = form.dataset.formId!;
     const project = form.dataset.project || window.location.hostname;
 
@@ -84,6 +104,7 @@ export function initForms() {
     const submitBtn = form.querySelector<HTMLButtonElement>('.form-submit, [type="button"], [type="submit"]');
 
     const handleSubmit = async () => {
+      if (sending) return;
       const hp = form.querySelector<HTMLInputElement>('[name="website"]');
       if (hp && hp.value) return;
 
@@ -187,6 +208,7 @@ export function initForms() {
         ? document.getElementById(gridId)?.querySelector('[id$="FormMsg"]') as HTMLElement | null
         : form.querySelector('.form-error') as HTMLElement | null;
 
+      sending = true;
       if (submitBtn) submitBtn.disabled = true;
 
       if (btnText && btnLoading) {
@@ -260,27 +282,35 @@ export function initForms() {
         ...metaCapi,
       };
 
+      const phoneValue = rawData['telefone'] || rawData['whatsapp'] || '';
+
       try {
-        const res = await fetch(submitUrl, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify(payload),
-        });
-
-        if (!res.ok) throw new Error('http_' + res.status);
-
         let json: any = {};
-        try { json = await res.json(); } catch {}
 
-        // dataLayer limpo, SEM PII (o GTM lê e-mail/telefone/nome do DOM via Enhanced Conversions)
-        (window as any).dataLayer?.push({
-          event: 'form_submit',
-          form_source: 'form',
-          form_id: formId,
-          project,
-          tipo_evento: rawData['tipo_evento'] || '',
-          event_id: tracking['event_id'] || (window as any).__page_event_id || '',
-        });
+        // Se o popup de WhatsApp já enviou este telefone nesta sessão, não reenvia ao n8n
+        // (nem repete o form_submit): só segue para a tela de sucesso.
+        if (!leadAlreadySent(phoneValue)) {
+          const res = await fetch(submitUrl, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(payload),
+          });
+
+          if (!res.ok) throw new Error('http_' + res.status);
+
+          try { json = await res.json(); } catch {}
+          markLeadSent(phoneValue);
+
+          // dataLayer limpo, SEM PII (o GTM lê e-mail/telefone/nome do DOM via Enhanced Conversions)
+          (window as any).dataLayer?.push({
+            event: 'form_submit',
+            form_source: 'form',
+            form_id: formId,
+            project,
+            tipo_evento: rawData['tipo_evento'] || '',
+            event_id: tracking['event_id'] || (window as any).__page_event_id || '',
+          });
+        }
 
         const redir = redirectUrl || json.redirect;
         if (redir) {
@@ -303,6 +333,7 @@ export function initForms() {
             </div>`;
         }
       } catch (err: any) {
+        sending = false;
         (window as any).dataLayer?.push({ event: 'form_error', form_source: 'form', form_id: formId, error: err.message });
 
         if (msgEl) {
